@@ -116,3 +116,7 @@ elseif(APPLE)
     # macOS-specific settings
     set(CMAKE_MACOSX_RPATH ON)
 endif()
+
+set_target_properties(TetrisEngine PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)

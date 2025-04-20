@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import shutil
 import subprocess
@@ -26,8 +24,8 @@ def main():
     build_dir.mkdir()
     os.chdir(build_dir)
 
-    # Define the CMake command
-    cmake_command = [
+    # Define the CMake configuration command
+    cmake_configure_command = [
         "cmake", "..",
         "-DCMAKE_BUILD_TYPE=Release",
         "-DENABLE_NN=ON",
@@ -35,9 +33,18 @@ def main():
         f"-DCMAKE_TOOLCHAIN_FILE={vcpkg_root}/scripts/buildsystems/vcpkg.cmake"
     ]
 
-    # Run the CMake command
-    print("Running cmake...")
-    subprocess.run(cmake_command, check=True)
+    # Run the CMake configuration command
+    print("Configuring the project with CMake...")
+    subprocess.run(cmake_configure_command, check=True)
+
+    # Define the CMake build command
+    cmake_build_command = [
+        "cmake", "--build", ".", "--config", "Release"
+    ]
+
+    # Run the CMake build command
+    print("Building the project with CMake...")
+    subprocess.run(cmake_build_command, check=True)
 
 if __name__ == "__main__":
     main()

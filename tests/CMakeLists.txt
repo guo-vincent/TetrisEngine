@@ -53,3 +53,8 @@ if(WIN32)
             "$<TARGET_FILE_DIR:test_neuralnet>"
     )
 endif()
+
+# Specify runtime output directory for test executables
+set_target_properties(test_board PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
