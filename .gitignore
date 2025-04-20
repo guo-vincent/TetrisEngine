@@ -1,0 +1,39 @@
+# Ignore Python virtual environments
+.venv/
+venv/
+
+# Ignore build directories and CMake cache
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.cmake
+
+# Ignore Python bytecode and cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+*.log
+*.bak
+*.tmp
+
+# Ignore test coverage and report directories
+.coverage/
+nosetests.xml
+coverage.xml
+*.cover
+*.hypothesis/
+.pytest_cache/

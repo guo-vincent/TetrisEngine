@@ -1,0 +1,11 @@
+# python/requirements.txt
+torch>=2.0.0          # PyTorch
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.2.0
+onnx>=1.13.0          # For model conversion
+pyyaml>=6.0           # Config parsing
+tqdm>=4.64.0
+tensorboard>=2.12.0
+
+# Installation: pip install -r python/requirements.txt
