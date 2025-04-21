@@ -32,12 +32,64 @@ A modular Tetris engine with neural network integration, featuring:
 
 Ensure the following tools are installed:
 
-- CMake ≥ 3.15
+- CMake ≥ 3.15 - [Installation Guide](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Getting%20Started.html#getting-and-installing-cmake-on-your-computer)
 - A C++20-compatible compiler
 - Git
 - Python ≥ 3.8 (for training scripts)
 
+### Installing CMake
+
+#### Linux
+
+##### Ubuntu/Debian
+
+sudo apt-get update
+sudo apt-get install cmake
+
+#### Windows
+
+1. Download the latest installer from [cmake.org/download](https://cmake.org/download/)
+2. Run the installer and select:
+   - "Add CMake to the system PATH for all users"
+   - "Create CMake Desktop Icon" (optional)
+3. Verify installation in Command Prompt:
+
+   ```cmd
+   cmake --version
+
+#### Mac
+
+##### Using Homebrew
+
+brew install cmake
+
+##### Downloaded directly
+
+curl -OL [https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-macos-universal.tar.gz](https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-macos-universal.tar.gz)
+tar -xzf cmake-*.tar.gz
+sudo mv cmake-*.app /Applications/
+
+#### Verify installation
+
+Run
+
+```bash
+cmake --version
+```
+
+You should see a message like 
+
+```bash
+cmake version 4.0.1
+
+CMake suite maintained and supported by Kitware "(kitware.com/cmake)".
+```
+
 ### Install vcpkg
+
+Downloading CMake is a prerequisite for vcpkg.
+
+Make sure CMake is downloaded before proceeding further.
 
 vcpkg is used to manage C++ dependencies.
 
@@ -51,7 +103,7 @@ vcpkg is used to manage C++ dependencies.
 
    ```bash
    cd vcpkg
-   ./bootstrap-vcpkg.sh  # Use .\bootstrap-vcpkg.bat on Windows
+   ./bootstrap-vcpkg.sh  # .\bootstrap-vcpkg.bat on Windows
    ```
 
    If you do not want to follow step 3 and onwards, place vcpkg in the system root.
@@ -61,13 +113,12 @@ vcpkg is used to manage C++ dependencies.
    - Mac: "/Users/YourName"
    - Linux: "/home/YourName"
 
-   So if I were on a Windows computer, I would download the vcpkg folder and have the file be at
-   C:\Users\vguo\vcpkg
+   There is no gurantee that this will work with build.py.
 
-   There is no gurantee that this will work.
    I HIGHLY RECOMMEND just saving the variables to PATH.
 
 3. Add vcpkg to your system PATH (advanced environment variables)
+
    WARNING: For steps 3-4 you may need to access terminal/powershell in administrator mode for PATH to update.
 
    ```bash
