@@ -13,13 +13,13 @@ TetrisEngine/                 Usage:
 │       ├── Board.h           # Game board representation
 │       ├── Piece.h           # Tetris piece definitions
 │       ├── Engine.h          # Game loop and manager
-│       └── NeuralNet.h       # NN wrapper interface
+│       └── NeuralNetwork.h   # NN wrapper interface
 ├── src/                      # Core C++ implementation
 │   ├── main.cpp              # Entry point, command-line handling
 │   ├── Board.cpp             # Board mechanics implementation
 │   ├── Piece.cpp             # Piece handling code
 │   ├── Engine.cpp            # Core game-engine logic
-│   └── NeuralNet.cpp         # Neural network integration (loading/saving)
+│   └── NeuralNetwork.cpp     # Neural network integration (loading/saving)
 ├── python/                   # Python scripts for training and evaluation
 │   ├── data/                 # Data preprocessing and utilities
 │   │   └── utils.py          # Dataset generation and augmentation

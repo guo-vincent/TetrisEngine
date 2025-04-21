@@ -46,12 +46,12 @@ foreach(test_src ${TEST_SOURCES})
     )
 endforeach()
 
-if(WIN32)
-    add_custom_command(TARGET test_neuralnet POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:onnxruntime::onnxruntime>"
-            "$<TARGET_FILE_DIR:test_neuralnet>"
-    )
+if(ENABLE_NN)
+  add_custom_command(TARGET test_neuralnet POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${ONNXRUNTIME_ROOT}/lib/$<LOWER_CASE:$<PLATFORM_ID>>/$<TARGET_FILE_NAME:onnxruntime::onnxruntime>"
+      $<TARGET_FILE_DIR:test_neuralnet>
+  )
 endif()
 
 # Specify runtime output directory for test executables

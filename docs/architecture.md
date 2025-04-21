@@ -1,0 +1,64 @@
+# File structure
+
+TetrisEngine/                 Usage:
+├── CMakeLists.txt            # Top-level CMake configuration
+├── README.md                 # Project overview and setup instructions
+├── build.py                  # Use this to make the file. Should work regardless of platform
+├── setup_venv.py             # Helper function for setting up python venv, regardless of platform
+├── .gitignore
+├── docs/                     # Documentation and design notes
+│   └── architecture.md       # High-level architecture diagram and explanations
+├── include/                  # Public headers for the engine
+│   └── TetrisEngine/         # Namespace folder
+│       ├── Board.h           # Game board representation
+│       ├── Piece.h           # Tetris piece definitions
+│       ├── Engine.h          # Game loop and manager
+│       └── NeuralNet.h       # NN wrapper interface
+├── src/                      # Core C++ implementation
+│   ├── main.cpp              # Entry point, command-line handling
+│   ├── Board.cpp             # Board mechanics implementation
+│   ├── Piece.cpp             # Piece handling code
+│   ├── Engine.cpp            # Core game-engine logic
+│   └── NeuralNet.cpp         # Neural network integration (loading/saving)
+├── python/                   # Python scripts for training and evaluation
+│   ├── data/                 # Data preprocessing and utilities
+│   │   └── utils.py          # Dataset generation and augmentation
+│   ├── models/               # Saved/trained model checkpoints
+│   ├── train.py              # Training script (PyTorch/TensorFlow)
+│   ├── evaluate.py           # Evaluation and benchmarking
+│   ├── config.yaml           # Hyperparameter settings
+│   └── requirements.txt      # Python import requirements
+├── data/                     # Raw and processed game-play data
+│   ├── raw/                  # Raw gameplay logs or recordings
+│   └── processed/            # Processed feature vectors for training
+├── models/                   # Exported neural network models for C++ inference
+│   └── best_model.onnx       # Example ONNX model file
+├── tests/                    # Unit and integration tests
+│   ├── CMakeLists.txt        # Tests-specific CMake setup
+│   ├── test_board.cpp        # GoogleTest suite for Board
+│   ├── test_engine.cpp       # Tests for game logic
+│   └── test_neuralnet.cpp    # Tests for NN interface & inference
+└── scripts/                  # Utility scripts and CI helpers
+│   ├── run_all_tests.sh      # Convenience script to build and run tests
+│   └──download_data.sh       # Script to fetch or update training data
+├── third_party/              # Contains linker files to ONNX runtime library
+│   └── onnxruntime/
+│       ├── include/
+│       │   └── onnxruntime/
+│       │       └── core/
+│       │           └── session/
+│       │               ├── onnxruntime_c_api.h
+│       │               ├── onnxruntime_cxx_api.h
+│       │               └── onnxruntime_cxx_inline.h
+│       ├── lib/
+│       │   ├── windows/
+│       │   │   ├── onnxruntime.dll
+│       │   │   └── onnxruntime.lib
+│       │   ├── linux/
+│       │   │   ├──libonnxruntime_providers_shared.so
+│       │   │   ├── libonnxruntime.so
+│       │   │   ├── libonnxruntime.so.1
+│       │   │   └── libonnxruntime.so.1.18.1
+│       │   └── mac/
+│       │       ├── libonnxruntime.dylib
+│       │       └── libonnxruntime.dylib.1.18.1

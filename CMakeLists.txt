@@ -83,12 +83,23 @@ target_include_directories(TetrisEngineCore PUBLIC
 )
 
 if(ENABLE_NN)
-    target_link_libraries(TetrisEngineCore PRIVATE onnxruntime::onnxruntime)
+    target_link_libraries(TetrisEngineCore PUBLIC onnxruntime::onnxruntime)
 endif()
 
 # Main executable
 add_executable(TetrisEngine src/main.cpp)
 target_link_libraries(TetrisEngine PRIVATE TetrisEngineCore)
+
+# ----------------------------------------------------------------------------
+# Copy ONNX Runtime into the exe folder after build. We need this so ONNX uses latest API version
+# ----------------------------------------------------------------------------
+if(ENABLE_NN)
+  add_custom_command(TARGET TetrisEngine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${ONNXRUNTIME_ROOT}/lib/$<LOWER_CASE:$<PLATFORM_ID>>/$<TARGET_FILE_NAME:onnxruntime::onnxruntime>"
+      $<TARGET_FILE_DIR:TetrisEngine>
+  )
+endif()
 
 # Installation targets (cross-platform)
 install(TARGETS TetrisEngine TetrisEngineCore
