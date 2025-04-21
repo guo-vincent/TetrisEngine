@@ -1,15 +1,13 @@
 #include <iostream>
 
-// This is the relative path to onnxruntime. DO NOT MESS WITH THIS, OR YOU WILL BREAK SOMETHING.
+// relative path to onnxruntime
 #include <../third_party/onnxruntime/include/core/session/onnxruntime_cxx_api.h>
 
 int main() {
     // All this does is test to make sure onnxruntime is importing properly.
     try {
-        // Initialize the ONNX Runtime environment
         Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "TetrisEngineTest");
 
-        // Create session options
         Ort::SessionOptions session_options;
         session_options.SetIntraOpNumThreads(1);
 

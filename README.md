@@ -3,6 +3,16 @@
 ## THIS IS A WORK IN PROGRESS (This page will be updated incrementally)
 
 README will be updated incrementally
+Currently, ONNX Runtime is only tested (and known to work on Windows-CPU)
+Other versions may or may not work. Needs more testing. Then I'll figure it out.
+
+Need to test:
+
+1. Windows-CPU (WORKS!)
+2. Mac-CPU
+3. Linux-CPU
+
+GPU files contain nothing. This is because they are not yet implemented and are not a priority right now.
 
 ---
 

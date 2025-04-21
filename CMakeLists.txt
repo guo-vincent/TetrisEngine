@@ -39,29 +39,32 @@ option(ENABLE_NN "Enable neural network integration" ON)
 # ----------------------------------------------------------------------------
 if(ENABLE_NN)
     set(ONNXRUNTIME_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime")
-
-    # Create an imported target for the ONNX Runtime library
     add_library(onnxruntime::onnxruntime SHARED IMPORTED)
 
-    # Configure it differently depending on the platform
+    # Determine CPU/GPU subdirectory
+    # The following is configured with the ability to handle GPU args for futureproofing
+    if(USE_GPU)
+        set(ONNX_RUNTIME_LIB_SUBDIR "gpu")
+    else()
+        set(ONNX_RUNTIME_LIB_SUBDIR "cpu")
+    endif()
+
+    # Platform-specific paths
     if(WIN32)
-        # Windows: link against onnxruntime.dll + onnxruntime.lib
         set_target_properties(onnxruntime::onnxruntime PROPERTIES
-            IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/windows/onnxruntime.dll"
-            IMPORTED_IMPLIB     "${ONNXRUNTIME_ROOT}/lib/windows/onnxruntime.lib"
+            IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/windows/${ONNX_RUNTIME_LIB_SUBDIR}/onnxruntime.dll"
+            IMPORTED_IMPLIB     "${ONNXRUNTIME_ROOT}/lib/windows/${ONNX_RUNTIME_LIB_SUBDIR}/onnxruntime.lib"
             INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include"
         )
     elseif(APPLE)
-        # macOS: link against libonnxruntime.dylib
-        set(CMAKE_MACOSX_RPATH ON)  # embed @rpath so the loader finds the .dylib
+        set(CMAKE_MACOSX_RPATH ON)
         set_target_properties(onnxruntime::onnxruntime PROPERTIES
-            IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/mac/libonnxruntime.dylib"
+            IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/mac/${ONNX_RUNTIME_LIB_SUBDIR}/libonnxruntime.dylib"
             INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include"
         )
-    else()  # UNIX (Linux)
-        # Linux: link against libonnxruntime.so
+    else()
         set_target_properties(onnxruntime::onnxruntime PROPERTIES
-            IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/linux/libonnxruntime.so"
+            IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/linux/${ONNX_RUNTIME_LIB_SUBDIR}/libonnxruntime.so"
             INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include"
         )
     endif()
@@ -90,16 +93,12 @@ endif()
 add_executable(TetrisEngine src/main.cpp)
 target_link_libraries(TetrisEngine PRIVATE TetrisEngineCore)
 
-# ----------------------------------------------------------------------------
-# Copy ONNX Runtime into the exe folder after build. We need this so ONNX uses latest API version
-# ----------------------------------------------------------------------------
-if(ENABLE_NN)
-  add_custom_command(TARGET TetrisEngine POST_BUILD
+# Copy the correct ONNX Runtime library post-build
+add_custom_command(TARGET TetrisEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${ONNXRUNTIME_ROOT}/lib/$<LOWER_CASE:$<PLATFORM_ID>>/$<TARGET_FILE_NAME:onnxruntime::onnxruntime>"
-      $<TARGET_FILE_DIR:TetrisEngine>
-  )
-endif()
+        "$<TARGET_FILE:onnxruntime::onnxruntime>"
+        $<TARGET_FILE_DIR:TetrisEngine>
+)
 
 # Installation targets (cross-platform)
 install(TARGETS TetrisEngine TetrisEngineCore
@@ -126,6 +125,19 @@ if(UNIX AND NOT APPLE)
 elseif(APPLE)
     # macOS-specific settings
     set(CMAKE_MACOSX_RPATH ON)
+
+    # ======================================================
+    # Add CoreML/Metal GPU support when requested
+    # ======================================================
+    if(USE_GPU)
+        message(STATUS "Enabling macOS GPU acceleration (CoreML/Metal)")
+        find_library(ACCELERATE_LIB Accelerate)
+        find_library(COREML_LIB CoreML)
+        target_link_libraries(TetrisEngineCore PRIVATE 
+            ${ACCELERATE_LIB} 
+            ${COREML_LIB}
+        )
+    endif()
 endif()
 
 set_target_properties(TetrisEngine PROPERTIES

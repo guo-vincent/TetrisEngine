@@ -46,12 +46,31 @@ foreach(test_src ${TEST_SOURCES})
     )
 endforeach()
 
+
+# The following is configured with the ability to handle GPU args.
+# In the future, we could use gpu
 if(ENABLE_NN)
-  add_custom_command(TARGET test_neuralnet POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${ONNXRUNTIME_ROOT}/lib/$<LOWER_CASE:$<PLATFORM_ID>>/$<TARGET_FILE_NAME:onnxruntime::onnxruntime>"
-      $<TARGET_FILE_DIR:test_neuralnet>
-  )
+    # Determine CPU/GPU subdirectory
+    if(USE_GPU)
+        set(ONNX_RUNTIME_LIB_SUBDIR "gpu")
+    else()
+        set(ONNX_RUNTIME_LIB_SUBDIR "cpu")
+    endif()
+
+    # Set platform directory
+    if(WIN32)
+        set(ONNXRUNTIME_PLATFORM_DIR "windows")
+    elseif(APPLE)
+        set(ONNXRUNTIME_PLATFORM_DIR "mac")
+    else()
+        set(ONNXRUNTIME_PLATFORM_DIR "linux")
+    endif()
+
+    add_custom_command(TARGET test_neuralnet POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${ONNXRUNTIME_ROOT}/lib/${ONNXRUNTIME_PLATFORM_DIR}/${ONNX_RUNTIME_LIB_SUBDIR}/$<TARGET_FILE_NAME:onnxruntime::onnxruntime>"
+            $<TARGET_FILE_DIR:test_neuralnet>
+    )
 endif()
 
 # Specify runtime output directory for test executables

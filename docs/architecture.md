@@ -1,5 +1,7 @@
 # File structure
 
+Schema
+
 TetrisEngine/                 Usage:
 ├── CMakeLists.txt            # Top-level CMake configuration
 ├── README.md                 # Project overview and setup instructions
@@ -13,13 +15,13 @@ TetrisEngine/                 Usage:
 │       ├── Board.h           # Game board representation
 │       ├── Piece.h           # Tetris piece definitions
 │       ├── Engine.h          # Game loop and manager
-│       └── NeuralNet.h       # NN wrapper interface
+│       └── NeuralNetwork.h   # NN wrapper interface
 ├── src/                      # Core C++ implementation
 │   ├── main.cpp              # Entry point, command-line handling
 │   ├── Board.cpp             # Board mechanics implementation
 │   ├── Piece.cpp             # Piece handling code
 │   ├── Engine.cpp            # Core game-engine logic
-│   └── NeuralNet.cpp         # Neural network integration (loading/saving)
+│   └── NeuralNetwork.cpp     # Neural network integration (loading/saving)
 ├── python/                   # Python scripts for training and evaluation
 │   ├── data/                 # Data preprocessing and utilities
 │   │   └── utils.py          # Dataset generation and augmentation
@@ -41,24 +43,38 @@ TetrisEngine/                 Usage:
 └── scripts/                  # Utility scripts and CI helpers
 │   ├── run_all_tests.sh      # Convenience script to build and run tests
 │   └──download_data.sh       # Script to fetch or update training data
-├── third_party/              # Contains linker files to ONNX runtime library
-│   └── onnxruntime/
-│       ├── include/
-│       │   └── onnxruntime/
-│       │       └── core/
-│       │           └── session/
-│       │               ├── onnxruntime_c_api.h
-│       │               ├── onnxruntime_cxx_api.h
-│       │               └── onnxruntime_cxx_inline.h
-│       ├── lib/
-│       │   ├── windows/
-│       │   │   ├── onnxruntime.dll
-│       │   │   └── onnxruntime.lib
-│       │   ├── linux/
-│       │   │   ├──libonnxruntime_providers_shared.so
-│       │   │   ├── libonnxruntime.so
-│       │   │   ├── libonnxruntime.so.1
-│       │   │   └── libonnxruntime.so.1.18.1
-│       │   └── mac/
-│       │       ├── libonnxruntime.dylib
-│       │       └── libonnxruntime.dylib.1.18.1
+└── third_party/              # Contains linker files to ONNX runtime library
+    └── onnxruntime/
+        ├── include
+        │   └── core
+        │       └── session
+        │           ├── cpu_provider_factory.h
+        │           ├── onnxruntime_c_api.h
+        │           ├── onnxruntime_cxx_api.h
+        │           ├── onnxruntime_cxx_inline.h
+        │           ├── onnxruntime_float16.h
+        │           ├── onnxruntime_lite_custom_op.h
+        │           ├── onnxruntime_run_options_config_keys.h
+        │           ├── onnxruntime_session_options_config_keys.h
+        │           ├── onnxruntime_training_c_api.h
+        │           ├── onnxruntime_training_cxx_api.h
+        │           ├── onnxruntime_training_cxx_inline.h
+        │           └── provider_options.h
+        └── lib/
+            ├── windows/
+            │   ├── cpu/
+            │   │   ├── onnxruntime.dll
+            │   │   └── onnxruntime.lib
+            │   └── gpu/
+            ├── linux/
+            │   ├── cpu/
+            │   │   ├── libonnxruntime.so
+            │   │   ├── libonnxruntime.so.1
+            │   │   ├── libonnxruntime.so.1.21.0
+            │   │   └── libonnxruntime_providers_shared
+            │   └── gpu/
+            └── mac/
+                ├── cpu/
+                │   ├── libonnxruntime.1.21.0.dylib
+                │   └── libonnxruntime.dylib
+                └── gpu/
