@@ -52,32 +52,30 @@ sudo apt-get install cmake
 2. Run the installer and select:
    - "Add CMake to the system PATH for all users"
    - "Create CMake Desktop Icon" (optional)
-3. Verify installation in Command Prompt:
-
-   ```cmd
-   cmake --version
 
 #### Mac
 
 ##### Using Homebrew
 
+```cmd
 brew install cmake
+```
 
-##### Downloaded directly
+##### Downloaded directly (not recommended)
 
+```cmd
 curl -OL [https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-macos-universal.tar.gz](https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-macos-universal.tar.gz)
 tar -xzf cmake-*.tar.gz
 sudo mv cmake-*.app /Applications/
+```
 
-#### Verify installation
+#### Verify Installation
 
-Run
-
-```bash
+```cmd
 cmake --version
 ```
 
-You should see a message like 
+You should see a message like
 
 ```bash
 cmake version 4.0.1
