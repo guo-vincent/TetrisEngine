@@ -85,9 +85,8 @@ CMake suite maintained and supported by Kitware "(kitware.com/cmake)".
 
 ### Install vcpkg
 
-Downloading CMake is a prerequisite for vcpkg.
-
-Make sure CMake is downloaded before proceeding further.
+> **Important:** Downloading CMake is a prerequisite for vcpkg.
+> **Make sure CMake is downloaded before proceeding further.**
 
 vcpkg is used to manage C++ dependencies.
 
@@ -107,13 +106,14 @@ vcpkg is used to manage C++ dependencies.
    If you do not want to follow step 3 and onwards, place vcpkg in the system root.
    That is, UNDER:
 
+   ```cmd
    - Windows: "C:\Users\YourName"
    - Mac: "/Users/YourName"
    - Linux: "/home/YourName"
+   ```
 
-   There is no gurantee that this will work with build.py.
-
-   I HIGHLY RECOMMEND just saving the variables to PATH.
+   > There is no gurantee that this will work with build.py.
+   > **I HIGHLY RECOMMEND saving variables to PATH (steps 3-4)**
 
 3. Add vcpkg to your system PATH (advanced environment variables)
 
@@ -191,7 +191,7 @@ If not, you are probably missing something major (like python) and I'll assume y
 
 ### Training and Evaluation
 
-Train.py and evaluate.py ARE NOT YET IMPLEMENTED AND CURRENTLY DO NOTHING!
+**Train.py and evaluate.py ARE NOT YET IMPLEMENTED AND CURRENTLY DO NOTHING!**
 
 Use the provided scripts to train and evaluate your models:
 
@@ -230,10 +230,13 @@ To make your life easier, build.py takes in some optional flags:
 
 1. "--tests": compiles unit tests. ON by default.
 2. "--no-tests": tells CMake to skip compilation of tests.
+
    Cannot be declared with the --tests flag.
+
    Shortens compilation time.
 
 3. "--run": immediately executes all files compiled by CMake.
+
    This includes unit tests compiled, if they compiled successfully.
 
 The output generated can get quite verbose, so I recommend piping the output to a .txt file.
