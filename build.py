@@ -21,23 +21,25 @@ def main():
     
     # run files right after compilation?
     parser.add_argument('--run', action='store_true', help='run files immediately after compilation')
-    
+        
     args = parser.parse_args()
     
     # Define the build directory relative to the script's location
     repo_root = Path(__file__).resolve().parents[0]  # Always point to TetrisEngine/
     build_dir = repo_root / "build"
 
-    # Set VCPKG_ROOT based on the platform
-    if sys.platform == "win32":
-        vcpkg_root = os.environ.get('VCPKG_ROOT', 'C:\\path\\to\\vcpkg')
-    else:
-        vcpkg_root = os.environ.get('VCPKG_ROOT', str(Path.home() / 'vcpkg'))
+    vcpkg_root = os.environ.get('VCPKG_ROOT', str(Path.home() / 'vcpkg'))
 
     # Remove the build directory if it exists
     if build_dir.exists() and build_dir.is_dir():
         print("Removing existing build directory...")
-        shutil.rmtree(build_dir)
+        try:
+            shutil.rmtree(build_dir)
+        except PermissionError as e:
+            print(f"Failed to delete {build_dir}: {e}")
+            print("Close any open files/Explorer windows")
+            print("Your antivirus may also cause problems")
+            sys.exit(1)
 
     # Create a new build directory
     build_dir.mkdir()

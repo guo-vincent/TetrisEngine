@@ -33,7 +33,7 @@ A modular Tetris engine with neural network integration, featuring:
 Ensure the following tools are installed:
 
 - CMake ≥ 3.15
-- A C++17-compatible compiler
+- A C++20-compatible compiler
 - Git
 - Python ≥ 3.8 (for training scripts)
 
@@ -54,7 +54,21 @@ vcpkg is used to manage C++ dependencies.
    ./bootstrap-vcpkg.sh  # Use .\bootstrap-vcpkg.bat on Windows
    ```
 
+   If you do not want to follow step 3 and onwards, place vcpkg in the system root.
+   That is, UNDER:
+
+   - Windows: "C:\Users\YourName"
+   - Mac: "/Users/YourName"
+   - Linux: "/home/YourName"
+
+   So if I were on a Windows computer, I would download the vcpkg folder and have the file be at
+   C:\Users\vguo\vcpkg
+
+   There is no gurantee that this will work.
+   I HIGHLY RECOMMEND just saving the variables to PATH.
+
 3. Add vcpkg to your system PATH (advanced environment variables)
+   WARNING: For steps 3-4 you may need to access terminal/powershell in administrator mode for PATH to update.
 
    ```bash
    setx PATH "%PATH%;<path_to_vcpkg>"
@@ -69,7 +83,6 @@ vcpkg is used to manage C++ dependencies.
    ```
 
    Replace <path_to_vcpkg> with the actual path to your vcpkg directory.
-   Make sure to do this in administrator mode, or it might not update!
 
 ### Clone TetrisEngine
 
@@ -92,22 +105,44 @@ Use vcpkg to install the necessary libraries:
 ./vcpkg/vcpkg install gtest
 ```
 
+Confirm your installation:
+
+```bash
+vcpkg list
+```
+
+You should see this message:
+
+```bash
+gtest:x64-`<platform>`
+```
+
+where `<platform>` represents your computer's architecture.
+
 ---
 
 ## Python Tools
 
 ### Setup Python Environment
 
-Navigate to the `python/` directory and install the required Python packages:
+Navigate to the TetrisEngine/ directory
+
+run
 
 ```bash
-cd python
-pip install -r requirements.txt
+python setup_venv.py
 ```
 
-Ensure that `requirements.txt` includes all necessary Python dependencies.
+This sets up venv for you. Pretty nice, since I always forget the venv command.
+
+Follow the instructions that correspond with your computer architecture.
+
+If no error messages show up, you're done. Keep reading.
+If not, you are probably missing something major (like python) and I'll assume you know how to set python up.
 
 ### Training and Evaluation
+
+Train.py and evaluate.py ARE NOT YET IMPLEMENTED AND CURRENTLY DO NOTHING!
 
 Use the provided scripts to train and evaluate your models:
 
@@ -127,6 +162,10 @@ Use the provided scripts to train and evaluate your models:
 
 ## Compiling the program
 
+THIS IS IMPLEMENTED
+
+Navigate to TetrisEngine/
+
 - Run:
 
   ```bash
@@ -137,6 +176,20 @@ This executes the CMake file.
 
 The executable will be under "build\bin\Release"
 Test files will be generated under "build\bin\tests"
+
+To make your life easier, build.py takes in some optional flags:
+
+1. "--tests": compiles unit tests. ON by default.
+2. "--no-tests": tells CMake to skip compilation of tests.
+   Cannot be declared with the --tests flag.
+   Shortens compilation time.
+
+3. "--run": immediately executes all files compiled by CMake.
+   This includes unit tests compiled, if they compiled successfully.
+
+The output generated can get quite verbose, so I recommend piping the output to a .txt file.
+
+Just make sure to edit .gitignore to ignore the file.
 
 ---
 
