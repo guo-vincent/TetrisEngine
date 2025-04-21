@@ -43,8 +43,10 @@ Ensure the following tools are installed:
 
 ##### Ubuntu/Debian
 
+```bash
 sudo apt-get update
 sudo apt-get install cmake
+```
 
 #### Windows
 
@@ -187,7 +189,8 @@ This sets up venv for you. Pretty nice, since I always forget the venv command.
 Follow the instructions that correspond with your computer architecture.
 
 If no error messages show up, you're done. Keep reading.
-If not, you are probably missing something major (like python) and I'll assume you know how to set python up.
+
+If not, you are probably missing something major (like python). I'll assume you know how to set python up.
 
 ### Training and Evaluation
 
@@ -230,14 +233,11 @@ To make your life easier, build.py takes in some optional flags:
 
 1. "--tests": compiles unit tests. ON by default.
 2. "--no-tests": tells CMake to skip compilation of tests.
-
-   Cannot be declared with the --tests flag.
-
-   Shortens compilation time.
+   - Cannot be declared with the --tests flag.
+   - Shortens compilation time.
 
 3. "--run": immediately executes all files compiled by CMake.
-
-   This includes unit tests compiled, if they compiled successfully.
+   - includes unit tests compiled, if they compiled successfully.
 
 The output generated can get quite verbose, so I recommend piping the output to a .txt file.
 
