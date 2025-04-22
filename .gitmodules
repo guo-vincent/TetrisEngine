@@ -1,6 +1,6 @@
 [submodule "third_party/imgui"]
     path = third_party/imgui
-    url = https://github.com/guo-vincent/imgui.git  # Your fork
+    url = https://github.com/guo-vincent/imgui.git
     branch = cmake-support
 [submodule "third_party/rlImGui"]
     path = third_party/rlImGui
