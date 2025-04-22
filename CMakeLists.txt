@@ -85,9 +85,15 @@ target_include_directories(TetrisEngineCore PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+add_subdirectory(third_party/raylib)
+add_subdirectory(third_party/imgui)
+add_subdirectory(third_party/rlImGui)
+
 if(ENABLE_NN)
     target_link_libraries(TetrisEngineCore PUBLIC onnxruntime::onnxruntime)
 endif()
+
+target_link_libraries(TetrisEngineCore PUBLIC raylib imgui rlImGui)
 
 # Main executable
 add_executable(TetrisEngine src/main.cpp)
