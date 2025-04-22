@@ -1,9 +1,9 @@
 # TetrisEngine
 
-## THIS IS A WORK IN PROGRESS (This page will be updated incrementally)
+## THIS IS A WORK IN PROGRESS
 
-README will be updated incrementally
-Currently, ONNX Runtime is only tested (and known to work on Windows-CPU)
+Currently, ONNX Runtime is only tested (and known to work on Windows-CPU).
+
 Other versions may or may not work. Needs more testing. Then I'll figure it out.
 
 Need to test:
@@ -176,7 +176,7 @@ where `platform` represents your computer's architecture.
 
 ### Setup Python Environment
 
-Navigate to the TetrisEngine/ directory
+Navigate to the **TetrisEngine** directory
 
 run
 
@@ -184,13 +184,10 @@ run
 python setup_venv.py
 ```
 
-This sets up venv for you. Pretty nice, since I always forget the venv command.
-
-Follow the instructions that correspond with your computer architecture.
+- This sets up venv for you.
+- Follow the instructions that correspond with your computer architecture.
 
 If no error messages show up, you're done. Keep reading.
-
-If not, you are probably missing something major (like python). I'll assume you know how to set python up.
 
 ### Training and Evaluation
 
@@ -214,8 +211,6 @@ Use the provided scripts to train and evaluate your models:
 
 ## Compiling the program
 
-THIS IS IMPLEMENTED
-
 Navigate to TetrisEngine/
 
 - Run:
@@ -226,39 +221,39 @@ Navigate to TetrisEngine/
 
 This executes the CMake file.
 
-On linux/mac:
+### Linux/Mac:
 
 The executable will be under "build/bin/"
 Test files will be generated under "build/bin/tests"
 
-On windows:
+### Windows:
 
 The executable will be under "build/bin/Release"
 Test files will be generated under "build/bin/tests/Release"
 
-To make your life easier, build.py takes in some optional flags:
+### Build.py takes in optional flags
 
-1. "--no-tests": (DEFAULT=ON)
+1. "--no-tests": (**DEFAULT=ON**)
    - Use if you wish to explicitly force CMake to skip compilation of tests
    - Cannot be declared with the --tests flag.
    - Shortens compilation time.
 
 2. "--tests": compiles unit tests.
 
-3. "--run": immediately executes all files compiled by CMake. (DEFAULT=OFF)
+3. "--run": immediately executes all files compiled by CMake. (**DEFAULT=OFF**)
    - includes unit tests compiled, if they compiled successfully.
 
-4. "--document": updates doxygen documents. (DEFAULT=OFF)
+4. "--document": updates doxygen documents. (**DEFAULT=OFF**)
    - run this every now and then
    - not running
 
-5. "--use-cache": uses cache to rebuild project (DEFAULT=OFF)
+5. "--use-cache": uses cache to rebuild project (**DEFAULT=OFF**)
    - **Warning: changes to config code may not be reflected if you enable this option**
-   - **python build.py --use-cache might skip tests and documentation changes**
+   - **python build.py `--use-cache` might skip tests and documentation changes**
    - massively reduces compilation time by performing incremental changes instead
    - use for smallish changes
 
-The output generated can get quite verbose, so I recommend piping the output to a .txt file.
+The output generated can get quite verbose, so piping the output to a .txt file is recommended
 
 Just make sure to edit .gitignore to ignore the file.
 
