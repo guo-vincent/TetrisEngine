@@ -1,10 +1,9 @@
-[submodule "third_party/imgui"]
-    path = third_party/imgui
-    url = https://github.com/guo-vincent/imgui.git
-    branch = cmake-support
 [submodule "third_party/rlImGui"]
-    path = third_party/rlImGui
-    url = https://github.com/guo-vincent/rlImGui.git
+	path = third_party/rlImGui
+	url = https://github.com/guo-vincent/rlImGui.git
 [submodule "third_party/raylib"]
     path = third_party/raylib
     url = https://github.com/raysan5/raylib.git
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/guo-vincent/imgui.git
