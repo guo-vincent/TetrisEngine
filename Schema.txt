@@ -46,7 +46,7 @@ TetrisEngine/                 Usage:
     ├── imgui
     ├── raylib
     ├── rIlmGui
-    └── onnxruntime/
+    └── onnxruntime/          # Note: not a submodule
         ├── include
         │   └── core
         │       └── session

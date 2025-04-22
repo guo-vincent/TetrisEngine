@@ -32,7 +32,7 @@ A modular Tetris engine with neural network integration, featuring:
 
 Ensure the following tools are installed:
 
-- CMake ≥ 3.15 - [Installation Guide](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Getting%20Started.html#getting-and-installing-cmake-on-your-computer)
+- CMake ≥ 3.28 - [Installation Guide](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Getting%20Started.html#getting-and-installing-cmake-on-your-computer)
 - A C++20-compatible compiler
 - Git
 - Python ≥ 3.8 (for training scripts)
@@ -226,15 +226,24 @@ Navigate to TetrisEngine/
 
 This executes the CMake file.
 
-The executable will be under "build\bin\Release"
+On linux/mac:
+
+The executable will be under "build\bin\"
 Test files will be generated under "build\bin\tests"
+
+On windows:
+
+The executable will be under "build\bin\Release"
+Test files will be generated under "build\bin\tests\Release"
 
 To make your life easier, build.py takes in some optional flags:
 
-1. "--tests": compiles unit tests. ON by default.
-2. "--no-tests": tells CMake to skip compilation of tests.
+1. "--no-tests": Default=ON.
+   - Use if you wish to explicitly force CMake to skip compilation of tests
    - Cannot be declared with the --tests flag.
    - Shortens compilation time.
+
+2. "--tests": compiles unit tests.
 
 3. "--run": immediately executes all files compiled by CMake.
    - includes unit tests compiled, if they compiled successfully.

@@ -17,7 +17,7 @@ def main():
                       help='Enable building test executables (default)')
     group.add_argument('--no-tests', action='store_false', dest='build_tests',
                       help='Disable building test executables')
-    parser.set_defaults(build_tests=True)
+    parser.set_defaults(build_tests=False)
     
     # run files right after compilation?
     parser.add_argument('--run', action='store_true', help='run files immediately after compilation')
@@ -53,7 +53,7 @@ def main():
         f"-DBUILD_TESTS={'ON' if args.build_tests else 'OFF'}",
         f"-DUSE_GPU=OFF",
         f"-DCMAKE_TOOLCHAIN_FILE={vcpkg_root}/scripts/buildsystems/vcpkg.cmake",
-        "-DCMAKE_POLICY_VERSION_MINIMUM=3.10"
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.28"
     ]
 
     # Run the CMake configuration command
