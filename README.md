@@ -1,143 +1,142 @@
 # TetrisEngine
 
-## THIS IS A WORK IN PROGRESS
+A modular, cross-platform Tetris engine with neural network integration.
 
-Currently, ONNX Runtime is only tested (and known to work on Windows-CPU).
+[TOC]
 
-Other versions may or may not work. Needs more testing. Then I'll figure it out.
+...
 
-Need to test:
+## Overview
 
-1. Windows-CPU (WORKS!)
-2. Mac-CPU
-3. Linux-CPU
+TetrisEngine provides:
 
-GPU files contain nothing. This is because they are not yet implemented and are not a priority right now.
+- C++ core with ONNX Runtime
+- Python training utilities
+- Cross-platform build via CMake/vcpkg
 
----
+## Status
 
-## ABOUT
+### Work in Progress
 
-A modular Tetris engine with neural network integration, featuring:
-
-- C++ core engine with ONNX Runtime support
-- Python tools for training and evaluation
-- Cross-platform build system using CMake and vcpkg
+- Currently verified on Windows (CPU only).
+- Support for Mac/Linux and GPU backends is under development.
 
 ---
 
-## Getting Started
+## About
 
-### Prerequisites
+TetrisEngine is a modular Tetris engine featuring:
 
-Ensure the following tools are installed:
+- **C++ Core** with ONNX Runtime support for AI-driven gameplay
+- **Python Utilities** for training and evaluation
+- **Cross-Platform Build** using CMake and vcpkg
 
-- CMake ≥ 3.28 - [Installation Guide](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Getting%20Started.html#getting-and-installing-cmake-on-your-computer)
-- A C++20-compatible compiler
-- Git
-- Python ≥ 3.8 (for training scripts)
+---
 
-### Installing CMake
+## Prerequisites
 
-#### Linux
+Before you begin, ensure you have:
 
-##### Ubuntu/Debian
+- **CMake** ≥ 3.28
+- A **C++20**-compatible compiler (MSVC, GCC, Clang)
+- **Git**
+- **Python** ≥ 3.8 (for training scripts)
+
+---
+
+## Installation
+
+### Install CMake {#cmake}
+
+#### Ubuntu / Debian (CMake)
 
 ```bash
 sudo apt-get update
 sudo apt-get install cmake
 ```
 
-#### Windows
+#### macOS Installation (Homebrew)
 
-1. Download the latest installer from [cmake.org/download](https://cmake.org/download/)
-2. Run the installer and select:
-   - "Add CMake to the system PATH for all users"
-   - "Create CMake Desktop Icon" (optional)
-
-#### Mac
-
-##### Using Homebrew
-
-```cmd
+```bash
 brew install cmake
 ```
 
-##### Downloaded directly (not recommended)
+#### Windows (Doxygen)
 
-```cmd
-curl -OL [https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-macos-universal.tar.gz](https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-macos-universal.tar.gz)
-tar -xzf cmake-*.tar.gz
-sudo mv cmake-*.app /Applications/
-```
+1. Download the installer from <https://cmake.org/download>
+2. Run the installer and choose:
+   - "Add CMake to the system PATH for all users"
+   - (Optional) "Create CMake Desktop Icon"
 
-#### Verify Installation
+Verify:
 
-```cmd
+```bash
 cmake --version
 ```
 
-You should see a message like
+Expected output:
 
 ```bash
 cmake version 4.0.1
-
-CMake suite maintained and supported by Kitware "(kitware.com/cmake)".
+CMake suite maintained and supported by Kitware (kitware.com/cmake)
 ```
 
-### Install vcpkg
+### Install Doxygen {#install-doxygen}
 
-> **Important:** Downloading CMake is a prerequisite for vcpkg.
-> **Make sure CMake is downloaded before proceeding further.**
+Doxygen generates API documentation from annotated source code.
 
-vcpkg is used to manage C++ dependencies.
+#### Ubuntu / Debian
 
-1. Clone the vcpkg repository:
+```bash
+sudo apt-get update
+sudo apt-get install doxygen doxygen-doc doxygen-gui graphviz
+```
 
-   ```bash
-   git clone https://github.com/microsoft/vcpkg.git
-   ```
+#### macOS (Homebrew)
 
-2. Navigate to the vcpkg directory and bootstrap:
+```bash
+brew install doxygen graphviz
+```
 
-   ```bash
-   cd vcpkg
-   ./bootstrap-vcpkg.sh  # ./bootstrap-vcpkg.bat on Windows
-   ```
+#### Windows
 
-   If you do not want to follow step 3 and onwards, place vcpkg in the system root.
-   That is, UNDER:
+1. Download the latest Doxygen installer from <https://www.doxygen.nl/download.html>
+2. (Optional) Install Graphviz from <https://graphviz.org/download/>
+3. Run the Doxygen installer and follow the wizard.
 
-   ```cmd
-   - Windows: "C:/Users/YourName"
-   - Mac: "/Users/YourName"
-   - Linux: "/home/YourName"
-   ```
+Verify:
 
-   > There is no gurantee that this will work with build.py.
-   > **I HIGHLY RECOMMEND saving variables to PATH (steps 3-4)**
+```bash
+doxygen --version
+```
 
-3. Add vcpkg to your system PATH (advanced environment variables)
+### Install vcpkg {#install-vcpkg}
 
-   WARNING: For steps 3-4 you may need to access terminal/powershell in administrator mode for PATH to update.
+vcpkg manages C++ dependencies.
 
-   ```bash
-   setx PATH `%PATH%; path_to_vcpkg`
-   ```
+```bash
+# Clone the repo
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
 
-   This allows you to use build.py.
+# Bootstrap (Linux/macOS)
+./bootstrap-vcpkg.sh
 
-4. Set VCPKG_ROOT environment variable to the root dir of your vcpkg installation:
+# or Windows
+# .\\bootstrap-vcpkg.bat
+```
 
-   ```bash
-   setx VCPKG_ROOT `path_to_vcpkg`
-   ```
+Add vcpkg to your PATH and set `VCPKG_ROOT`:
 
-   Replace `path_to_vcpkg` with the actual path to your vcpkg directory.
+```bash
+# Example (bash):
+export VCPKG_ROOT=~/vcpkg
+export PATH="$VCPKG_ROOT:$PATH"
+```
 
-### Clone TetrisEngine
+---
 
-Clone the repository and navigate to its directory:
+## Cloning the Repository {#cloning}
 
 ```bash
 git clone git@github.com:guo-vincent/TetrisEngine.git
@@ -148,117 +147,61 @@ cd TetrisEngine
 
 ## Building the Project
 
-### Install Dependencies with vcpkg
+### Dependencies via vcpkg {#dependencies-via-vcpkg}
 
-Use vcpkg to install the necessary libraries:
+Install required libraries:
 
 ```bash
-./vcpkg/vcpkg install gtest
+vcpkg install gtest
 ```
 
-Confirm your installation:
+Verify:
 
 ```bash
 vcpkg list
+# Expect: gtest:x64-<platform>
 ```
 
-You should see this message:
+### Compiling & Flags {#compiling-flags}
+
+Use the provided build script:
 
 ```bash
-gtest:x64-`platform`
+python build.py [options]
 ```
 
-where `platform` represents your computer's architecture.
+#### Available Flags
+
+- `--no-tests` (default): Skip unit tests
+- `--tests`: Compile unit tests
+- `--run`: Run all compiled binaries
+- `--document`: Regenerate Doxygen docs
+- `--use-cache`: Incremental build (may skip docs/tests)
+
+**Note:** On large builds, redirect output to a file and add it to `.gitignore`.
+
+**Output Paths**:
+
+- **Linux/macOS**: `build/bin/` and `build/bin/tests`
+- **Windows**: `build/bin/Release/` and `build/bin/tests/Release/`
 
 ---
 
-## Python Tools
+## Python Tools {#python-tools}
 
-### Setup Python Environment
-
-Navigate to the **TetrisEngine** directory
-
-run
+Set up a virtual environment and install dependencies:
 
 ```bash
 python setup_venv.py
 ```
 
-- This sets up venv for you.
-- Follow the instructions that correspond with your computer architecture.
+> **Note**: `train.py` and `evaluate.py` are not yet implemented.
 
-If no error messages show up, you're done. Keep reading.
+Examples:
 
-### Training and Evaluation
-
-**Train.py and evaluate.py ARE NOT YET IMPLEMENTED AND CURRENTLY DO NOTHING!**
-
-Use the provided scripts to train and evaluate your models:
-
-- Train:
-
-  ```bash
-  python train.py
-  ```
-
-- Evaluate:
-
-  ```bash
-  python evaluate.py
-  ```
+```bash
+python train.py
+python evaluate.py
+```
 
 ---
-
-## Compiling the program
-
-Navigate to TetrisEngine/
-
-- Run:
-
-  ```bash
-  python build.py
-  ```
-
-This executes the CMake file.
-
-### Linux/Mac:
-
-The executable will be under "build/bin/"
-Test files will be generated under "build/bin/tests"
-
-### Windows:
-
-The executable will be under "build/bin/Release"
-Test files will be generated under "build/bin/tests/Release"
-
-### Build.py takes in optional flags
-
-1. "--no-tests": (**DEFAULT=ON**)
-   - Use if you wish to explicitly force CMake to skip compilation of tests
-   - Cannot be declared with the --tests flag.
-   - Shortens compilation time.
-
-2. "--tests": compiles unit tests.
-
-3. "--run": immediately executes all files compiled by CMake. (**DEFAULT=OFF**)
-   - includes unit tests compiled, if they compiled successfully.
-
-4. "--document": updates doxygen documents. (**DEFAULT=OFF**)
-   - run this every now and then
-   - not running
-
-5. "--use-cache": uses cache to rebuild project (**DEFAULT=OFF**)
-   - **Warning: changes to config code may not be reflected if you enable this option**
-   - **python build.py `--use-cache` might skip tests and documentation changes**
-   - massively reduces compilation time by performing incremental changes instead
-   - use for smallish changes
-
-The output generated can get quite verbose, so piping the output to a .txt file is recommended
-
-Just make sure to edit .gitignore to ignore the file.
-
----
-
-For more information on integrating vcpkg with CMake, refer to the official documentation:
-
-- [vcpkg CMake Integration](https://learn.microsoft.com/en-us/vcpkg/users/buildsystems/cmake-integration)
