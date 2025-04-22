@@ -1,8 +1,7 @@
 #include <iostream>
 
-// relative path to onnxruntime
-#include <../third_party/onnxruntime/include/core/session/onnxruntime_cxx_api.h>
-
+// Testing imports
+#include <onnxruntime_cxx_api.h>
 #include <raylib.h>
 #include <imgui.h>
 #include <rlImGui.h>

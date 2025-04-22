@@ -54,18 +54,18 @@ if(ENABLE_NN)
         set_target_properties(onnxruntime::onnxruntime PROPERTIES
             IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/windows/${ONNX_RUNTIME_LIB_SUBDIR}/onnxruntime.dll"
             IMPORTED_IMPLIB     "${ONNXRUNTIME_ROOT}/lib/windows/${ONNX_RUNTIME_LIB_SUBDIR}/onnxruntime.lib"
-            INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include"
+            INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include/core/session"
         )
     elseif(APPLE)
         set(CMAKE_MACOSX_RPATH ON)
         set_target_properties(onnxruntime::onnxruntime PROPERTIES
             IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/mac/${ONNX_RUNTIME_LIB_SUBDIR}/libonnxruntime.dylib"
-            INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include"
+            INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include/core/session"
         )
     else()
         set_target_properties(onnxruntime::onnxruntime PROPERTIES
             IMPORTED_LOCATION   "${ONNXRUNTIME_ROOT}/lib/linux/${ONNX_RUNTIME_LIB_SUBDIR}/libonnxruntime.so"
-            INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include"
+            INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_ROOT}/include/core/session"
         )
     endif()
 endif()
