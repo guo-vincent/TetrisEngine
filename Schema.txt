@@ -8,6 +8,9 @@ TetrisEngine/                 Usage:
 ├── .gitignore
 ├── .gitmodules               # submodules (imgui, raylib, rIlmGui)
 ├── docs/                     # Documentation and design notes
+│   ├── configFile.in
+│   ├── html_header.html.in   # dummy header, used for moving index.html from build to under docs, while still keeping relative refs.
+│   ├── index.html
 │   └── architecture.md       # High-level architecture diagram and explanations
 ├── include/                  # Public headers for the engine
 │   └── TetrisEngine/         # Namespace folder

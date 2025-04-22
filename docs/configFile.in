@@ -1,0 +1,23 @@
+PROJECT_NAME           = TetrisEngine
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/docs
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+RECURSIVE              = YES
+HTML_HEADER            = @HTML_HEADER@
+
+EXCLUDE                = ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+
+INPUT                  = @CMAKE_SOURCE_DIR@/src \
+                         @CMAKE_SOURCE_DIR@/python \
+                         ../README.md
+
+EXCLUDE_PATTERNS       = */third_party/* \
+                         */build/*
+
+USE_MDFILE_AS_MAINPAGE = ../README.md
+
+HIDE_UNDOC_CLASSES     = NO             # Show undocumented classes (temporarily)
+EXTRACT_ALL            = YES            # Include all code entities, even if undocumented
+
+MARKDOWN_SUPPORT = YES
+ALIASES = "note=\par Note:"

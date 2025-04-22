@@ -102,14 +102,14 @@ vcpkg is used to manage C++ dependencies.
 
    ```bash
    cd vcpkg
-   ./bootstrap-vcpkg.sh  # .\bootstrap-vcpkg.bat on Windows
+   ./bootstrap-vcpkg.sh  # ./bootstrap-vcpkg.bat on Windows
    ```
 
    If you do not want to follow step 3 and onwards, place vcpkg in the system root.
    That is, UNDER:
 
    ```cmd
-   - Windows: "C:\Users\YourName"
+   - Windows: "C:/Users/YourName"
    - Mac: "/Users/YourName"
    - Linux: "/home/YourName"
    ```
@@ -122,7 +122,7 @@ vcpkg is used to manage C++ dependencies.
    WARNING: For steps 3-4 you may need to access terminal/powershell in administrator mode for PATH to update.
 
    ```bash
-   setx PATH "%PATH%;<path_to_vcpkg>"
+   setx PATH `%PATH%; path_to_vcpkg`
    ```
 
    This allows you to use build.py.
@@ -130,10 +130,10 @@ vcpkg is used to manage C++ dependencies.
 4. Set VCPKG_ROOT environment variable to the root dir of your vcpkg installation:
 
    ```bash
-   setx VCPKG_ROOT "<path_to_vcpkg>"
+   setx VCPKG_ROOT `path_to_vcpkg`
    ```
 
-   Replace <path_to_vcpkg> with the actual path to your vcpkg directory.
+   Replace `path_to_vcpkg` with the actual path to your vcpkg directory.
 
 ### Clone TetrisEngine
 
@@ -165,10 +165,10 @@ vcpkg list
 You should see this message:
 
 ```bash
-gtest:x64-`<platform>`
+gtest:x64-`platform`
 ```
 
-where `<platform>` represents your computer's architecture.
+where `platform` represents your computer's architecture.
 
 ---
 
@@ -228,25 +228,35 @@ This executes the CMake file.
 
 On linux/mac:
 
-The executable will be under "build\bin\"
-Test files will be generated under "build\bin\tests"
+The executable will be under "build/bin/"
+Test files will be generated under "build/bin/tests"
 
 On windows:
 
-The executable will be under "build\bin\Release"
-Test files will be generated under "build\bin\tests\Release"
+The executable will be under "build/bin/Release"
+Test files will be generated under "build/bin/tests/Release"
 
 To make your life easier, build.py takes in some optional flags:
 
-1. "--no-tests": Default=ON.
+1. "--no-tests": (DEFAULT=ON)
    - Use if you wish to explicitly force CMake to skip compilation of tests
    - Cannot be declared with the --tests flag.
    - Shortens compilation time.
 
 2. "--tests": compiles unit tests.
 
-3. "--run": immediately executes all files compiled by CMake.
+3. "--run": immediately executes all files compiled by CMake. (DEFAULT=OFF)
    - includes unit tests compiled, if they compiled successfully.
+
+4. "--document": updates doxygen documents. (DEFAULT=OFF)
+   - run this every now and then
+   - not running
+
+5. "--use-cache": uses cache to rebuild project (DEFAULT=OFF)
+   - **Warning: changes to config code may not be reflected if you enable this option**
+   - **python build.py --use-cache might skip tests and documentation changes**
+   - massively reduces compilation time by performing incremental changes instead
+   - use for smallish changes
 
 The output generated can get quite verbose, so I recommend piping the output to a .txt file.
 

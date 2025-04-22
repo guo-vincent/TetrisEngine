@@ -33,6 +33,42 @@ endif()
 option(USE_GPU "Enable GPU acceleration for neural networks" OFF)
 option(BUILD_TESTS "Build test executables" ON)
 option(ENABLE_NN "Enable neural network integration" ON)
+option(BUILD_DOC "Build documentation" OFF)
+
+if(BUILD_DOC)
+    find_package(Doxygen REQUIRED)  # REQUIRED ensures failure if missing
+
+    # Documentation setup (same as before)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/html)
+    set(HTML_HEADER_IN  ${CMAKE_CURRENT_SOURCE_DIR}/docs/html_header.html.in)
+    set(HTML_HEADER_OUT ${CMAKE_CURRENT_BINARY_DIR}/docs/html_header.html)
+    configure_file(${HTML_HEADER_IN} ${HTML_HEADER_OUT} @ONLY)
+    set(HTML_HEADER ${HTML_HEADER_OUT})
+
+    set(DOXYFILE_IN  ${CMAKE_CURRENT_SOURCE_DIR}/docs/configFile.in)
+    set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/docs/configFile.doxygen)
+    configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+
+    message(STATUS "Doxygen build started")
+
+    add_custom_target(doc_doxygen ALL
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+
+    add_custom_command(
+        TARGET doc_doxygen POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/docs/html/index.html
+            ${CMAKE_CURRENT_SOURCE_DIR}/docs/index.html
+        COMMENT "Copying Doxygen index.html to source/docs"
+        VERBATIM
+    )
+else()
+    message(STATUS "Documentation generation skipped (use --document to enable)")
+endif()
 
 # ----------------------------------------------------------------------------
 # Manual import of ONNX Runtime per-platform

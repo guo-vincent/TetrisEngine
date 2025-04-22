@@ -21,6 +21,12 @@ def main():
     
     # run files right after compilation?
     parser.add_argument('--run', action='store_true', help='run files immediately after compilation')
+    
+    # update doxygen documents?
+    parser.add_argument('--document', action='store_true', dest='document', help='update doxygen files')
+    
+    # use cache?
+    parser.add_argument('--use-cache', action='store_true', dest='use_cache', help='Reuse existing build directory (skip deletion)')
         
     args = parser.parse_args()
     
@@ -30,19 +36,21 @@ def main():
 
     vcpkg_root = os.environ.get('VCPKG_ROOT', str(Path.home() / 'vcpkg'))
 
-    # Remove the build directory if it exists
-    if build_dir.exists() and build_dir.is_dir():
-        print("Removing existing build directory...")
-        try:
-            shutil.rmtree(build_dir)
-        except PermissionError as e:
-            print(f"Failed to delete {build_dir}: {e}")
-            print("Close any open files/Explorer windows")
-            print("Your antivirus may also cause problems")
-            sys.exit(1)
+    # Remove the build directory if it exists. Disabled if --use-cache is set
+    if not args.use_cache:
+        if build_dir.exists() and build_dir.is_dir():
+            print("Removing existing build directory...")
+            try:
+                shutil.rmtree(build_dir)
+            except PermissionError as e:
+                print(f"Failed to delete {build_dir}: {e}")
+                print("Close any open files/Explorer windows")
+                print("Your antivirus may also cause problems")
+                sys.exit(1)
 
-    # Create a new build directory
-    build_dir.mkdir()
+    if not build_dir.exists():
+        build_dir.mkdir()
+
     os.chdir(build_dir)
 
     # Define the CMake configuration command
@@ -53,6 +61,7 @@ def main():
         f"-DBUILD_TESTS={'ON' if args.build_tests else 'OFF'}",
         f"-DUSE_GPU=OFF",
         f"-DCMAKE_TOOLCHAIN_FILE={vcpkg_root}/scripts/buildsystems/vcpkg.cmake",
+        f"-DBUILD_DOC={'ON' if args.document else 'OFF'}",
         "-DCMAKE_POLICY_VERSION_MINIMUM=3.28"
     ]
 
