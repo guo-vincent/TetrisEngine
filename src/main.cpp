@@ -3,6 +3,10 @@
 // relative path to onnxruntime
 #include <../third_party/onnxruntime/include/core/session/onnxruntime_cxx_api.h>
 
+#include <raylib.h>
+#include <imgui.h>
+#include <rlImGui.h>
+
 int main() {
     // All this does is test to make sure onnxruntime is importing properly.
     try {
@@ -17,6 +21,38 @@ int main() {
         return 1;
     }
 
-    std::cout << "Hello, Tetris Engine!" << std::endl;
+    // Testing all 3 graphics libararies
+    const int screenWidth = 800;
+    const int screenHeight = 600;
+    
+    InitWindow(screenWidth, screenHeight, "Tetris Engine - Graphics Test");
+    SetTargetFPS(60);
+
+    rlImGuiSetup(true);
+
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        rlImGuiBegin();
+
+        ImGui::Begin("Debug Panel");
+        ImGui::Text("Hello, ImGui!");
+        ImGui::Text("FPS: %.1f", GetFPS());
+        if (ImGui::Button("Test Button")) {
+            std::cout << "Button clicked!\n";
+        }
+        ImGui::End();
+
+        rlImGuiEnd();
+
+        EndDrawing();
+    }
+
+    rlImGuiShutdown();
+    CloseWindow();
+
+    std::cout << "All graphics libraries closed successfully.\n";
     return 0;
+
 }

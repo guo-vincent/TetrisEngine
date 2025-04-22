@@ -89,6 +89,24 @@ add_subdirectory(third_party/raylib)
 add_subdirectory(third_party/imgui)
 add_subdirectory(third_party/rlImGui)
 
+# ---------------------------------------------------------------
+# Suppress warnings for third-party libraries
+# ---------------------------------------------------------------
+if(MSVC)
+    # Disable all warnings for ImGui, Raylib, and rlImGui
+    target_compile_options(imgui PRIVATE /W0)       # MSVC: disable all warnings
+    target_compile_options(raylib PRIVATE /W0)
+    target_compile_options(rlImGui PRIVATE /W0)
+else()
+    # GCC/Clang: suppress all warnings
+    target_compile_options(imgui PRIVATE -w)        # -w = suppress all warnings
+    target_compile_options(raylib PRIVATE -w)
+    target_compile_options(rlImGui PRIVATE -w)
+endif()
+
+target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui")
+target_include_directories(raylib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/raylib/src")
+
 if(ENABLE_NN)
     target_link_libraries(TetrisEngineCore PUBLIC onnxruntime::onnxruntime)
 endif()

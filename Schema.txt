@@ -6,6 +6,7 @@ TetrisEngine/                 Usage:
 ├── build.py                  # Use this to make the file. Should work regardless of platform
 ├── setup_venv.py             # Helper function for setting up python venv, regardless of platform
 ├── .gitignore
+├── .gitmodules               # submodules (imgui, raylib, rIlmGui)
 ├── docs/                     # Documentation and design notes
 │   └── architecture.md       # High-level architecture diagram and explanations
 ├── include/                  # Public headers for the engine
@@ -38,10 +39,13 @@ TetrisEngine/                 Usage:
 │   ├── test_board.cpp        # GoogleTest suite for Board
 │   ├── test_engine.cpp       # Tests for game logic
 │   └── test_neuralnet.cpp    # Tests for NN interface & inference
-└── scripts/                  # Utility scripts and CI helpers
+├── scripts/                  # Utility scripts and CI helpers
 │   ├── run_all_tests.sh      # Convenience script to build and run tests
 │   └──download_data.sh       # Script to fetch or update training data
 └── third_party/              # Contains linker files to ONNX runtime library
+    ├── imgui
+    ├── raylib
+    ├── rIlmGui
     └── onnxruntime/
         ├── include
         │   └── core
