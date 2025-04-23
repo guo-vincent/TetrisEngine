@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 import argparse
 
+# TODO: test if this also works on mac & linux
+
 def main():
     parser = argparse.ArgumentParser()
     

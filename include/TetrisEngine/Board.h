@@ -18,6 +18,11 @@
 
 #include "Piece.h"
 
+// TODO: implement Zobrist Hash Class & change == and != overloads
+// TODO: implement rest of the operators, including iterators in Board.cpp
+// TODO: write unit tests in tests\test_board.cpp
+// TODO: implement pseudolegal and legal move generator class
+
 namespace tetris {
     class board {        
         public:

@@ -18,6 +18,7 @@ set(TEST_SOURCES
     test_board.cpp
     test_engine.cpp
     test_neuralnet.cpp
+    test_piece.cpp
 )
 
 foreach(test_src ${TEST_SOURCES})

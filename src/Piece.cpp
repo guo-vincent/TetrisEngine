@@ -1,6 +1,9 @@
 #include "../include/TetrisEngine/Piece.h"
 #include <cmath>
 
+// #TODO: update comments to be more doxygen friendly
+// #TODO: create unit tests to test rotation, especially for out-of-bounds rotations in test_piece.cpp
+
 /**
  * @file Piece.cpp
  * @brief Implementation of Tetris pieces and their behaviors.
