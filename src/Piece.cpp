@@ -59,8 +59,8 @@ namespace tetris {
      */
 
     void piece::flip_piece_clockwise() {
-        ++rotation %= 4;
-        representation = representation_table[rotation];
+        rotation = (rotation + 1) % 4;
+        representation = get_representation_table()[rotation];
     }
     
     /**
@@ -69,8 +69,8 @@ namespace tetris {
      */
 
     void piece::flip_piece_counterwise() {
-        --rotation %= 4;
-        representation = representation_table[rotation];
+        rotation = (rotation + 3) % 4;
+        representation = get_representation_table()[rotation];
     }
 
     /**
@@ -99,7 +99,7 @@ namespace tetris {
     I_piece::I_piece() {
         piece_type = PieceType::I;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 
@@ -114,7 +114,7 @@ namespace tetris {
     J_piece::J_piece() {
         piece_type = PieceType::J;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 
@@ -129,7 +129,7 @@ namespace tetris {
     L_piece::L_piece() {
         piece_type = PieceType::L;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 
@@ -145,7 +145,7 @@ namespace tetris {
     O_piece::O_piece() {
         piece_type = PieceType::O;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 
@@ -160,7 +160,7 @@ namespace tetris {
     S_piece::S_piece() {
         piece_type = PieceType::S;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 
@@ -175,7 +175,7 @@ namespace tetris {
     T_piece::T_piece() {
         piece_type = PieceType::T;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 
@@ -190,7 +190,7 @@ namespace tetris {
     Z_piece::Z_piece() {
         piece_type = PieceType::Z;
         rotation = 0;
-        representation = representation_table[rotation];
+        representation = get_representation_table()[rotation];
         placed = false;
     }
 }
