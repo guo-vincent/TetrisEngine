@@ -79,6 +79,7 @@ public:
             bool operator!=(const CellIterator& other) const {
                 return col != other.col || row != other.row || board != other.board;
             }
+
         private:
             const Board* board;
             int col;
@@ -89,8 +90,9 @@ public:
     // CellIterator visible_begin() const { return CellIterator(this, 0, VISIBLE_BOARD_HEIGHT - 1); }
     // CellIterator visible_end() const { return CellIterator(this, 0, -1); }
 
+    // debugging only
+    void PrintBoard(bool show_hidden = false) const;
 
-private:
     // Grid stores PieceType for each cell. Row 0 is bottom.
     // (row_from_bottom * BOARD_WIDTH + col)
     std::array<PieceType, TOTAL_BOARD_HEIGHT * BOARD_WIDTH> grid;
@@ -107,7 +109,7 @@ private:
     void LockActivePiece(); // Places piece on grid, clears lines, checks game over
     int ClearFullLines();   // Returns number of lines cleared in this step
     void InitializeGrid();  // Sets all grid cells to PieceType::EMPTY
-    Point CalculateSpawnPosition(PieceType type, RotationState spawn_rotation, uint16_t representation);
+    Point CalculateSpawnPosition(PieceType type);
 
 
     // Collision and Movement Validation

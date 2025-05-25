@@ -1,0 +1,287 @@
+#include "../include/TetrisEngine/Board.h"
+#include "../include/TetrisEngine/Piece.h"
+#include <algorithm>
+#include <cassert>
+#include <iomanip>
+#include <iostream>
+#include <unordered_set>
+
+namespace tetris {
+    Board::Board() {
+        Reset();
+    }
+
+    void Board::Reset() {
+        InitializeGrid();
+        currentPiece.reset();
+        isGameOverFlag = false;
+        score = 0;
+        linesClearedTotal = 0;
+    }
+
+    bool Board::SpawnNewPiece(PieceType type) {
+        auto piece = CreatePieceByType(type);
+        if (!piece) return false;
+        uint16_t repr = piece->GetCurrentRepresentation();
+        RotationState spawnRotation = RotationState::STATE_0;
+        piece->SetCurrentRotation(spawnRotation);
+        Point spawnPos = CalculateSpawnPosition(type);
+
+        // Game over check: if spawn position is invalid
+        if (!IsValidPosition(repr, spawnPos)) {
+            isGameOverFlag = true;
+            return false;
+        }
+
+        currentPiece = std::move(piece);
+        currentPieceTopLeftPos = spawnPos;
+        return true;
+    }
+
+    bool Board::SpawnRandomPiece() {
+    // Simplified: always spawn I piece for example
+        return SpawnNewPiece(PieceType::I);
+    }
+
+    bool Board::MoveActivePiece(int delta_x, int delta_y) {
+        if (!currentPiece) return false;
+        Point newPos = currentPieceTopLeftPos + Point{delta_x, delta_y};
+        uint16_t repr = currentPiece->GetCurrentRepresentation();
+
+        if (IsValidPosition(repr, newPos)) {
+            currentPieceTopLeftPos = newPos;
+            return true;
+        }
+        return false;
+    }
+
+    bool Board::RotateActivePiece(RotationDirection direction) {
+        if (!currentPiece) return false;
+        PieceType type = currentPiece->GetType();
+        if (type == PieceType::O) return true; // O doesn't rotate
+
+        RotationState from_rot = currentPiece->GetCurrentRotation();
+        RotationState to_rot = (direction == RotationDirection::CLOCKWISE) ?
+            static_cast<RotationState>((static_cast<int>(from_rot) + 1) % 4) :
+            static_cast<RotationState>((static_cast<int>(from_rot) + 3) % 4);
+
+        const auto& kicks = GetSrsKickData(type, from_rot, to_rot);
+        uint16_t new_repr = currentPiece->GetRepresentation(to_rot);
+
+        for (const Point& kick : kicks) {
+            Point test_pos = currentPieceTopLeftPos + kick;
+            if (IsValidPosition(new_repr, test_pos)) {
+                currentPiece->SetCurrentRotation(to_rot);
+                currentPieceTopLeftPos = test_pos;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void Board::HardDropActivePiece() {
+        if (!currentPiece) return;
+        Point pos = currentPieceTopLeftPos;
+        uint16_t repr = currentPiece->GetCurrentRepresentation();
+        while (IsValidPosition(repr, {pos.x, pos.y - 1})) {
+            pos.y--;
+        }
+        if (!IsValidPosition(repr, pos)) return; // Avoid locking in an invalid position
+        currentPieceTopLeftPos = pos;
+        LockActivePiece();
+    }
+
+    void Board::LockActivePiece() {
+        if (!currentPiece) return;
+        uint16_t repr = currentPiece->GetCurrentRepresentation();
+        int x = currentPieceTopLeftPos.x;
+        int y = currentPieceTopLeftPos.y;
+
+        // Write the piece to the grid (only once)
+        for (int i = 0; i < 16; ++i) {
+            if (repr & (1 << (15 - i))) {
+                int row = y + (i / 4);
+                int col = x + (i % 4);
+                if (col >= 0 && col < BOARD_WIDTH && row >= 0 && row < TOTAL_BOARD_HEIGHT) {
+                    grid[row * BOARD_WIDTH + col] = currentPiece->GetType();
+                }
+            }
+        }
+
+        // Clear lines and update score
+        int lines = ClearFullLines();
+        score += lines * 100;
+        linesClearedTotal += lines;
+
+        // Reset current piece
+        currentPiece.reset();
+
+        // Game over is checked in SpawnNewPiece, not here
+    }
+
+    int Board::ClearFullLines() {
+        int lines = 0;
+        // Iterate from bottom (row 0) to top (row 19)
+        for (int row = 0; row < VISIBLE_BOARD_HEIGHT; ++row) {
+            bool full = true;
+            // Check if all cells in the row are filled
+            for (int col = 0; col < BOARD_WIDTH; ++col) {
+                if (grid[row * BOARD_WIDTH + col] == PieceType::EMPTY) {
+                    full = false;
+                    break;
+                }
+            }
+            if (full) {
+                // Shift all rows above DOWN by one
+                for (int r = row; r < TOTAL_BOARD_HEIGHT - 1; ++r) {
+                    std::copy_n(
+                        &grid[(r + 1) * BOARD_WIDTH], // Source: row above
+                        BOARD_WIDTH,
+                        &grid[r * BOARD_WIDTH]         // Destination: current row
+                    );
+                }
+                // Clear the topmost row (hidden buffer)
+                std::fill_n(
+                    &grid[(TOTAL_BOARD_HEIGHT - 1) * BOARD_WIDTH],
+                    BOARD_WIDTH,
+                    PieceType::EMPTY
+                );
+                lines++;
+                row--; // Re-check this row index after shifting
+            }
+        }
+        return lines;
+    }
+
+    void Board::InitializeGrid() {
+        std::fill(grid.begin(), grid.end(), PieceType::EMPTY);
+    }
+
+    Point Board::CalculateSpawnPosition(PieceType type) {
+        int row = (type == PieceType::I) ? 21 : 20;
+        return {3, row}; // Centered at column 3
+    }
+
+    bool Board::IsValidPosition(uint16_t repr, Point pos) const {
+        for (int i = 0; i < 16; ++i) {
+            if (repr & (1 << (15 - i))) {
+                int c = pos.x + (i % 4);
+                int r = pos.y + (i / 4);
+                if (c < 0 || c >= BOARD_WIDTH || r < 0 || r >= TOTAL_BOARD_HEIGHT) {
+                    return false;
+                }
+                if (grid[r * BOARD_WIDTH + c] != PieceType::EMPTY) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    std::unique_ptr<Piece> Board::CreatePieceByType(PieceType type) {
+        switch (type) {
+            case PieceType::I: return std::make_unique<PieceI>();
+            case PieceType::J: return std::make_unique<PieceJ>();
+            case PieceType::L: return std::make_unique<PieceL>();
+            case PieceType::O: return std::make_unique<PieceO>();
+            case PieceType::S: return std::make_unique<PieceS>();
+            case PieceType::T: return std::make_unique<PieceT>();
+            case PieceType::Z: return std::make_unique<PieceZ>();
+            default: return nullptr;
+        }
+    }
+
+    const std::vector<Point>& Board::GetSrsKickData(PieceType type, RotationState from, RotationState to) const {
+        // JLSTZ SRS kicks
+        static const std::vector<Point> JLSTZ_0R = {{0,0}, {-1,0}, {-1,1}, {0,-2}, {-1,-2}};
+        static const std::vector<Point> JLSTZ_R2 = {{0,0}, {1,0}, {1,-1}, {0,2}, {1,2}};
+        static const std::vector<Point> JLSTZ_2L = {{0,0}, {1,0}, {1,1}, {0,-2}, {1,-2}};
+        static const std::vector<Point> JLSTZ_L0 = {{0,0}, {-1,0}, {-1,-1}, {0,2}, {-1,2}};
+        // I-piece SRS kicks
+        static const std::vector<Point> I_0R = {{0,0}, {-2,0}, {1,0}, {-2,-1}, {1,2}};
+        static const std::vector<Point> I_R2 = {{0,0}, {-1,0}, {2,0}, {-1,2}, {2,-1}};
+        static const std::vector<Point> I_2L = {{0,0}, {2,0}, {-1,0}, {2,1}, {-1,-2}};
+        static const std::vector<Point> I_L0 = {{0,0}, {1,0}, {-2,0}, {1,-2}, {-2,1}};
+        static const std::vector<Point> empty;
+
+        static const std::vector<Point> JLSTZ_R0 = {{0,0}, {1,0}, {1,-1}, {0,2}, {1,2}};
+        static const std::vector<Point> JLSTZ_2R = {{0,0}, {-1,0}, {-1,1}, {0,-2}, {-1,-2}};
+        static const std::vector<Point> JLSTZ_L2 = {{0,0}, {-1,0}, {-1,-1}, {0,2}, {-1,2}};
+        static const std::vector<Point> JLSTZ_0L = {{0,0}, {1,0}, {1,1}, {0,-2}, {1,-2}};
+
+        static const std::vector<Point> I_R0 = {{0,0}, {2,0}, {-1,0}, {2,1}, {-1,-2}};
+        static const std::vector<Point> I_2R = {{0,0}, {1,0}, {-2,0}, {1,-2}, {-2,1}};
+        static const std::vector<Point> I_L2 = {{0,0}, {-2,0}, {1,0}, {-2,-1}, {1,2}};
+        static const std::vector<Point> I_0L = {{0,0}, {-1,0}, {2,0}, {-1,2}, {2,-1}};
+
+        if (type == PieceType::I) {
+            if (from == RotationState::STATE_0 && to == RotationState::STATE_R) return I_0R;
+            if (from == RotationState::STATE_R && to == RotationState::STATE_0) return I_R0;
+            if (from == RotationState::STATE_R && to == RotationState::STATE_2) return I_R2;
+            if (from == RotationState::STATE_2 && to == RotationState::STATE_R) return I_2R;
+            if (from == RotationState::STATE_2 && to == RotationState::STATE_L) return I_2L;
+            if (from == RotationState::STATE_L && to == RotationState::STATE_2) return I_L2;
+            if (from == RotationState::STATE_L && to == RotationState::STATE_0) return I_L0;
+            if (from == RotationState::STATE_0 && to == RotationState::STATE_L) return I_0L;
+        } else if (type != PieceType::O) {
+            if (from == RotationState::STATE_0 && to == RotationState::STATE_R) return JLSTZ_0R;
+            if (from == RotationState::STATE_R && to == RotationState::STATE_0) return JLSTZ_R0;
+            if (from == RotationState::STATE_R && to == RotationState::STATE_2) return JLSTZ_R2;
+            if (from == RotationState::STATE_2 && to == RotationState::STATE_R) return JLSTZ_2R;
+            if (from == RotationState::STATE_2 && to == RotationState::STATE_L) return JLSTZ_2L;
+            if (from == RotationState::STATE_L && to == RotationState::STATE_2) return JLSTZ_L2;
+            if (from == RotationState::STATE_L && to == RotationState::STATE_0) return JLSTZ_L0;
+            if (from == RotationState::STATE_0 && to == RotationState::STATE_L) return JLSTZ_0L;
+        }
+        return empty;
+    }
+
+    PieceType Board::GetCellState(int col, int row_from_bottom) const {
+        // Add bounds checking
+        if (col < 0 || col >= BOARD_WIDTH || row_from_bottom < 0 || row_from_bottom >= TOTAL_BOARD_HEIGHT) {
+            return PieceType::EMPTY;
+        }
+        return grid[row_from_bottom * BOARD_WIDTH + col];
+    }
+
+    void Board::PrintBoard(bool show_hidden) const {
+        const int start_row = show_hidden ? TOTAL_BOARD_HEIGHT - 1 : VISIBLE_BOARD_HEIGHT - 1;
+        const int end_row = 0;
+
+        // Track active piece blocks
+        std::unordered_set<int> active_piece_cells;
+        if (currentPiece) {
+            uint16_t repr = currentPiece->GetCurrentRepresentation();
+            int x = currentPieceTopLeftPos.x;
+            int y = currentPieceTopLeftPos.y;
+            for (int i = 0; i < 16; ++i) {
+                if (repr & (1 << (15 - i))) {
+                    int col = x + (i % 4);
+                    int row = y + (i / 4);
+                    active_piece_cells.insert(row * BOARD_WIDTH + col);
+                }
+            }
+        }
+
+        for (int row = start_row; row >= end_row; --row) {
+            std::cout << std::setw(2) << row << " ";
+            for (int col = 0; col < BOARD_WIDTH; ++col) {
+                int idx = row * BOARD_WIDTH + col;
+                if (active_piece_cells.count(idx)) {
+                    // Draw active piece
+                    char c = static_cast<char>('A' + static_cast<int>(currentPiece->GetType()) - 1);
+                    std::cout << c << " ";
+                } else {
+                    // Draw grid
+                    PieceType pt = GetCellState(col, row);
+                    char c = (pt != PieceType::EMPTY) ? static_cast<char>('A' + static_cast<int>(pt) - 1) : '.';
+                    std::cout << c << " ";
+                }
+            }
+            std::cout << "\n";
+        }
+        std::cout << "    ";
+        for (int col = 0; col < BOARD_WIDTH; ++col) std::cout << col << " ";
+        std::cout << "\n\n";
+    }
+} // namespace tetris
