@@ -19,120 +19,120 @@ Rows:
 Cols: 0 1 2 3 4 5 6 7 8 9
 */
 
-#include <algorithm>
-#include <cassert>
-#include <iostream>
-#include <string>
-#include <array>
-#include <cstdint>
-#include <cstddef>
-#include <bitset>
-
 #include "Piece.h"
-
-// TODO: implement Zobrist Hash Class & change == and != overloads
-// TODO: implement rest of the operators, including iterators in Board.cpp
-// TODO: write unit tests in tests\test_board.cpp
-// TODO: implement pseudolegal and legal move generator class
+#include <vector>
+#include <array>
+#include <memory> 
+#include <bitset>
+#include <functional>
 
 namespace tetris {
-    class board {        
-        public:
-            board();
 
-            // Board comparison
-            bool operator==(const board &) const;
-            bool operator!=(const board &) const;
+// Board dimensions and constants
+constexpr int BOARD_WIDTH = 10;
+constexpr int VISIBLE_BOARD_HEIGHT = 20; // Rows 0 to 19 from bottom are visible
+constexpr int TOTAL_BOARD_HEIGHT = 27;   // Rows 0 to 26 from bottom. Rows 20-26 are buffer/spawn area.
 
-            // This is for generating a piece onto the board. May require more parameters
-            // Caution: the visible area for the tetris board is only 20 blocks high + 1 which can be seen but is not gridded
-            // So we should spawn the block within that area. 
-            void insert_new_piece(const tetris::PieceType);
-
-            // Checks if a board is a loss
-            bool is_loss() const;
-
-            // Checks if a board state is valid, or if the board needs to be updated (e.g. full row)
-            bool needs_rows_cleared() const;
-
-            // Checks if a move is valid. May require more parameters
-            bool is_valid_move() const;
-
-            // Given an invalid board, makes adjustments to make the board valid
-            void make_rows_valid();
-
-            // prints the state of the board. Currently we can just print '.' and numbers for now
-            // but this will later be replaced with actual graphics
-            void print_board() const;
-
-            // These tell the board to move the current piece in hand in the given direction
-            // It may make more sense to move these into the piece class, which already has some logic
-            // on rotations
-            uint16_t move_down();
-            uint16_t move_left();
-            uint16_t move_right();
-            uint16_t drop();
-
-            size_t rows;
-            size_t cols;
-
-            struct iterator {
-                const board* parent;
-                size_t       index;
-
-                // Constructors
-                iterator(const board* b = nullptr, size_t idx = 0)
-                : parent(b), index(idx) {}
-
-                // Increment/Decrement
-                iterator& operator++()    { ++index; return *this; }
-                iterator  operator++(int) { iterator tmp = *this; ++index; return tmp; }
-                iterator& operator--()    { --index; return *this; }
-                iterator  operator--(int) { iterator tmp = *this; --index; return tmp; }
-
-                // Comparison
-                bool operator==(iterator const& other) const { return index == other.index && parent == other.parent; }
-                bool operator!=(iterator const& other) const { return !(*this == other); }
-
-                // Dereference: pull 3 bits out of parent->bits
-                uint8_t operator*() const {
-                    assert(parent);
-                    auto const& bits = parent->bits;
-                    const size_t bit_pos = index * 3;
-                    return  uint8_t(
-                        (bits[bit_pos+2] << 2) |
-                        (bits[bit_pos+1] << 1) |
-                        bits[bit_pos]
-                    );
-                }
-
-                // Row iterators if you still need them
-                iterator row_begin(size_t row) const { return iterator(parent, row * parent->cols); }
-                iterator row_end  (size_t row) const { return iterator(parent, (row+1) * parent->cols); }
-            };
-
-            // Provide proper begin()/end() on the board itself
-            iterator begin()       { return iterator(this, 0); }
-            iterator end()         { return iterator(this, rows*cols); }
-
-            // Const overloads too, if you want
-            iterator begin() const { return iterator(this, 0); }
-            iterator end()   const { return iterator(this, rows*cols); }
-
-        private: 
-            // 27 row by 10 col block array. Each block is represented by 3 bits to represent different piece types.
-            std::bitset<810> bits;
-
-            // Track rows modified by last insert for optimization of eliminating rows
-            std::vector<size_t> last_placed_rows; 
-
-    };
-
-    // Creates a zobrist hash for the tetris board, used for quickly checking if two board positions are equal
-    // Useful for testing
-    struct zobrist {
-        
-    };
+// Helper to define rotation transitions for SRS kicks
+enum class RotationDirection {
+    CLOCKWISE,
+    COUNTER_CLOCKWISE
 };
+
+class Board {
+public:
+    Board();
+
+    // Game Flow
+    void Reset(); // Resets the board for a new game
+    bool SpawnNewPiece(PieceType type); // Spawns a specific piece, returns false if spawn fails (game over)
+    bool SpawnRandomPiece();            // Spawns a random piece
+
+    // Player Actions
+    bool MoveActivePiece(int delta_x, int delta_y); // Tries to move, returns true on success
+    bool RotateActivePiece(RotationDirection direction); // Tries to rotate, returns true on success
+    void HardDropActivePiece();
+
+    // Game State & Info
+    bool IsGameOver() const { return isGameOverFlag; }
+    PieceType GetCellState(int col, int row_from_bottom) const; // For querying grid
+    const Piece* GetCurrentPiece() const { return currentPiece.get(); }
+    Point GetCurrentPiecePosition() const { return currentPieceTopLeftPos; } // Top-left of 4x4 box
+    int GetScore() const { return score; }
+    int GetLinesCleared() const { return linesClearedTotal; }
+
+    // Iterator for board cells
+    class CellIterator {
+        public:
+            CellIterator(const Board* board_ptr, int c, int r) : board(board_ptr), col(c), row(r) {}
+
+            PieceType operator*() const { return board->GetCellState(col, row); }
+            CellIterator& operator++() { // Simple row-major increment
+                col++;
+                if (col >= BOARD_WIDTH) {
+                    col = 0;
+                    row--; // Iterating from top-visible down to bottom for typical display
+                }
+                // Adjust bounds as needed or provide a sentinel end iterator
+                return *this;
+            }
+            bool operator!=(const CellIterator& other) const {
+                return col != other.col || row != other.row || board != other.board;
+            }
+        private:
+            const Board* board;
+            int col;
+            int row; // Row from bottom
+        };
+
+    // Example iterator usage (conceptual, might need proper end sentinels)
+    // CellIterator visible_begin() const { return CellIterator(this, 0, VISIBLE_BOARD_HEIGHT - 1); }
+    // CellIterator visible_end() const { return CellIterator(this, 0, -1); }
+
+
+private:
+    // Grid stores PieceType for each cell. Row 0 is bottom.
+    // (row_from_bottom * BOARD_WIDTH + col)
+    std::array<PieceType, TOTAL_BOARD_HEIGHT * BOARD_WIDTH> grid;
+
+    std::unique_ptr<Piece> currentPiece;
+    Point currentPieceTopLeftPos; // (column, row_from_bottom) for the top-left of piece's 4x4 box
+
+    bool isGameOverFlag;
+    int score;
+    int linesClearedTotal;
+    // Could add: level, piece sequence generator
+
+    // Internal Game Logic
+    void LockActivePiece(); // Places piece on grid, clears lines, checks game over
+    int ClearFullLines();   // Returns number of lines cleared in this step
+    void InitializeGrid();  // Sets all grid cells to PieceType::EMPTY
+    Point CalculateSpawnPosition(PieceType type, RotationState spawn_rotation, uint16_t representation);
+
+
+    // Collision and Movement Validation
+    // Checks if the piece (defined by its 4x4 representation) is valid at the given board top-left position.
+    bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
+
+    // Piece Factory
+    std::unique_ptr<Piece> CreatePieceByType(PieceType type);
+
+    // SRS Kick Data and Logic
+    // Returns a list of kick offsets to try for a given rotation.
+    const std::vector<Point>& GetSrsKickData(PieceType type, RotationState from_rotation, RotationState to_rotation) const;
+
+    // Static SRS Kick Tables (to be defined in Board.cpp)
+    // These tables store the 5 kick test offsets (dx, dy) for each rotation transition.
+    // dy is relative to board: +1 means one row up (further from row 0).
+    // Example: kicks_JLSTZ[from_state_idx][to_state_idx][kick_test_idx]
+    // Simplified: one table for JLSTZ, one for I. Each maps (from_rot, to_rot) -> vector<Point_kicks>
+    // These are quite extensive and are standard.
+    // For brevity in .h, actual data will be in .cpp
+    using KickDataTable = std::array<std::array<std::vector<Point>, 4>, 4>; // [PieceSetIdx][FromRot][ToRot] -> Kicks
+    // Or more specific:
+    // static const std::vector<Point KICK_DATA_JLSTZ_0_R; // etc.
+};
+
+} // namespace tetris
 
 #endif BOARD_H
