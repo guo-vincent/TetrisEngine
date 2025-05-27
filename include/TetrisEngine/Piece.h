@@ -16,7 +16,6 @@ if the piece can be represented in a 3 by 3 square
 
 #include <array>
 #include <cstdint>
-#include <vector>
 
 namespace tetris {
 

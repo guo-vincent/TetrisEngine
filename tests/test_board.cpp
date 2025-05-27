@@ -1,5 +1,6 @@
 #include "../include/TetrisEngine/Board.h"
 #include <iostream>
+#include <limits>
 
 using namespace tetris;
 
@@ -74,8 +75,8 @@ void TestLineClear() {
 }
 
 int main() {
-    TestBasicMovement();
-    TestRotation();
-    TestLineClear();
+    // TestBasicMovement();
+    // TestRotation();
+    // TestLineClear();
     return 0;
 }

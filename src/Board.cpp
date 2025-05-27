@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <unordered_set>
 
 namespace tetris {
@@ -39,8 +40,12 @@ namespace tetris {
     }
 
     bool Board::SpawnRandomPiece() {
-    // Simplified: always spawn I piece for example
-        return SpawnNewPiece(PieceType::I);
+        // For creating a random piece
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution<std::mt19937::result_type> dist6(0,6);
+
+        return SpawnNewPiece(grab_bag[dist6(rng)]);
     }
 
     bool Board::MoveActivePiece(int delta_x, int delta_y) {
@@ -244,7 +249,7 @@ namespace tetris {
         return grid[row_from_bottom * BOARD_WIDTH + col];
     }
 
-    void Board::PrintBoard(bool show_hidden) const {
+    void Board::PrintBoardText(bool show_hidden) const {
         const int start_row = show_hidden ? TOTAL_BOARD_HEIGHT - 1 : VISIBLE_BOARD_HEIGHT - 1;
         const int end_row = 0;
 

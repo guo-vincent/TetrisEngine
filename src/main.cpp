@@ -2,9 +2,81 @@
 
 // Testing imports
 #include <onnxruntime_cxx_api.h>
+#include "../include/TetrisEngine/Board.h"
 #include <raylib.h>
 #include <imgui.h>
 #include <rlImGui.h>
+
+using namespace tetris;
+
+void test_game() {
+    Board board;
+    bool game_over = false;
+    std::string input_line;
+
+    if (!board.SpawnRandomPiece()) {
+        game_over = true;
+    }
+
+    while (!game_over) {
+        board.PrintBoardText(false);
+
+        std::cout << "Command (q/e/a/d/s/x/p): ";
+        if (!std::getline(std::cin, input_line)) {
+            // Handle input errors or EOF (e.g., Ctrl+D)
+            game_over = true;
+            break;
+        }
+
+        if (input_line.empty()) {
+            continue; // Skip empty input
+        }
+
+        char input = input_line[0]; // Take first character only
+
+        switch (input) {
+            case 'a':
+                board.MoveActivePiece(-1, 0);
+                break;
+            case 'd':
+                board.MoveActivePiece(1, 0);
+                break;
+            case 's':
+                if (!board.MoveActivePiece(0, -1)) {
+                    board.LockActivePiece();
+                    if (!board.SpawnRandomPiece()) {
+                        game_over = true;
+                    }
+                }
+                break;
+            case 'e':
+                board.RotateActivePiece(RotationDirection::CLOCKWISE);
+                break;
+            case 'q':
+                board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
+                break;
+            case 'x':
+                board.HardDropActivePiece();
+                if (!board.SpawnRandomPiece()) {
+                    game_over = true;
+                }
+                break;
+            case 'p':
+                game_over = true;
+                break;
+            default:
+                std::cout << "Invalid command.\n";
+                break;
+        }
+
+        if (board.IsGameOver()) {
+            game_over = true;
+        }
+    }
+
+    std::cout << "Game Over! Score: " << board.GetScore() 
+              << ", Lines Cleared: " << board.GetLinesCleared() << "\n";
+}
 
 int main() {
     // All this does is test to make sure onnxruntime is importing properly.
@@ -52,6 +124,7 @@ int main() {
     CloseWindow();
 
     std::cout << "All graphics libraries closed successfully.\n";
+    test_game();
     return 0;
 
 }
