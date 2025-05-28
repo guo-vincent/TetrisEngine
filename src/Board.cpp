@@ -279,39 +279,42 @@ namespace tetris {
         }
     }
 
-// based on board state return 1D array of the visible board including active piece
-std::vector<PieceType> Board::GetRenderableState() const {
-    std::vector<PieceType> state(VISIBLE_BOARD_HEIGHT * BOARD_WIDTH, PieceType::EMPTY);
+    // based on board state return 1D array of the visible board including active piece
+    std::vector<PieceType> Board::GetRenderableState() const {
+        std::vector<PieceType> state(VISIBLE_BOARD_HEIGHT * BOARD_WIDTH, PieceType::EMPTY);
 
-    // Copy locked cells
-    for (int row = 0; row < VISIBLE_BOARD_HEIGHT; ++row) {
-        for (int col = 0; col < BOARD_WIDTH; ++col) {
-            PieceType pt = GetCellState(col, row);
-            state[row * BOARD_WIDTH + col] = pt;
+        // Copy locked cells in reverse row order (top row first)
+        for (int state_row = 0; state_row < VISIBLE_BOARD_HEIGHT; ++state_row) {
+            int grid_row = VISIBLE_BOARD_HEIGHT - 1 - state_row;
+            for (int col = 0; col < BOARD_WIDTH; ++col) {
+                PieceType pt = GetCellState(col, grid_row);
+                state[state_row * BOARD_WIDTH + col] = pt;
+            }
         }
-    }
 
-    // Overlay active piece
-    if (currentPiece) {
-        uint16_t repr = currentPiece->GetCurrentRepresentation();
-        int x = currentPieceTopLeftPos.x;
-        int y = currentPieceTopLeftPos.y;
-        PieceType activeType = currentPiece->GetType();
+        // Overlay active piece
+        if (currentPiece) {
+            uint16_t repr = currentPiece->GetCurrentRepresentation();
+            int x = currentPieceTopLeftPos.x;
+            int y = currentPieceTopLeftPos.y;
+            PieceType activeType = currentPiece->GetType();
 
-        for (int i = 0; i < 16; ++i) {
-            if (repr & (1 << (15 - i))) {
-                int col = x + (i % 4);
-                int row = y + (i / 4);
-                if (row >= 0 && row < VISIBLE_BOARD_HEIGHT && col >= 0 && col < BOARD_WIDTH) {
-                    state[row * BOARD_WIDTH + col] = activeType;
+            for (int i = 0; i < 16; ++i) {
+                if (repr & (1 << (15 - i))) {
+                    int col = x + (i % 4);
+                    int grid_row = y + (i / 4);
+                    if (grid_row >= 0 && grid_row < VISIBLE_BOARD_HEIGHT) {
+                        int state_row = VISIBLE_BOARD_HEIGHT - 1 - grid_row;
+                        if (col >= 0 && col < BOARD_WIDTH) {
+                            state[state_row * BOARD_WIDTH + col] = activeType;
+                        }
+                    }
                 }
             }
         }
+
+        return state;
     }
-
-    return state;
-}
-
 
     void Board::PrintBoardText(bool show_hidden = false) const {
         const int start_row = show_hidden ? TOTAL_BOARD_HEIGHT - 1 : VISIBLE_BOARD_HEIGHT - 1;

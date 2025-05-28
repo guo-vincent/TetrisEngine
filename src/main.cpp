@@ -149,13 +149,10 @@ int main() {
             for (int col = 0; col < BOARD_WIDTH; ++col) {
                 PieceType pt = state[row * BOARD_WIDTH + col];
                 Color color = GetColorForPiece(pt);
-                
-                // flip coz why not
-                int drawRow = VISIBLE_BOARD_HEIGHT - 1 - row;
 
                 DrawRectangle(
                     boardOffsetX + col * cellSize,
-                    boardOffsetY + drawRow * cellSize,
+                    boardOffsetY + row * cellSize,
                     cellSize - 2,
                     cellSize - 2,
                     color
