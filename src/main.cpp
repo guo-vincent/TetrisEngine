@@ -36,6 +36,9 @@ int main() {
         return 1;
     }
 
+    // list of previous commands
+    std::vector<std::string> commandHistory;
+
     Board board;
     board.MoveActivePiece(-4, 0);
 
@@ -62,36 +65,62 @@ int main() {
 
         rlImGuiBegin();
         // offset to prevent overlap from squares
+
+        // this is box for controlling without keybinds
         ImGui::SetNextWindowPos(ImVec2(800, 100));
         ImGui::Begin("Controls");
-        if (!gameOver) {
 
+        if (!gameOver) {
             // these controls were also reversed
-            if (ImGui::Button("← Left") || IsKeyPressed(KEY_LEFT)) board.MoveActivePiece(1, 0);
+            if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
+                board.MoveActivePiece(1, 0);
+                commandHistory.push_back("Move Left");
+            }
             ImGui::SameLine();
-            if (ImGui::Button("→ Right") || IsKeyPressed(KEY_RIGHT)) board.MoveActivePiece(-1, 0);
+            if (ImGui::Button("Right") || IsKeyPressed(KEY_RIGHT)){ 
+                board.MoveActivePiece(-1, 0);
+                commandHistory.push_back("Move Right");
+            }
             
-            if (ImGui::Button("↓ Soft Drop") || IsKeyPressed(KEY_DOWN)) {
+            if (ImGui::Button("Soft Drop") || IsKeyPressed(KEY_DOWN)) {
+                commandHistory.push_back("Drop 1");
                 if (!board.MoveActivePiece(0, -1)) {
                     board.LockActivePiece();
+
                     if (!board.SpawnRandomPiece()) gameOver = true;
                 }
             }
             
             ImGui::SameLine();  
-            if (ImGui::Button("⤓ Hard Drop") || IsKeyPressed(KEY_SPACE)) {
+            if (ImGui::Button("Hard Drop") || IsKeyPressed(KEY_SPACE)) {
                 board.HardDropActivePiece();
+                commandHistory.push_back("Drop X");
                 if (!board.SpawnRandomPiece()) gameOver = true;
             }
 
-            if (ImGui::Button("⟳ Rotate CW") || IsKeyPressed(KEY_E)) board.RotateActivePiece(RotationDirection::CLOCKWISE);
+            if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
+                board.RotateActivePiece(RotationDirection::CLOCKWISE);
+                commandHistory.push_back("Rotate CW");
+            }
             ImGui::SameLine();
-            if (ImGui::Button("⟲ Rotate CCW") || IsKeyPressed(KEY_Q)) board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
+            if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Q)) {
+                board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
+                commandHistory.push_back("Rotate CCW");
+            }
+
+            if (ImGui::Button("Reset") || IsKeyPressed(KEY_Y)) {
+                board.Reset();
+                commandHistory.push_back("Reset Board");
+            }
             // TODO:
             // ImGui::SameLine();
             // if (ImGui::Button("180 (unimplemented)")IsKeyPressed(KEY_W) ) board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
-            
-            
+           
+           
+           // erase first command if bigger than 10
+            if (commandHistory.size() > 10) {
+                commandHistory.erase(commandHistory.begin());
+            }
         }
 
         if (gameOver) {
@@ -99,13 +128,23 @@ int main() {
         }
         ImGui::Text("Score: %d", board.GetScore());
         ImGui::Text("Lines: %d", board.GetLinesCleared());
-
         ImGui::End();
+
+        // this is the box to see command history
+        ImGui::SetNextWindowPos(ImVec2(800, 400));
+        ImGui::Begin("Command History");
+        // populate
+        ImGui::BeginChild("ScrollRegion", ImVec2(250, 200), true, 0);
+        for (const std::string& cmd : commandHistory) {
+            ImGui::TextUnformatted(cmd.c_str());
+        }
+        ImGui::EndChild();
 
         rlImGuiEnd();
 
         // Draw board
-        auto state = board.GetRenderableState();
+        std::vector<PieceType> state(VISIBLE_BOARD_HEIGHT * BOARD_WIDTH, PieceType::EMPTY);
+        state = board.GetRenderableState();
 
         for (int row = 0; row < VISIBLE_BOARD_HEIGHT; ++row) {
             for (int col = 0; col < BOARD_WIDTH; ++col) {
@@ -132,7 +171,6 @@ int main() {
     rlImGuiShutdown();
     CloseWindow();
     std::cout << "All graphics libraries closed successfully.\n";
-    test_game();
 
     return 0;
 }
