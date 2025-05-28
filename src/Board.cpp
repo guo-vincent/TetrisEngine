@@ -19,6 +19,7 @@ namespace tetris {
         isGameOverFlag = false;
         score = 0;
         linesClearedTotal = 0;
+        index = 0;
     }
 
     bool Board::SpawnNewPiece(PieceType type) {
@@ -44,9 +45,14 @@ namespace tetris {
         // For creating a random piece
         std::random_device dev;
         std::mt19937 rng(dev());
-        std::uniform_int_distribution<std::mt19937::result_type> dist6(0,6);
 
-        return SpawnNewPiece(grab_bag[dist6(rng)]);
+        index %= grab_bag.size();
+        if (index == 0) {
+            std::shuffle(grab_bag.begin(), grab_bag.end(), rng);
+        }
+
+        PieceType last_piece = grab_bag[index++];
+        return SpawnNewPiece(last_piece);
     }
 
     bool Board::MoveActivePiece(int delta_x, int delta_y) {
