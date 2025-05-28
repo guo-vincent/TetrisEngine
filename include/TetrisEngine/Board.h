@@ -59,6 +59,7 @@ public:
     Point GetCurrentPiecePosition() const { return currentPieceTopLeftPos; } // Top-left of 4x4 box
     int GetScore() const { return score; }
     int GetLinesCleared() const { return linesClearedTotal; }
+    std::vector<PieceType> GetRenderableState() const;
 
     // Iterator for board cells
     class CellIterator {
