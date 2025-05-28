@@ -9,7 +9,8 @@
 #include <raylib.h>
 
 namespace tetris {
-    Board::Board() : rng(std::random_device{}()), grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} {
+    Board::Board() : rng(std::random_device{}()), grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }}, 
+                     grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} {
         Reset();
     }
 
@@ -45,16 +46,16 @@ namespace tetris {
 
     bool Board::SpawnRandomPiece() {
         index %= grab_bag.size();
+        
+        // On start, shuffle first next bag
+        if (last_piece_is_none){
+            std::shuffle(grab_bag_next.begin(), grab_bag_next.end(), rng);
+        }
 
-        // On bag refill, shuffle once
+        // On bag emptied, copy next bag and shuffle new next bag
         if (index == 0) {
-            std::shuffle(grab_bag.begin(), grab_bag.end(), rng);
-
-            // If the new first piece == previous piece, swap it with something else in the bag
-            if (!last_piece_is_none && grab_bag[0] == last_piece) {
-                size_t swap_idx = 1 + (rng() % (grab_bag.size() - 1));
-                std::swap(grab_bag[0], grab_bag[swap_idx]);
-            }
+            grab_bag = grab_bag_next;
+            std::shuffle(grab_bag_next.begin(), grab_bag_next.end(), rng);
         }
 
         // Pick and advance

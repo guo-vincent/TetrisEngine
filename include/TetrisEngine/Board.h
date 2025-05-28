@@ -118,6 +118,7 @@ public:
     std::unique_ptr<Piece> CreatePieceByType(PieceType type);
     std::mt19937 rng;
     std::vector<PieceType> grab_bag;
+    std::vector<PieceType> grab_bag_next;
     size_t index;
     PieceType last_piece;
     bool last_piece_is_none;
