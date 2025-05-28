@@ -46,7 +46,7 @@ namespace tetris {
 
     bool Board::SpawnRandomPiece() {
         index %= grab_bag.size();
-        
+
         // On start, shuffle first next bag
         if (last_piece_is_none){
             std::shuffle(grab_bag_next.begin(), grab_bag_next.end(), rng);
@@ -214,27 +214,28 @@ namespace tetris {
     }
 
     const std::vector<Point>& Board::GetSrsKickData(PieceType type, RotationState from, RotationState to) const {
-        // JLSTZ SRS kicks
+        // JLSTZ SRS clockwise kicks
         static const std::vector<Point> JLSTZ_0R = {{0,0}, {-1,0}, {-1,1}, {0,-2}, {-1,-2}};
         static const std::vector<Point> JLSTZ_R2 = {{0,0}, {1,0}, {1,-1}, {0,2}, {1,2}};
         static const std::vector<Point> JLSTZ_2L = {{0,0}, {1,0}, {1,1}, {0,-2}, {1,-2}};
         static const std::vector<Point> JLSTZ_L0 = {{0,0}, {-1,0}, {-1,-1}, {0,2}, {-1,2}};
-        // I-piece SRS kicks
+        // I-piece SRS clockwise kicks
         static const std::vector<Point> I_0R = {{0,0}, {-2,0}, {1,0}, {-2,-1}, {1,2}};
         static const std::vector<Point> I_R2 = {{0,0}, {-1,0}, {2,0}, {-1,2}, {2,-1}};
         static const std::vector<Point> I_2L = {{0,0}, {2,0}, {-1,0}, {2,1}, {-1,-2}};
         static const std::vector<Point> I_L0 = {{0,0}, {1,0}, {-2,0}, {1,-2}, {-2,1}};
-        static const std::vector<Point> empty;
-
+        // JLSTZ SRS counter-clockwise kicks
         static const std::vector<Point> JLSTZ_R0 = {{0,0}, {1,0}, {1,-1}, {0,2}, {1,2}};
         static const std::vector<Point> JLSTZ_2R = {{0,0}, {-1,0}, {-1,1}, {0,-2}, {-1,-2}};
         static const std::vector<Point> JLSTZ_L2 = {{0,0}, {-1,0}, {-1,-1}, {0,2}, {-1,2}};
         static const std::vector<Point> JLSTZ_0L = {{0,0}, {1,0}, {1,1}, {0,-2}, {1,-2}};
-
+        // I-piece SRS counter-clockwise kicks
         static const std::vector<Point> I_R0 = {{0,0}, {2,0}, {-1,0}, {2,1}, {-1,-2}};
         static const std::vector<Point> I_2R = {{0,0}, {1,0}, {-2,0}, {1,-2}, {-2,1}};
         static const std::vector<Point> I_L2 = {{0,0}, {-2,0}, {1,0}, {-2,-1}, {1,2}};
         static const std::vector<Point> I_0L = {{0,0}, {-1,0}, {2,0}, {-1,2}, {2,-1}};
+
+        static const std::vector<Point> empty;
 
         if (type == PieceType::I) {
             if (from == RotationState::STATE_0 && to == RotationState::STATE_R) return I_0R;
