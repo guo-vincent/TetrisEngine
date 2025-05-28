@@ -16,6 +16,7 @@ if the piece can be represented in a 3 by 3 square
 
 #include <array>
 #include <cstdint>
+#include <raylib.h>
 
 namespace tetris {
 
@@ -55,7 +56,7 @@ namespace tetris {
     // Abstract base class for all Tetris pieces
     class Piece {
         public:
-            Piece(PieceType piece_type) : type(piece_type), currentRotation(RotationState::STATE_0) {}
+            Piece(PieceType piece_type, Color color = WHITE): type(piece_type), currentRotation(RotationState::STATE_0), color(WHITE){}
             virtual ~Piece() = default;
 
             PieceType GetType() const { return type; }
@@ -69,10 +70,12 @@ namespace tetris {
 
             // Helper to get the representation for the current rotation state
             uint16_t GetCurrentRepresentation() const { return GetRepresentation(currentRotation); }
+            Color GetColor() const { return color; }
 
         protected:
             PieceType type;
             RotationState currentRotation;
+            Color color;
         };
 
     // Concrete piece classes

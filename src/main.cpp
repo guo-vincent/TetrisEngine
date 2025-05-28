@@ -92,10 +92,14 @@ int main() {
         return 1;
     }
 
+    Board board;
+    board.MoveActivePiece(-4, 0);
+
     // Testing all 3 graphics libararies
-    const int screenWidth = 800;
-    const int screenHeight = 600;
-    
+    int monitor = GetCurrentMonitor();
+    int screenWidth = GetMonitorWidth(monitor);
+    int screenHeight = GetMonitorHeight(monitor);
+
     InitWindow(screenWidth, screenHeight, "Tetris Engine - Graphics Test");
     SetTargetFPS(60);
 

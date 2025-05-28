@@ -11,18 +11,18 @@ void TestBasicMovement() {
     // Spawn J piece
     board.SpawnNewPiece(PieceType::J);
     std::cout << "Initial spawn:\n";
-    board.PrintBoard(true);  // Show hidden area
+    board.PrintBoardText(true);  // Show hidden area
 
     // Move right
     board.MoveActivePiece(1, 0);
     std::cout << "After moving right:\n";
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
 
     // Move left twice (should stop at left wall)
     board.MoveActivePiece(-1, 0);
     board.MoveActivePiece(-1, 0);
     std::cout << "After trying to move left twice:\n";
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
 }
 
 void TestRotation() {
@@ -31,12 +31,12 @@ void TestRotation() {
     board.SpawnNewPiece(PieceType::I);
     
     std::cout << "Initial I-piece:\n";
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
     
     // Rotate clockwise
     board.RotateActivePiece(RotationDirection::CLOCKWISE);
     std::cout << "After clockwise rotation:\n";
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
 }
 
 void TestLineClear() {
@@ -48,13 +48,13 @@ void TestLineClear() {
     board.SpawnNewPiece(PieceType::I);
     board.currentPieceTopLeftPos = {0, 5}; // Columns 0-3
     board.LockActivePiece();
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
 
     // Second I-piece covers columns 4-7
     board.SpawnNewPiece(PieceType::I);
     board.currentPieceTopLeftPos = {4, 5};
     board.LockActivePiece();
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
 
     // Third I-piece adjusted to fit within BOARD_WIDTH=10
     board.SpawnNewPiece(PieceType::O);
@@ -63,14 +63,14 @@ void TestLineClear() {
 
     // Verify the board state
     std::cout << "Before clear:\n";
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
 
     // Spawn and drop an O-piece to trigger line clear
     board.SpawnNewPiece(PieceType::O);
     board.HardDropActivePiece();
 
     std::cout << "After clear:\n";
-    board.PrintBoard(true);
+    board.PrintBoardText(true);
     std::cout << "Lines cleared: " << board.GetLinesCleared() << "\n";
 }
 

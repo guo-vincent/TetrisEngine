@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <unordered_set>
+#include <raylib.h>
 
 namespace tetris {
     Board::Board() {
@@ -140,7 +141,7 @@ namespace tetris {
                 // Shift all rows above DOWN by one
                 for (int r = row; r < TOTAL_BOARD_HEIGHT - 1; ++r) {
                     std::copy_n(
-                        &grid[(r + 1) * BOARD_WIDTH], // Source: row above
+                        &grid[(r + 1) * BOARD_WIDTH],  // Source: row above
                         BOARD_WIDTH,
                         &grid[r * BOARD_WIDTH]         // Destination: current row
                     );
@@ -249,7 +250,20 @@ namespace tetris {
         return grid[row_from_bottom * BOARD_WIDTH + col];
     }
 
-    void Board::PrintBoardText(bool show_hidden) const {
+    Color tetris::Board::GetColorForPieceType(tetris::PieceType pt) const {
+        switch (pt) {
+            case PieceType::I: return SKYBLUE;
+            case PieceType::J: return BLUE;
+            case PieceType::L: return ORANGE;
+            case PieceType::O: return YELLOW;
+            case PieceType::S: return GREEN;
+            case PieceType::T: return PURPLE;
+            case PieceType::Z: return RED;
+            default: return GRAY;
+        }
+    }
+
+    void Board::PrintBoardText(bool show_hidden = false) const {
         const int start_row = show_hidden ? TOTAL_BOARD_HEIGHT - 1 : VISIBLE_BOARD_HEIGHT - 1;
         const int end_row = 0;
 
@@ -288,5 +302,47 @@ namespace tetris {
         std::cout << "    ";
         for (int col = 0; col < BOARD_WIDTH; ++col) std::cout << col << " ";
         std::cout << "\n\n";
+    }
+
+    void Board::PrintBoard(const int screenWidth, const int screenHeight, bool show_hidden = false) const {
+        const int start_row = show_hidden ? TOTAL_BOARD_HEIGHT - 1 : VISIBLE_BOARD_HEIGHT - 1;
+        const int end_row = 0;
+
+        int cellSize = std::min(screenWidth / BOARD_WIDTH, screenHeight / VISIBLE_BOARD_HEIGHT);
+
+        int offsetX = (screenWidth - (cellSize * BOARD_WIDTH)) / 2;
+        int offsetY = (screenHeight - (cellSize * VISIBLE_BOARD_HEIGHT)) / 2;
+
+        // Track active piece blocks
+        std::unordered_set<int> active_piece_cells;
+        if (currentPiece) {
+            uint16_t repr = currentPiece->GetCurrentRepresentation();
+            int x = currentPieceTopLeftPos.x;
+            int y = currentPieceTopLeftPos.y;
+            for (int i = 0; i < 16; ++i) {
+                if (repr & (1 << (15 - i))) {
+                    int col = x + (i % 4);
+                    int row = y + (i / 4);
+                    active_piece_cells.insert(row * BOARD_WIDTH + col);
+                }
+            }
+        }
+
+        for (int row = start_row; row >= end_row; --row) {
+            for (int col = 0; col < BOARD_WIDTH; ++col) {
+                int idx = row * BOARD_WIDTH + col;
+                int posX = offsetX + col * cellSize;
+                int posY = offsetY + row * cellSize;
+                if (active_piece_cells.count(idx)) {
+                    // Draw active piece
+                    PieceType pt = GetCellState(col, row);
+                    Color color = (pt != PieceType::EMPTY) ? GetColorForPieceType(pt) : GRAY;
+                    DrawRectangle(posX, posY, cellSize - 1, cellSize - 1, currentPiece->GetColor());
+                } else {
+                    // Draw grid
+                    DrawRectangle(posX, posY, cellSize - 1, cellSize - 1, GRAY);
+                }
+            }
+        }
     }
 } // namespace tetris

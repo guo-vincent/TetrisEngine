@@ -85,11 +85,13 @@ public:
         };
 
     // Example iterator usage (conceptual, might need proper end sentinels)
-    // CellIterator visible_begin() const { return CellIterator(this, 0, VISIBLE_BOARD_HEIGHT - 1); }
-    // CellIterator visible_end() const { return CellIterator(this, 0, -1); }
+    CellIterator visible_begin() const { return CellIterator(this, 0, VISIBLE_BOARD_HEIGHT - 1); }
+    CellIterator visible_end() const { return CellIterator(this, 0, -1); }
 
     // debugging only
     void PrintBoardText(bool show_hidden = false) const;
+    
+    void PrintBoard(const int screenWidth, const int screenHeight, bool show_hidden = false) const;
 
     // Grid stores PieceType for each cell. Row 0 is bottom.
     std::array<PieceType, TOTAL_BOARD_HEIGHT * BOARD_WIDTH> grid;
@@ -121,6 +123,9 @@ public:
     // SRS Kick Data and Logic
     // Returns a list of kick offsets to try for a given rotation.
     const std::vector<Point>& GetSrsKickData(PieceType type, RotationState from_rotation, RotationState to_rotation) const;
+
+    // Color switch
+    Color GetColorForPieceType(PieceType pt) const;
 };
 
 } // namespace tetris
