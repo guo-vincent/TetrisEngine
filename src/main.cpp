@@ -40,7 +40,6 @@ int main() {
     std::vector<std::string> commandHistory;
 
     Board board;
-    board.MoveActivePiece(-4, 0);
 
     // Raylib + ImGui
     int monitor = GetCurrentMonitor();
@@ -73,12 +72,12 @@ int main() {
         if (!gameOver) {
             // these controls were also reversed
             if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
-                board.MoveActivePiece(1, 0);
+                board.MoveActivePiece(-1, 0);
                 commandHistory.push_back("Move Left");
             }
             ImGui::SameLine();
             if (ImGui::Button("Right") || IsKeyPressed(KEY_RIGHT)){ 
-                board.MoveActivePiece(-1, 0);
+                board.MoveActivePiece(1, 0);
                 commandHistory.push_back("Move Right");
             }
             
@@ -153,10 +152,9 @@ int main() {
                 
                 // flip coz why not
                 int drawRow = VISIBLE_BOARD_HEIGHT - 1 - row;
-                int drawCol = BOARD_WIDTH - 1 - col;
 
                 DrawRectangle(
-                    boardOffsetX + drawCol * cellSize,
+                    boardOffsetX + col * cellSize,
                     boardOffsetY + drawRow * cellSize,
                     cellSize - 2,
                     cellSize - 2,
