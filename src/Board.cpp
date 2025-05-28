@@ -9,7 +9,7 @@
 #include <raylib.h>
 
 namespace tetris {
-    Board::Board() {
+    Board::Board() : rng(std::random_device{}()), grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} {
         Reset();
     }
 
@@ -20,6 +20,7 @@ namespace tetris {
         score = 0;
         linesClearedTotal = 0;
         index = 0;
+        last_piece_is_none = true;
     }
 
     bool Board::SpawnNewPiece(PieceType type) {
@@ -38,21 +39,29 @@ namespace tetris {
 
         currentPiece = std::move(piece);
         currentPieceTopLeftPos = spawnPos;
+        last_piece_is_none = false;
         return true;
     }
 
     bool Board::SpawnRandomPiece() {
-        // For creating a random piece
-        std::random_device dev;
-        std::mt19937 rng(dev());
-
         index %= grab_bag.size();
+
+        // On bag refill, shuffle once
         if (index == 0) {
             std::shuffle(grab_bag.begin(), grab_bag.end(), rng);
+
+            // If the new first piece == previous piece, swap it with something else in the bag
+            if (!last_piece_is_none && grab_bag[0] == last_piece) {
+                size_t swap_idx = 1 + (rng() % (grab_bag.size() - 1));
+                std::swap(grab_bag[0], grab_bag[swap_idx]);
+            }
         }
 
-        PieceType last_piece = grab_bag[index++];
-        return SpawnNewPiece(last_piece);
+        // Pick and advance
+        PieceType next = grab_bag[index++];
+        last_piece = next;
+        last_piece_is_none = false;
+        return SpawnNewPiece(next);
     }
 
     bool Board::MoveActivePiece(int delta_x, int delta_y) {

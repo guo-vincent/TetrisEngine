@@ -24,6 +24,7 @@ Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 #include <memory> 
 #include <bitset>
 #include <functional>
+#include <random>
 
 namespace tetris {
 
@@ -115,9 +116,11 @@ public:
 
     // Piece Factory
     std::unique_ptr<Piece> CreatePieceByType(PieceType type);
-    // Array of 7 pieces, used by the random number generator to select the next piece 
-    std::vector<PieceType> grab_bag = {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z};
-    int index;
+    std::mt19937 rng;
+    std::vector<PieceType> grab_bag;
+    size_t index;
+    PieceType last_piece;
+    bool last_piece_is_none;
 
 
     // SRS Kick Data and Logic
