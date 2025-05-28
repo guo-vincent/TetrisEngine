@@ -337,7 +337,7 @@ namespace tetris {
                     // Draw active piece
                     PieceType pt = GetCellState(col, row);
                     Color color = (pt != PieceType::EMPTY) ? GetColorForPieceType(pt) : GRAY;
-                    DrawRectangle(posX, posY, cellSize - 1, cellSize - 1, currentPiece->GetColor());
+                    DrawRectangle(posX, posY, cellSize - 1, cellSize - 1, color);
                 } else {
                     // Draw grid
                     DrawRectangle(posX, posY, cellSize - 1, cellSize - 1, GRAY);
