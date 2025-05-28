@@ -33,7 +33,6 @@ namespace tetris {
         }
     };
 
-    // Enumeration for the different types of Tetris pieces and empty cells
     enum class PieceType : uint8_t {
         EMPTY = 0,
         I = 1,
@@ -45,7 +44,6 @@ namespace tetris {
         Z = 7
     };
 
-    // Enumeration for the four standard SRS rotation states
     enum class RotationState : uint8_t {
         STATE_0 = 0, // Spawn state
         STATE_R = 1, // Clockwise rotation from spawn (or 1st CWR)
@@ -56,7 +54,7 @@ namespace tetris {
     // Abstract base class for all Tetris pieces
     class Piece {
         public:
-            Piece(PieceType piece_type, Color color = WHITE): type(piece_type), currentRotation(RotationState::STATE_0), color(WHITE){}
+            Piece(PieceType piece_type): type(piece_type), currentRotation(RotationState::STATE_0), color(WHITE){}
             virtual ~Piece() = default;
 
             PieceType GetType() const { return type; }
@@ -84,9 +82,6 @@ namespace tetris {
         public:
             PieceI() : Piece(PieceType::I) {}
             uint16_t GetRepresentation(RotationState state) const override {
-                // Standard SRS shapes for I piece might differ slightly in exact position
-                // within the 4x4, but these are common representations.
-                // Kicks will handle the precise placement.
                 static const std::array<uint16_t, 4> representations = {
                     0x0F00, // STATE_0 (Horizontal, line on 2nd row from top)
                     0x2222, // STATE_R (Vertical, line on 2nd col from left)
@@ -107,12 +102,10 @@ namespace tetris {
                     0x0E20, // STATE_2: .X., XXX. (Bottom up)
                     0x44C0  // STATE_L: XX., X.., X..
                 };
-                // Example of one common orientation set:
                 // 0: J pointing right  (0x4E00 T-shape like with top-left missing, or 0x8E00)
                 // R: J pointing up    (0x6440)
                 // 2: J pointing left  (0x0E20)
                 // L: J pointing down  (0x44C0)
-                // The provided 0x8E00, 0x44C0, 0x0E20, 0x6440 seems to be a valid cycle.
                 return representations[static_cast<uint8_t>(state)];
             }
         };
@@ -127,13 +120,10 @@ namespace tetris {
                     0x0E80, // STATE_2: XXX, X.. (Bottom up)
                     0xC440  // STATE_L: .XX, .X., .X.
                 };
-                // Example of one common orientation set:
                 // 0: L pointing left   (0x2E00)
                 // R: L pointing up     (0x4460)
                 // 2: L pointing right  (0x0E80)
                 // L: L pointing down   (0xC440)
-                // The provided 0x2E00, 0xC440, 0x0E80, 0x4460 needs consistent interpretation with kicks.
-                // Using the order: 0x2E00 (spawn), 0x4460 (R), 0x0E80 (2), 0xC440 (L)
                 return representations[static_cast<uint8_t>(state)];
             }
         };
@@ -142,7 +132,6 @@ namespace tetris {
         public:
             PieceO() : Piece(PieceType::O) {}
             uint16_t GetRepresentation(RotationState state) const override {
-                // O-piece does not rotate in SRS, always same shape
                 static const std::array<uint16_t, 4> representations = {
                     0x0660, // .XX., .XX.
                     0x0660,
@@ -163,8 +152,6 @@ namespace tetris {
                     0x06C0, // STATE_2: Same as 0 (or shifted like 0x006C if kicks vary)
                     0x4620  // STATE_L: Same as R (or shifted like 0x8C40 if kicks vary)
                 };
-                // For SRS, S usually has 2 distinct shapes.
-                // 0 & 2: horizontal-ish, 1 & 3: vertical-ish
                 return representations[static_cast<uint8_t>(state)];
             }
         };
@@ -193,7 +180,6 @@ namespace tetris {
                     0x0C60, // STATE_2: Same as 0 (or shifted like 0x00C6)
                     0x2640  // STATE_L: Same as R (or shifted like 0x4C80)
                 };
-                // For SRS, Z usually has 2 distinct shapes.
                 return representations[static_cast<uint8_t>(state)];
             }
         };

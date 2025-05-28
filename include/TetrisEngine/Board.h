@@ -2,20 +2,20 @@
 #define BOARD_H
 
 // Note: Tetr.io tetris boards are 10 columns wide and 20 rows tall
-// Using the following bitboard implementation: https://isaiahgrace.github.io/tetris/board.html
 // The board has 27 rows, with row 0 being the bottom (where the pieces stack) and row 26 being the top.
+// We do this to make keeping track of extra blocks easier.
 // The visible area is rows 0-19 (20 rows), and rows 20-26 are hidden (7 rows).
 // Bit boards are in row major format also.
 
 /* Board setup
-Rows:
+Rows (y):
     26
     25
     ...
     2
     1
     0
-Cols: 0 1 2 3 4 5 6 7 8 9
+Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 */
 
 #include "Piece.h"
@@ -84,14 +84,12 @@ public:
             int row;
         };
 
-    // Example iterator usage (conceptual, might need proper end sentinels)
     CellIterator visible_begin() const { return CellIterator(this, 0, VISIBLE_BOARD_HEIGHT - 1); }
     CellIterator visible_end() const { return CellIterator(this, 0, -1); }
-
-    // debugging only
-    void PrintBoardText(bool show_hidden = false) const;
     
-    void PrintBoard(const int screenWidth, const int screenHeight, bool show_hidden = false) const;
+    // Display
+    void PrintBoard(const int screenWidth, const int screenHeight, bool show_hidden) const;
+    Color GetColorForPieceType(PieceType pt) const;
 
     // Grid stores PieceType for each cell. Row 0 is bottom.
     std::array<PieceType, TOTAL_BOARD_HEIGHT * BOARD_WIDTH> grid;
@@ -102,10 +100,7 @@ public:
     bool isGameOverFlag;
     int score;
     int linesClearedTotal;
-    // Could add: level, piece sequence generator
-
-    // Array of 7 pieces, used by the random number generator to select the next piece 
-    const PieceType grab_bag[7] = {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z};
+    // Could add: level
 
     // Internal Game Logic
     void LockActivePiece(); // Places piece on grid, clears lines, checks game over
@@ -119,13 +114,16 @@ public:
 
     // Piece Factory
     std::unique_ptr<Piece> CreatePieceByType(PieceType type);
+    // Array of 7 pieces, used by the random number generator to select the next piece 
+    const PieceType grab_bag[7] = {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z};
+
 
     // SRS Kick Data and Logic
     // Returns a list of kick offsets to try for a given rotation.
     const std::vector<Point>& GetSrsKickData(PieceType type, RotationState from_rotation, RotationState to_rotation) const;
 
-    // Color switch
-    Color GetColorForPieceType(PieceType pt) const;
+    // debugging only
+    void PrintBoardText(bool show_hidden) const;
 };
 
 } // namespace tetris

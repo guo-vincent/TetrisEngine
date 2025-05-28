@@ -1,0 +1,48 @@
+# HOW TO USE:
+
+First, read the README and download the stuff that you need. You might want to do this outside of work though.
+
+Assuming you have downloaded everything asked of you in the README, follow these steps.
+
+in terminal/cmd prompt, while in root level of directory, run 
+``` bash
+python<version> build.py --run
+```
+
+That's it. You know how to run a python file.
+
+Important files: 
+
+/Tetris/TetrisEngine/include/TetrisEngine/Board.h and /Tetris/TetrisEngine/src/Board.cpp: 
+- contains board class. Row 0 IS THE BOTTOM MOST ROW NOT THE TOP. Keep that in mind.
+- think of it like (x,y) coordinate system; x = col, y = row, where (0, 0) is bottom left corner
+- row major format. each jump in col is like jumping by 10 in terms of indices.
+- contains info about current tetris blocks inputted in and ptr to current active piece
+- other functions are pretty self explanatory/function is in the name
+- all line clears are scored as 100 right now
+
+/Tetris/TetrisEngine/include/TetrisEngine/Piece.h:
+- contains definitions for all the pieces
+- also pretty self explanatory
+- Each Piece is defined in a 4 by 4 box, index 0 being top left corner. 
+
+/Tetris/TetrisEngine/src/main.cpp:
+- this is where everything is linked and executed
+- currently only used to test that all the imports are working
+- also has a working version of tetris without gravity
+
+How to play the "game" in main: 
+q - rotate piece counterclockwise
+e - rotate piece clockwise
+a - move piece left
+d - move piece right
+s - move piece down (one)
+x - drop piece
+p - quit
+
+All other inputs are ignored.
+These are obviously not going to be the final controls.
+
+
+
+
