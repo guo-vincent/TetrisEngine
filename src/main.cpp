@@ -156,6 +156,7 @@ int main() {
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(450, 100));
+        ImGui::SetNextWindowSize(ImVec2(100, 0));
         ImGui::Begin("Queue");
         for (PieceType pt : board.GetNextQueue()) {
             Color c = GetColorForPiece(pt);
@@ -165,7 +166,6 @@ int main() {
             ImGui::SameLine();
             ImGui::TextUnformatted(PieceTypeToString(pt).c_str());
         }
-        ImGui::EndChild();
         ImGui::End();
 
         // this is the box to see command history
