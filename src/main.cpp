@@ -126,6 +126,11 @@ int main() {
                 board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
                 commandHistory.push_back("Rotate CCW");
             }
+            ImGui::SameLine();
+            if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_W)) {
+                board.RotateActivePiece(RotationDirection::ONE_EIGHTY);
+                commandHistory.push_back("Rotate 180");
+            }
 
             if (ImGui::Button("Reset") || IsKeyPressed(KEY_Y)) {
                 board.Reset();

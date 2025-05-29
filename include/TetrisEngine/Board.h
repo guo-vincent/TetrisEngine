@@ -36,7 +36,8 @@ constexpr int TOTAL_BOARD_HEIGHT = 27;   // Rows 0 to 26 from bottom. Rows 20-26
 // Helper to define rotation transitions for SRS kicks
 enum class RotationDirection {
     CLOCKWISE,
-    COUNTER_CLOCKWISE
+    COUNTER_CLOCKWISE,
+    ONE_EIGHTY
 };
 
 class Board {
