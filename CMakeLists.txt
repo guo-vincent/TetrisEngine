@@ -134,6 +134,11 @@ target_link_libraries(TetrisEngineCore PUBLIC raylib imgui rlImGui)
 
 # Main executable
 add_executable(TetrisEngine src/main.cpp)
+if(WIN32)
+    # Compile the resource file into an object file
+    enable_language(RC)  # Ensure CMake recognizes .rc files
+    target_sources(TetrisEngine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/appicon/appicon.rc)
+endif()
 target_link_libraries(TetrisEngine PRIVATE TetrisEngineCore)
 
 # Copy the correct ONNX Runtime library post-build

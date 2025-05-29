@@ -63,8 +63,7 @@ def main():
         f"-DBUILD_TESTS={'ON' if args.build_tests else 'OFF'}",
         f"-DUSE_GPU=OFF",
         f"-DCMAKE_TOOLCHAIN_FILE={vcpkg_root}/scripts/buildsystems/vcpkg.cmake",
-        f"-DBUILD_DOC={'ON' if args.document else 'OFF'}",
-        "-DCMAKE_POLICY_VERSION_MINIMUM=3.28"
+        f"-DBUILD_DOC={'ON' if args.document else 'OFF'}"
     ]
 
     # Run the CMake configuration command
