@@ -38,6 +38,7 @@ int main() {
 
     // list of previous commands
     std::vector<std::string> commandHistory;
+    
 
     Board board;
 
@@ -87,6 +88,7 @@ int main() {
                     board.LockActivePiece();
 
                     if (!board.SpawnRandomPiece()) gameOver = true;
+                    board.GetNextQueue();
                 }
             }
             
@@ -95,6 +97,7 @@ int main() {
                 board.HardDropActivePiece();
                 commandHistory.push_back("Drop X");
                 if (!board.SpawnRandomPiece()) gameOver = true;
+                board.GetNextQueue();
             }
 
             if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 

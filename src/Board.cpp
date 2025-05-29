@@ -317,6 +317,34 @@ namespace tetris {
         return state;
     }
 
+    std::vector<PieceType> Board::GetNextQueue() const {
+        // look at next 5 pieces
+        std::vector<PieceType> queue;
+        for (int i = 0; i < 5; i++) {
+            size_t look_index = index + i;
+            if (look_index < grab_bag.size()){
+                queue.push_back(grab_bag[look_index]);
+            } else {
+                queue.push_back(grab_bag_next[look_index%grab_bag.size()]);
+            }
+        }
+        // std::cout << "Bags: ";
+        // for (auto piece : grab_bag){
+        //     std::cout << static_cast<int>(piece) << " ";
+        // }
+        // for (auto piece : grab_bag_next){
+        //     std::cout << static_cast<int>(piece) << " ";
+        // }
+        // std::cout << "\n";
+        // std::cout << "Index: " << index << "\n";
+        std::cout << "Queue: ";
+        for (auto piece : queue){
+            std::cout << static_cast<int>(piece) << " ";
+        }
+        std::cout << "\n";
+        return queue;
+    }
+
     void Board::PrintBoardText(bool show_hidden = false) const {
         const int start_row = show_hidden ? TOTAL_BOARD_HEIGHT - 1 : VISIBLE_BOARD_HEIGHT - 1;
         const int end_row = 0;

@@ -61,6 +61,7 @@ public:
     int GetScore() const { return score; }
     int GetLinesCleared() const { return linesClearedTotal; }
     std::vector<PieceType> GetRenderableState() const;
+    std::vector<PieceType> GetNextQueue() const;
 
     // Iterator for board cells
     class CellIterator {
