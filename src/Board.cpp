@@ -17,13 +17,14 @@ namespace tetris {
     void Board::Reset() {
         InitializeGrid();
         currentPiece.reset();
+        held_piece.reset();
         isGameOverFlag = false;
         score = 0;
         linesClearedTotal = 0;
         index = 0;
         last_piece_is_none = true;
-        SpawnRandomPiece(); // Spawns first piece after initilizing
         canHold = true;
+        SpawnRandomPiece(); // Spawns first piece after initilizing
     }
 
     PieceType Board::GetHeldPieceType() const {

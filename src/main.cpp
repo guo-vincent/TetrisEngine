@@ -116,35 +116,31 @@ int main() {
                 if (!board.SpawnRandomPiece()) gameOver = true;
                 board.GetNextQueue();
             }
+            ImGui::SameLine();
+            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_C) || IsKeyPressed(KEY_LEFT_SHIFT)) {
+                board.HoldPiece();
+                commandHistory.push_back("Hold Piece");
+            }
 
-            if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
+            if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_X)){ 
                 board.RotateActivePiece(RotationDirection::CLOCKWISE);
                 commandHistory.push_back("Rotate CW");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Q)) {
+            if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_LEFT_CONTROL)) {
                 board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
                 commandHistory.push_back("Rotate CCW");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_W)) {
+            if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_A)) {
                 board.RotateActivePiece(RotationDirection::ONE_EIGHTY);
                 commandHistory.push_back("Rotate 180");
             }
 
-            if (ImGui::Button("Reset") || IsKeyPressed(KEY_Y)) {
+            if (ImGui::Button("Reset") || IsKeyPressed(KEY_R)) {
                 board.Reset();
                 commandHistory.push_back("Reset Board");
             }
-
-            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_R)) {
-                board.HoldPiece();
-                commandHistory.push_back("Hold Piece");
-            }
-            // TODO:
-            // ImGui::SameLine();
-            // if (ImGui::Button("180 (unimplemented)")IsKeyPressed(KEY_W) ) board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
-           
            
            // erase first command if bigger than 10
             if (commandHistory.size() > 10) {

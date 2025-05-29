@@ -31,18 +31,16 @@ Important files:
 - currently only used to test that all the imports are working
 - also has a working version of tetris without gravity
 
-How to play the "game" in main: 
-q - rotate piece counterclockwise
-e - rotate piece clockwise
-a - move piece left
-d - move piece right
-s - move piece down (one)
-x - drop piece
-p - quit
+How to play the "game" in main (default tetrio/guidline controls): 
+z, ctrl - rotate piece counterclockwise
+up, x - rotate piece clockwise
+a - rotate piece 180
+c, shift - hold piece
+left - move piece left
+right - move piece right
+down - move piece down (one)
+space - drop piece
+esc - quit
 
 All other inputs are ignored.
-These are obviously not going to be the final controls.
-
-
-
 
