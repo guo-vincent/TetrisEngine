@@ -22,6 +22,7 @@ namespace tetris {
         linesClearedTotal = 0;
         index = 0;
         last_piece_is_none = true;
+        SpawnRandomPiece(); // Spawns first piece after initilizing
     }
 
     bool Board::SpawnNewPiece(PieceType type) {
@@ -180,7 +181,7 @@ namespace tetris {
     }
 
     Point Board::CalculateSpawnPosition(PieceType type) {
-        int row = (type == PieceType::I) ? 21 : 20;
+        int row = (type == PieceType::I) ? 19 : 20;
         return {3, row}; // Centered at column 3
     }
 

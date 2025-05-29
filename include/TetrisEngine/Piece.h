@@ -150,15 +150,16 @@ namespace tetris {
             PieceO() : Piece(PieceType::O) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x6600, // .XX., .XX.
-                    0x6600,
-                    0x6600,
-                    0x6600
+                    0x0660, // .XX., .XX.
+                    0x0660,
+                    0x0660,
+                    0x0660
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
         };
         /*
+        .... 
         .XX. 
         .XX. Repeat all states 
         ....
