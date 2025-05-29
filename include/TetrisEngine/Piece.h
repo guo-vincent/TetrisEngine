@@ -78,83 +78,109 @@ namespace tetris {
 
     // Concrete piece classes
 
+    // NOTE: ALL PIECES ARE MIRRORED ABOUT THE X-AXIS DUE TO ROW 0 BEING ON THE BOTTOM
+
+    /*
+    Visual representation Format
+
+    0   R   2   L
+    */
+
     class PieceI : public Piece {
         public:
             PieceI() : Piece(PieceType::I) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x0F00, // STATE_0 (Horizontal, line on 2nd row from top)
-                    0x2222, // STATE_R (Vertical, line on 2nd col from left)
-                    0x00F0, // STATE_2 (Horizontal, line on 3rd row from top - or same as 0x0F00 if kicks adjust)
-                    0x4444  // STATE_L (Vertical, line on 3rd col from left - or same as 0x2222 if kicks adjust)
+                    0x00F0, // STATE_0 
+                    0x2222, // STATE_R 
+                    0x0F00, // STATE_2 
+                    0x4444  // STATE_L 
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
         };
+        /*
+        .... ..X. .... .X.. 
+        .... ..X. XXXX .X.. 
+        XXXX ..X. .... .X.. 
+        .... ..X. .... .X.. 
+        */
 
     class PieceJ : public Piece {
         public:
             PieceJ() : Piece(PieceType::J) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x2E00, // STATE_0: ..X, XXX.
-                    0x4460, // STATE_R: .X., .X., .XX
-                    0x0E80, // STATE_2: ..., XXX, X.. (Bottom up)
-                    0xC440  // STATE_L: XX., .X., .X.
+                    0x0E80, // STATE_0
+                    0x4460, // STATE_R
+                    0x2E00, // STATE_2
+                    0xC440  // STATE_L
                 };
-                // 0: J pointing right  (0x4E00 T-shape like with top-left missing, or 0x8E00)
-                // R: J pointing up    (0x6440)
-                // 2: J pointing left  (0x0E20)
-                // L: J pointing down  (0x44C0)
+                
                 return representations[static_cast<uint8_t>(state)];
             }
         };
+        /*
+        ... .X. ..X XX. 
+        XXX .X. XXX .X. 
+        X.. .XX ... .X. 
+        */
 
     class PieceL : public Piece {
         public:
             PieceL() : Piece(PieceType::L) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x8E00, // STATE_0: X.., XXX.
-                    0x6440, // STATE_R: .XX, .X., .X.
-                    0x0E20, // STATE_2: ..., XXX, ..X (Bottom up)
-                    0x44C0  // STATE_L: .X., .X., XX.
+                    0x0E20, // STATE_0
+                    0x6440, // STATE_R
+                    0x8E00, // STATE_2
+                    0x44C0  // STATE_L
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
         };
+        /*
+        ... .XX X.. .X. 
+        XXX .X. XXX .X. 
+        ..X .X. ... XX. 
+        */
 
     class PieceO : public Piece {
         public:
             PieceO() : Piece(PieceType::O) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x0660, // .XX., .XX.
-                    0x0660,
-                    0x0660,
-                    0x0660
+                    0x6600, // .XX., .XX.
+                    0x6600,
+                    0x6600,
+                    0x6600
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
         };
+        /*
+        .XX. 
+        .XX. Repeat all states 
+        ....
+        */
 
     class PieceS : public Piece {
         public:
             PieceS() : Piece(PieceType::S) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x6C00, // STATE_0: .XX, XX.
-                    0x4620, // STATE_R: ..X., .XX, ..X (Vertical)
-                    0x06C0, // STATE_2: Same as 0 (or shifted like 0x006C if kicks vary)
-                    0x8C40  // STATE_L: Same as R (or shifted like 0x8C40 if kicks vary)
+                    0x0C60, // STATE_0
+                    0x2640, // STATE_R
+                    0xC600, // STATE_2
+                    0x4C80  // STATE_L
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
         };
         /*
-        .XX .X. ... X..
-        XX. .XX .XX XX.
         ... ..X XX. .X.
+        XX. .XX .XX XX.
+        .XX .X. ... X..
         */
 
     class PieceT : public Piece {
@@ -162,32 +188,37 @@ namespace tetris {
             PieceT() : Piece(PieceType::T) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0x4E00, // STATE_2: .X., XXX  (T pointing up)
-                    0x4640,  // STATE_L: .X., .XX, .X. (T pointing right)
-                    0x0E40, // STATE_0: ..., XXX, .X. (T pointing down)
-                    0x4C40 // STATE_R: .X., XX., .X. (T pointing left)
+                    0x0E40, // STATE_0
+                    0x4640, // STATE_L
+                    0x4E00, // STATE_2
+                    0x4C40  // STATE_R
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
         };
+        /*
+        ... .X. .X. .X. 
+        XXX .XX XXX XX. 
+        .X. .X. ... .X. 
+        */
 
     class PieceZ : public Piece {
         public:
             PieceZ() : Piece(PieceType::Z) {}
             uint16_t GetRepresentation(RotationState state) const override {
                 static const std::array<uint16_t, 4> representations = {
-                    0xC600, // STATE_0: XX., .XX
-                    0x2640, // STATE_R: .X., XX., X.. (Vertical)
-                    0x0C60, // STATE_2: Same as 0 (or shifted like 0x00C6)
-                    0x4C60  // STATE_L: Same as R (or shifted like 0x4C80)
+                    0x06C0, // STATE_0
+                    0x4620, // STATE_R
+                    0x6C00, // STATE_2
+                    0x8C40  // STATE_L
                 };
                 return representations[static_cast<uint8_t>(state)];
             }
 
             /*
-            XX. ..X ... .X.
+            ... .X. .XX X..
             .XX .XX XX. XX.
-            ... .X. .XX .XX
+            XX. ..X ... .X.
             */
         };
 }
