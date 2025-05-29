@@ -115,8 +115,6 @@ int main() {
                 commandHistory.push_back("Drop X");
                 if (!board.SpawnRandomPiece()) gameOver = true;
                 board.GetNextQueue();
-                
-                
             }
 
             if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
@@ -133,6 +131,11 @@ int main() {
                 board.Reset();
                 commandHistory.push_back("Reset Board");
             }
+
+            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_R)) {
+                board.HoldPiece();
+                commandHistory.push_back("Hold Piece");
+            }
             // TODO:
             // ImGui::SameLine();
             // if (ImGui::Button("180 (unimplemented)")IsKeyPressed(KEY_W) ) board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
@@ -146,10 +149,7 @@ int main() {
 
         if (gameOver) {
             ImGui::Text("Game Over!");
-        }
-
-
-              
+        }    
         
         ImGui::Text("Score: %d", board.GetScore());
         ImGui::Text("Lines: %d", board.GetLinesCleared());
@@ -165,6 +165,24 @@ int main() {
                        ImVec2(30, 30));
             ImGui::SameLine();
             ImGui::TextUnformatted(PieceTypeToString(pt).c_str());
+        }
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(450, 500));
+        ImGui::SetNextWindowSize(ImVec2(100, 0));
+        ImGui::Begin("Hold");
+        
+        PieceType held = board.GetHeldPieceType();
+        if (held != PieceType::EMPTY) {
+            Color c = GetColorForPiece(held);
+            ImGui::ColorButton("##heldcolor", 
+                ImVec4{c.r/255.0f, c.g/255.0f, c.b/255.0f, 1.0f},
+                ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop,
+                ImVec2(30, 30));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(PieceTypeToString(held).c_str());
+        } else {
+            ImGui::Text("Empty");
         }
         ImGui::End();
 

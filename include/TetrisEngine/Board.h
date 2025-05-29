@@ -58,6 +58,7 @@ public:
     PieceType GetCellState(int col, int row_from_bottom) const;              // For querying grid
     const Piece* GetCurrentPiece() const { return currentPiece.get(); }
     Point GetCurrentPiecePosition() const { return currentPieceTopLeftPos; } // Top-left of 4x4 box
+    PieceType GetHeldPieceType() const;
     int GetScore() const { return score; }
     int GetLinesCleared() const { return linesClearedTotal; }
     std::vector<PieceType> GetRenderableState() const;
@@ -128,6 +129,12 @@ public:
     // SRS Kick Data and Logic
     // Returns a list of kick offsets to try for a given rotation.
     const std::vector<Point>& GetSrsKickData(PieceType type, RotationState from_rotation, RotationState to_rotation) const;
+
+    // Hold logic
+    void HoldPiece();
+    private: 
+        std::unique_ptr<Piece> held_piece;
+        bool canHold;
 
     // debugging only
     void PrintBoardText(bool show_hidden) const;

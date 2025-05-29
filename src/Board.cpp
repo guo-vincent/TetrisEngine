@@ -23,6 +23,14 @@ namespace tetris {
         index = 0;
         last_piece_is_none = true;
         SpawnRandomPiece(); // Spawns first piece after initilizing
+        canHold = true;
+    }
+
+    PieceType Board::GetHeldPieceType() const {
+        if (held_piece) {
+            return held_piece->GetType();
+        }
+        return PieceType::EMPTY;
     }
 
     bool Board::SpawnNewPiece(PieceType type) {
@@ -138,6 +146,9 @@ namespace tetris {
 
         // Reset current piece
         currentPiece.reset();
+
+        // Since we've updated the board, we can now hold a new piece
+        canHold = true;
 
         // Game over is checked in SpawnNewPiece, not here
     }
@@ -339,6 +350,41 @@ namespace tetris {
         // std::cout << "\n";
         // std::cout << "Index: " << index << "\n";
         return queue;
+    }
+
+    void Board::HoldPiece() {
+        if (!currentPiece) return;
+
+        PieceType currentType = currentPiece->GetType();
+        // if std::unique_ptr<Piece> held_piece is empty, transfer ownership of obj to next piece
+        // we make a new piece object as the nullptr because we need coordinates to start at the top
+        // we risk having swapped pieces appear in the middle of the board???
+        if (!held_piece) {
+            held_piece = CreatePieceByType(currentPiece->GetType());
+            currentPiece.reset();
+            SpawnRandomPiece();
+        } else { // Piece is not empty
+            if (!canHold) return;
+            PieceType heldType = held_piece->GetType();
+        
+            // Store current piece in hold
+            held_piece = CreatePieceByType(currentType);
+            
+            // Spawn held piece at correct position
+            currentPiece = CreatePieceByType(heldType);
+            Point spawnPos = CalculateSpawnPosition(heldType);
+            currentPieceTopLeftPos = spawnPos;
+
+            // Game over if spawn position is blocked
+            if (!IsValidPosition(
+                currentPiece->GetCurrentRepresentation(),
+                spawnPos
+            )) {
+                isGameOverFlag = true;
+            }
+        }
+
+        canHold = false;
     }
 
     void Board::PrintBoardText(bool show_hidden = false) const {
