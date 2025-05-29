@@ -9,6 +9,19 @@
 
 using namespace tetris;
 
+std::string PieceTypeToString(PieceType pt) {
+    switch (pt) {
+        case PieceType::I: return "I";
+        case PieceType::O: return "O";
+        case PieceType::T: return "T";
+        case PieceType::S: return "S";
+        case PieceType::Z: return "Z";
+        case PieceType::J: return "J";
+        case PieceType::L: return "L";
+        default: return " ";
+    }
+}
+
 Color GetColorForPiece(PieceType pt) {
     static std::unordered_map<PieceType, Color> colorMap = {
         {PieceType::EMPTY, DARKGRAY},
@@ -38,7 +51,7 @@ int main() {
 
     // list of previous commands
     std::vector<std::string> commandHistory;
-    
+
 
     Board board;
 
@@ -57,6 +70,8 @@ int main() {
     const int cellSize = 30;
     const int boardOffsetX = 100;
     const int boardOffsetY = 100;
+
+    
 
     // main loop add game stuff here
     while (!WindowShouldClose()) {
@@ -89,6 +104,8 @@ int main() {
 
                     if (!board.SpawnRandomPiece()) gameOver = true;
                     board.GetNextQueue();
+
+                   
                 }
             }
             
@@ -98,6 +115,8 @@ int main() {
                 commandHistory.push_back("Drop X");
                 if (!board.SpawnRandomPiece()) gameOver = true;
                 board.GetNextQueue();
+                
+                
             }
 
             if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
@@ -128,8 +147,25 @@ int main() {
         if (gameOver) {
             ImGui::Text("Game Over!");
         }
+
+
+              
+        
         ImGui::Text("Score: %d", board.GetScore());
         ImGui::Text("Lines: %d", board.GetLinesCleared());
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(450, 100));
+        ImGui::Begin("Queue");
+        for (PieceType pt : board.GetNextQueue()) {
+            Color c = GetColorForPiece(pt);
+            ImGui::ColorButton("##color", ImVec4{c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, 1.0f},
+                       ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop,
+                       ImVec2(30, 30));
+            ImGui::SameLine();
+            ImGui::TextUnformatted(PieceTypeToString(pt).c_str());
+        }
+        ImGui::EndChild();
         ImGui::End();
 
         // this is the box to see command history

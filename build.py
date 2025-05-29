@@ -67,8 +67,12 @@ def main():
     ]
 
     # Run the CMake configuration command
-    print("Configuring the project with CMake...")
-    subprocess.run(cmake_configure_command, check=True)
+    cmake_cache = build_dir / "CMakeCache.txt"
+    if not cmake_cache.exists():
+        print("CMake cache not found; reconfiguring...")
+        subprocess.run(cmake_configure_command, check=True)
+    else:
+        print("CMake cache exists; assuming configuration is valid")
 
     # Define the CMake build command
     cmake_build_command = [

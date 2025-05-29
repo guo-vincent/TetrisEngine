@@ -337,11 +337,6 @@ namespace tetris {
         // }
         // std::cout << "\n";
         // std::cout << "Index: " << index << "\n";
-        std::cout << "Queue: ";
-        for (auto piece : queue){
-            std::cout << static_cast<int>(piece) << " ";
-        }
-        std::cout << "\n";
         return queue;
     }
 
