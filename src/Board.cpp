@@ -84,10 +84,14 @@ namespace tetris {
         if (type == PieceType::O) return true; // O doesn't rotate
 
         RotationState from_rot = currentPiece->GetCurrentRotation();
-        RotationState to_rot = (direction == RotationDirection::CLOCKWISE) ?
-            static_cast<RotationState>((static_cast<int>(from_rot) + 1) % 4) :
-            static_cast<RotationState>((static_cast<int>(from_rot) + 3) % 4);
-
+        RotationState to_rot;
+        if (direction == RotationDirection::CLOCKWISE) {
+            to_rot = static_cast<RotationState>((static_cast<int>(from_rot) + 1) % 4);
+        } else if (direction == RotationDirection::COUNTER_CLOCKWISE) {
+            to_rot = static_cast<RotationState>((static_cast<int>(from_rot) + 3) % 4);
+        } else {
+            to_rot = static_cast<RotationState>((static_cast<int>(from_rot) + 2) % 4);
+        }
         const auto& kicks = GetSrsKickData(type, from_rot, to_rot);
         uint16_t new_repr = currentPiece->GetRepresentation(to_rot);
 
@@ -220,8 +224,8 @@ namespace tetris {
         static const std::vector<Point> JLSTZ_R2 = {{0,0}, {1,0}, {1,-1}, {0,2}, {1,2}};
         static const std::vector<Point> JLSTZ_2L = {{0,0}, {1,0}, {1,1}, {0,-2}, {1,-2}};
         static const std::vector<Point> JLSTZ_L0 = {{0,0}, {-1,0}, {-1,-1}, {0,2}, {-1,2}};
-        // I-piece SRS clockwise kicks
-        static const std::vector<Point> I_0R = {{0,0}, {-2,0}, {1,0}, {-2,-1}, {1,2}};
+        // I-piece SRS+ clockwise kicks
+        static const std::vector<Point> I_0R = {{0,0}, {1,0}, {-2,0}, {-2,-1}, {1,2}};
         static const std::vector<Point> I_R2 = {{0,0}, {-1,0}, {2,0}, {-1,2}, {2,-1}};
         static const std::vector<Point> I_2L = {{0,0}, {2,0}, {-1,0}, {2,1}, {-1,-2}};
         static const std::vector<Point> I_L0 = {{0,0}, {1,0}, {-2,0}, {1,-2}, {-2,1}};
@@ -230,14 +234,23 @@ namespace tetris {
         static const std::vector<Point> JLSTZ_2R = {{0,0}, {-1,0}, {-1,1}, {0,-2}, {-1,-2}};
         static const std::vector<Point> JLSTZ_L2 = {{0,0}, {-1,0}, {-1,-1}, {0,2}, {-1,2}};
         static const std::vector<Point> JLSTZ_0L = {{0,0}, {1,0}, {1,1}, {0,-2}, {1,-2}};
-        // I-piece SRS counter-clockwise kicks
-        static const std::vector<Point> I_R0 = {{0,0}, {2,0}, {-1,0}, {2,1}, {-1,-2}};
-        static const std::vector<Point> I_2R = {{0,0}, {1,0}, {-2,0}, {1,-2}, {-2,1}};
-        static const std::vector<Point> I_L2 = {{0,0}, {-2,0}, {1,0}, {-2,-1}, {1,2}};
-        static const std::vector<Point> I_0L = {{0,0}, {-1,0}, {2,0}, {-1,2}, {2,-1}};
+        // I-piece SRS+ counter-clockwise kicks
+        static const std::vector<Point> I_R0 = {{0,0}, {-1,0}, {2,0}, {-1,-2}, {2,1}};
+        static const std::vector<Point> I_2R = {{0,0}, {-2,0}, {1,0}, {-2,1}, {1,-2}};
+        static const std::vector<Point> I_L2 = {{0,0}, {1,0}, {-2,0}, {1,2}, {-2,-1}};
+        static const std::vector<Point> I_0L = {{0,0}, {-1,0}, {2,0}, {2,-1}, {-1,2}};
+        // All-piece SRS+ 180 kicks
+        static const std::vector<Point> A_02 = {{0,0}, {0,1}, {1,1}, {-1,1}, {1,0}, {-1,0}};
+        static const std::vector<Point> A_20 = {{0,0}, {0,-1}, {-1,-1}, {1,-1}, {-1,0}, {1,0}};
+        static const std::vector<Point> A_RL = {{0,0}, {1,0}, {1,2}, {1,1}, {0,2}, {0,1}};
+        static const std::vector<Point> A_LR = {{0,0}, {-1,0}, {-1,2}, {-1,1}, {0,2}, {0,1}};
 
         static const std::vector<Point> empty;
 
+        if (from == RotationState::STATE_0 && to == RotationState::STATE_2) return A_02;
+        if (from == RotationState::STATE_2 && to == RotationState::STATE_0) return A_20;
+        if (from == RotationState::STATE_R && to == RotationState::STATE_L) return A_RL;
+        if (from == RotationState::STATE_L && to == RotationState::STATE_R) return A_LR;
         if (type == PieceType::I) {
             if (from == RotationState::STATE_0 && to == RotationState::STATE_R) return I_0R;
             if (from == RotationState::STATE_R && to == RotationState::STATE_0) return I_R0;
