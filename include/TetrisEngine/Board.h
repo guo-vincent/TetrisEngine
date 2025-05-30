@@ -137,6 +137,13 @@ public:
         std::unique_ptr<Piece> held_piece;
         bool canHold;
 
+    // Spin Detection
+    public: 
+        bool IsTSpin() const;
+    private:
+        int back_to_back;
+        mutable bool lastMoveWasRotation;
+
     // debugging only
     void PrintBoardText(bool show_hidden) const;
 };

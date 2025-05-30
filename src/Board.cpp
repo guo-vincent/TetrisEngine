@@ -22,6 +22,8 @@ namespace tetris {
         score = 0;
         linesClearedTotal = 0;
         index = 0;
+        back_to_back = 0;
+        lastMoveWasRotation = false;
         last_piece_is_none = true;
         canHold = true;
         SpawnRandomPiece(); // Spawns first piece after initilizing
@@ -51,6 +53,7 @@ namespace tetris {
         currentPiece = std::move(piece);
         currentPieceTopLeftPos = spawnPos;
         last_piece_is_none = false;
+        lastMoveWasRotation = false;
         return true;
     }
 
@@ -82,6 +85,7 @@ namespace tetris {
 
         if (IsValidPosition(repr, newPos)) {
             currentPieceTopLeftPos = newPos;
+            lastMoveWasRotation = false;
             return true;
         }
         return false;
@@ -109,6 +113,7 @@ namespace tetris {
             if (IsValidPosition(new_repr, test_pos)) {
                 currentPiece->SetCurrentRotation(to_rot);
                 currentPieceTopLeftPos = test_pos;
+                lastMoveWasRotation = true;
                 return true;
             }
         }
@@ -124,9 +129,11 @@ namespace tetris {
         }
         if (!IsValidPosition(repr, pos)) return; // Avoid locking in an invalid position
         currentPieceTopLeftPos = pos;
+        lastMoveWasRotation = false;
         LockActivePiece();
     }
 
+    // See scoring guidelines: https://tetris.fandom.com/wiki/Scoring
     void Board::LockActivePiece() {
         if (!currentPiece) return;
         uint16_t repr = currentPiece->GetCurrentRepresentation();
@@ -144,9 +151,52 @@ namespace tetris {
             }
         }
 
-        // Clear lines and update score
+        // Check for T-spin BEFORE clearing lines
+        bool isTSpin = IsTSpin();
+
+        // Clear lines and get count
         int lines = ClearFullLines();
-        score += lines * 100;
+
+        // Score calculation
+        int baseScore = 0;
+        bool isB2BEligible = false;
+
+        if (isTSpin) {
+            if (lines == 0) baseScore = 400;
+            else if (lines == 1) {
+                baseScore = 800;
+                isB2BEligible = true;
+            }
+            else if (lines == 2) {
+                baseScore = 1200;
+                isB2BEligible = true;
+            }
+            else if (lines == 3) {
+                baseScore = 1600;
+                isB2BEligible = true;
+            }
+        } else {
+            if (lines == 1) baseScore = 100;
+            else if (lines == 2) baseScore = 300;
+            else if (lines == 3) baseScore = 500;
+            else if (lines == 4) {
+                baseScore = 800;
+                isB2BEligible = true;
+            }
+        }
+
+        // Apply B2B bonus
+        if (isB2BEligible) {
+            if (back_to_back > 0) {
+                baseScore = baseScore * 3 / 2; // 1.5x bonus
+            }
+            back_to_back++;
+        } else if (lines > 0) {
+            // Reset B2B if cleared lines without T-spin/Tetris
+            back_to_back = 0;
+        }
+
+        score += baseScore;
         linesClearedTotal += lines;
 
         // Reset current piece
@@ -388,6 +438,7 @@ namespace tetris {
             currentPiece = CreatePieceByType(heldType);
             Point spawnPos = CalculateSpawnPosition(heldType);
             currentPieceTopLeftPos = spawnPos;
+            lastMoveWasRotation = false;
 
             // Game over if spawn position is blocked
             if (!IsValidPosition(
@@ -399,6 +450,33 @@ namespace tetris {
         }
 
         canHold = false;
+    }
+
+    bool Board::IsTSpin() const {
+        if (!currentPiece || currentPiece->GetType() != PieceType::T || !lastMoveWasRotation) {
+            return false;
+        }
+
+        const Point center = currentPieceTopLeftPos + Point{1, 1};
+
+        // Corners around the center
+        std::array<Point, 4> corners = {
+            center + Point{-1, 1},  // top-left
+            center + Point{1, 1},   // top-right
+            center + Point{-1, -1}, // bottom-left
+            center + Point{1, -1}   // bottom-right
+        };
+
+        int occupied = 0;
+        for (const Point& p : corners) {
+            // Treat out-of-bounds as occupied
+            if (p.x < 0 || p.x >= BOARD_WIDTH || p.y < 0 || p.y >= TOTAL_BOARD_HEIGHT ||
+                GetCellState(p.x, p.y) != PieceType::EMPTY) {
+                ++occupied;
+            }
+        }
+
+        return occupied >= 3;
     }
 
     void Board::PrintBoardText(bool show_hidden = false) const {
