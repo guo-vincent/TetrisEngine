@@ -117,7 +117,7 @@ int main() {
                 board.GetNextQueue();
             }
             ImGui::SameLine();
-            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_SHIFT)) {
+            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_LEFT_SHIFT)) {
                 board.HoldPiece();
                 commandHistory.push_back("Hold Piece");
             }
