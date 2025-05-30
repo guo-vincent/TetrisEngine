@@ -40,30 +40,123 @@ enum class RotationDirection {
     ONE_EIGHTY
 };
 
+/**
+ * @brief Tetris game board controller.
+ * 
+ * Manages game state, piece movement, collision detection, and scoring.
+ */
 class Board {
     public:
         Board();
 
-        // Game Flow
-        void Reset();                       // Resets the board for a new game
-        bool SpawnNewPiece(PieceType type); // Spawns a specific piece, returns false if spawn fails (game over)
-        bool SpawnRandomPiece();            // Spawns a random piece
+        /// @name Game Flow
+        /// @{
+        /**
+         * @brief Reset the board for a new game.
+         * 
+         * Clears grid, resets score, and spawns the first piece.
+         */
+        void Reset();
+        /**
+         * @brief Spawn a specific piece type.
+         * @param type PieceType to spawn
+         * @return true if piece spawned successfully, false if game over
+         */
+        bool SpawnNewPiece(PieceType type);
 
-        // Player Actions
-        bool MoveActivePiece(int delta_x, int delta_y);         // Tries to move, returns true on success
-        bool RotateActivePiece(RotationDirection direction);    // Tries to rotate, returns true on success
+        /**
+         * @brief Spawn a random piece using 7-bag RNG.
+         * @return true if piece spawned, false on game over
+         */
+        bool SpawnRandomPiece();
+        /// @}
+
+
+        /// @name Player Actions
+        /// @{
+        /**
+         * @brief Move active piece by delta.
+         * @param delta_x Horizontal movement (+right, -left)
+         * @param delta_y Vertical movement (+up, -down)
+         * @return true if movement succeeded
+         */
+        bool MoveActivePiece(int delta_x, int delta_y);
+
+        /**
+         * @brief Rotate active piece with SRS kicks.
+         * @param direction RotationDirection
+         * @return true if rotation succeeded
+         */
+        bool RotateActivePiece(RotationDirection direction);
+
+        /**
+         * @brief Instantly drop piece and lock it. 
+         */
         void HardDropActivePiece();
+        /// @}
 
-        // Game State & Info
+        /// @name Game State
+        /// @{
+        /**
+         * @brief Check if the game has ended.
+         * @return true if game over condition detected, false otherwise
+         */
         bool IsGameOver() const { return isGameOverFlag; }
-        PieceType GetCellState(int col, int row_from_bottom) const;              // For querying grid
+
+        /**
+         * @brief Get piece type at board coordinate.
+         * @param col Horizontal position (0 = leftmost)
+         * @param row_from_bottom Vertical position (0 = bottom row)
+         * @return PieceType at requested position
+         * @warning Returns PieceType::EMPTY for invalid coordinates
+         */
+        PieceType GetCellState(int col, int row_from_bottom) const;
+
+        /**
+         * @brief Access active tetromino.
+         * @return Raw pointer to current piece (nullptr if none active)
+         */
         const Piece* GetCurrentPiece() const { return currentPiece.get(); }
-        Point GetCurrentPiecePosition() const { return currentPieceTopLeftPos; } // Top-left of 4x4 box
+
+        /**
+         * @brief Get active piece's grid position.
+         * @return Top-left coordinate of piece's 4x4 bounding box
+         * @note Position uses bottom-row=0 coordinate system
+         */
+        Point GetCurrentPiecePosition() const { return currentPieceTopLeftPos; }
+
+        /**
+         * @brief Retrieve held piece type.
+         * @return PieceType in hold slot, PieceType::EMPTY if none
+         */
         PieceType GetHeldPieceType() const;
+
+        /**
+         * @brief Get current score.
+         * @return Score value including bonuses
+         */
         int GetScore() const { return score; }
+
+        /**
+         * @brief Get total cleared lines.
+         * @return Cumulative lines cleared this game
+         */
         int GetLinesCleared() const { return linesClearedTotal; }
+
+        /**
+         * @brief Get visible board state for rendering.
+         * @return 1D array (row-major order) of PieceTypes
+         * @note Includes active piece and locked cells
+         * @details Rows ordered top-to-bottom (index 0 = top row)
+         */
         std::vector<PieceType> GetRenderableState() const;
+
+        /**
+         * @brief Get upcoming pieces.
+         * @return Next 5 pieces in queue. Represented as PieceType.
+         */
         std::vector<PieceType> GetNextQueue() const;
+        /// @}
 
         // Iterator for board cells
         class CellIterator {
@@ -92,32 +185,71 @@ class Board {
         CellIterator visible_begin() const { return CellIterator(this, 0, VISIBLE_BOARD_HEIGHT - 1); }
         CellIterator visible_end() const { return CellIterator(this, 0, -1); }
         
-        // Display
-            void PrintBoard(const int screenWidth, const int screenHeight, bool show_hidden) const;
-            Color GetColorForPieceType(PieceType pt) const;
+        /// @name Display
+        /// @{
+        /**
+         * @brief Render board state to screen.
+         * @param screenWidth Width of rendering area in pixels
+         * @param screenHeight Height of rendering area in pixels
+         * @param show_hidden True to display hidden buffer rows (20-26)
+         * @note Uses bottom-row=0 coordinate system for rendering
+         */
+        void PrintBoard(const int screenWidth, const int screenHeight, bool show_hidden) const;
 
-    // Grid stores PieceType for each cell. Row 0 is bottom.
+        /**
+         * @brief Get color mapping for piece types.
+         * @param pt Piece type to map
+         * @return Raylib Color value for visualization
+         * @retval GRAY for EMPTY/invalid types
+         */
+        Color GetColorForPieceType(PieceType pt) const;
+        /// @}
+
     private:
         std::array<PieceType, TOTAL_BOARD_HEIGHT * BOARD_WIDTH> grid;
 
         std::unique_ptr<Piece> currentPiece;
-        Point currentPieceTopLeftPos; // (column, row_from_bottom) for the top-left of piece's 4x4 box
+        Point currentPieceTopLeftPos;
 
         bool isGameOverFlag;
         int score;
         int linesClearedTotal;
     // Could add: level
 
-    // Internal Game Logic
+    /// @name Internal Game Logic
+    /// @{
     public:
-        void LockActivePiece(); // Places piece on grid, clears lines, checks game over
-        int ClearFullLines();   // Returns number of lines cleared in this step
-        void InitializeGrid();  // Sets all grid cells to PieceType::EMPTY
+        /**
+         * @brief Places piece on grid, clears lines, and checks game over
+         */
+        void LockActivePiece();
+
+        /**
+         * @brief Clears lines on the board
+         * @return number of lines cleared in this step
+         */
+        int ClearFullLines();
+
+        /**
+         * @brief Sets all grid cells to PieceType::EMPTY
+         */
+        void InitializeGrid();
+
+        /**
+         * @brief figures out where a piece should spawn, using (x,y) coordinate system with bottom left as {0,0}
+         * @param type PieceType of tetronimo
+         * @return Point coordinate of where to spawn top left corner of piece
+         */
         Point CalculateSpawnPosition(PieceType type);
 
-        // Collision and Movement Validation
-        // Checks if the piece (defined by its 4x4 representation) is valid at the given board top-left position.
+        /**
+         * @brief Checks if the piece (defined by its 4x4 representation) is valid at the given board top-left position.
+         * @param uint16_t bit representation of tetronimo
+         * @param top_left_pos Point coordinate of where to spawn top left corner of piece
+         * @return True if position is valid. False otherwise
+         */
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
+    /// @}
 
     // Piece Factory
     private:
@@ -130,24 +262,49 @@ class Board {
         bool last_piece_is_none;
 
 
-    // SRS Kick Data and Logic
-    // Returns a list of kick offsets to try for a given rotation.
+    /// @name SRS Kick Data & Logic
+    /// @{
     public:
+        /**
+         * @brief Returns a list of kick offsets to try for a given rotation.
+         * @param type PieceType of tetronimo
+         * @param from_rotation initial rotation state (STATE_0 | STATE_2 | STATE_R | STATE_L)
+         * @param to_rotation final rotation state (STATE_0 | STATE_2 | STATE_R | STATE_L)
+         * @return corresponding vector of Point coordinate offsets
+         */
         const std::vector<Point>& GetSrsKickData(PieceType type, RotationState from_rotation, RotationState to_rotation) const;
 
-        // Hold logic
+        /**
+         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset
+         */
         void HoldPiece();
+
     private: 
         std::unique_ptr<Piece> held_piece;
         bool canHold;
+    /// @}
 
-    // Spin Detection
+    /// @name Spin Detection
+    /// @{
     public: 
+        /* Test for T-Spins
+         * 0 = no T-Spin
+         * 1 = T-Spin Mini
+         * 2 = T-Spin
+         * int T-Spin status code
+         */
         int IsTSpin() const;
+
+        /*
+        * @brief Detects minispins for every piece except O.
+        * @return true if minispin detected, false otherwise
+        */
         bool IsAllMiniSpin() const;
+
     private:
         int back_to_back;
         mutable bool lastMoveWasRotation;
+    /// @}
 
     // debugging only
     public:

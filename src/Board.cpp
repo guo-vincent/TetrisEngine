@@ -467,10 +467,6 @@ namespace tetris {
         canHold = false;
     }
 
-    // test for t-spins
-    // 0 = no t-spin
-    // 1 = t-spin mini
-    // 2 = t-spin
     int Board::IsTSpin() const {
         if (!currentPiece || currentPiece->GetType() != PieceType::T || !lastMoveWasRotation) {
             return 0;
