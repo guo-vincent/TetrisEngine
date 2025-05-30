@@ -139,7 +139,8 @@ public:
 
     // Spin Detection
     public: 
-        bool IsTSpin() const;
+        int IsTSpin() const;
+        bool IsAllMiniSpin() const;
     private:
         int back_to_back;
         mutable bool lastMoveWasRotation;

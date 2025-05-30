@@ -125,11 +125,11 @@ namespace tetris {
         Point pos = currentPieceTopLeftPos;
         uint16_t repr = currentPiece->GetCurrentRepresentation();
         while (IsValidPosition(repr, {pos.x, pos.y - 1})) {
+            lastMoveWasRotation = false;
             pos.y--;
         }
         if (!IsValidPosition(repr, pos)) return; // Avoid locking in an invalid position
         currentPieceTopLeftPos = pos;
-        lastMoveWasRotation = false;
         LockActivePiece();
     }
 
@@ -139,6 +139,10 @@ namespace tetris {
         uint16_t repr = currentPiece->GetCurrentRepresentation();
         int x = currentPieceTopLeftPos.x;
         int y = currentPieceTopLeftPos.y;
+
+        // Check for spins BEFORE clearing lines and BEFORE writing to the grid
+        int isTSpin = IsTSpin();
+        bool isAllMiniSpin = IsAllMiniSpin();
 
         // Write the piece to the grid (only once)
         for (int i = 0; i < 16; ++i) {
@@ -151,9 +155,6 @@ namespace tetris {
             }
         }
 
-        // Check for T-spin BEFORE clearing lines
-        bool isTSpin = IsTSpin();
-
         // Clear lines and get count
         int lines = ClearFullLines();
 
@@ -161,7 +162,7 @@ namespace tetris {
         int baseScore = 0;
         bool isB2BEligible = false;
 
-        if (isTSpin) {
+        if (isTSpin == 2) {         // full t-spin
             if (lines == 0) baseScore = 400;
             else if (lines == 1) {
                 baseScore = 800;
@@ -175,12 +176,26 @@ namespace tetris {
                 baseScore = 1600;
                 isB2BEligible = true;
             }
+        } else if (isTSpin == 1) {  // t-spin mini
+            if (lines == 0) baseScore = 100;
+            else if (lines == 1) {
+                baseScore = 200;
+                isB2BEligible = true;
+            }
+            else if (lines == 2) {
+                baseScore = 400;
+                isB2BEligible = true;
+            }
         } else {
             if (lines == 1) baseScore = 100;
             else if (lines == 2) baseScore = 300;
             else if (lines == 3) baseScore = 500;
             else if (lines == 4) {
                 baseScore = 800;
+                isB2BEligible = true;
+            }
+            if (isAllMiniSpin) {
+                baseScore += 50;
                 isB2BEligible = true;
             }
         }
@@ -452,31 +467,71 @@ namespace tetris {
         canHold = false;
     }
 
-    bool Board::IsTSpin() const {
+    // test for t-spins
+    // 0 = no t-spin
+    // 1 = t-spin mini
+    // 2 = t-spin
+    int Board::IsTSpin() const {
         if (!currentPiece || currentPiece->GetType() != PieceType::T || !lastMoveWasRotation) {
-            return false;
+            return 0;
         }
 
+        const RotationState rotation  = currentPiece->GetCurrentRotation();
         const Point center = currentPieceTopLeftPos + Point{1, 1};
 
-        // Corners around the center
+        // Corners around the center (mirrored on x-axis)
         std::array<Point, 4> corners = {
-            center + Point{-1, 1},  // top-left
-            center + Point{1, 1},   // top-right
-            center + Point{-1, -1}, // bottom-left
-            center + Point{1, -1}   // bottom-right
+            center + Point{-1, 1},  // top-left         
+            center + Point{1, 1},   // top-right        
+            center + Point{1, -1},  // bottom-right     
+            center + Point{-1, -1}  // bottom-left       
         };
 
-        int occupied = 0;
-        for (const Point& p : corners) {
+        // Permute corners to line up with piece rotation
+        std::rotate(corners.begin(), corners.begin() + static_cast<int>(rotation), corners.end());
+
+        // Test on top side and bottom side seperately
+        int topOccupied = 0;
+        int bottomOccupied = 0;
+        for (size_t i = 0; i < corners.size(); i++) {
+            Point p = corners[i];
             // Treat out-of-bounds as occupied
             if (p.x < 0 || p.x >= BOARD_WIDTH || p.y < 0 || p.y >= TOTAL_BOARD_HEIGHT ||
                 GetCellState(p.x, p.y) != PieceType::EMPTY) {
-                ++occupied;
+                if (i < 2){
+                    ++topOccupied;
+                } else {
+                    ++bottomOccupied;
+                }
             }
         }
 
-        return occupied >= 3;
+        // Determine t-spin quality
+        if (topOccupied == 2 && bottomOccupied >= 1){
+            return 2;
+        }
+        if ((bottomOccupied == 2 && topOccupied >= 1) || IsAllMiniSpin()){
+            return 1;
+        }
+
+        return 0;
+    }
+
+    bool Board::IsAllMiniSpin() const {
+        if (!currentPiece || currentPiece->GetType() == PieceType::O || !lastMoveWasRotation) {
+            return false;
+        }
+
+        static const std::vector<Point> tests = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        uint16_t repr = currentPiece->GetCurrentRepresentation();
+
+        for (const Point& test : tests) {
+            Point test_pos = currentPieceTopLeftPos + test;
+            if (IsValidPosition(repr, test_pos)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     void Board::PrintBoardText(bool show_hidden = false) const {
