@@ -117,27 +117,27 @@ int main() {
                 board.GetNextQueue();
             }
             ImGui::SameLine();
-            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_C) || IsKeyPressed(KEY_LEFT_SHIFT)) {
+            if (ImGui::Button("HOLD") || IsKeyPressed(KEY_LEFT_SHIFT)) {
                 board.HoldPiece();
                 commandHistory.push_back("Hold Piece");
             }
 
-            if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_X)){ 
+            if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
                 board.RotateActivePiece(RotationDirection::CLOCKWISE);
                 commandHistory.push_back("Rotate CW");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_LEFT_CONTROL)) {
+            if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Q)) {
                 board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
                 commandHistory.push_back("Rotate CCW");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_A)) {
+            if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_W)) {
                 board.RotateActivePiece(RotationDirection::ONE_EIGHTY);
                 commandHistory.push_back("Rotate 180");
             }
 
-            if (ImGui::Button("Reset") || IsKeyPressed(KEY_R)) {
+            if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
                 board.Reset();
                 commandHistory.push_back("Reset Board");
             }
