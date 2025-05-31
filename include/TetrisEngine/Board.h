@@ -220,7 +220,8 @@ class Board {
     /// @{
     public:
         /**
-         * @brief Places piece on grid, clears lines, and checks game over
+         * @brief Places piece on grid, clears lines, and checks game over.
+         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
          */
         void LockActivePiece();
 
@@ -251,15 +252,23 @@ class Board {
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
     /// @}
 
-    // Piece Factory
-    private:
+    /// @name Piece Factory
+    /// @{
+        /**
+         * @brief Given a PieceType, returns a unique_ptr containing an instance of said Piece
+         * @param type tetris::PieceType of tetronimo
+         * @return std::unique_ptr<Piece> instance
+         */
         std::unique_ptr<Piece> CreatePieceByType(PieceType type);
+
+    private:
         std::mt19937 rng;
         std::vector<PieceType> grab_bag;
         std::vector<PieceType> grab_bag_next;
         size_t index;
         PieceType last_piece;
         bool last_piece_is_none;
+    /// @}
 
 
     /// @name SRS Kick Data & Logic

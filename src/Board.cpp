@@ -133,7 +133,6 @@ namespace tetris {
         LockActivePiece();
     }
 
-    // See scoring guidelines: https://tetris.fandom.com/wiki/Scoring
     void Board::LockActivePiece() {
         if (!currentPiece) return;
         uint16_t repr = currentPiece->GetCurrentRepresentation();
@@ -371,7 +370,6 @@ namespace tetris {
         }
     }
 
-    // based on board state return 1D array of the visible board including active piece
     std::vector<PieceType> Board::GetRenderableState() const {
         std::vector<PieceType> state(VISIBLE_BOARD_HEIGHT * BOARD_WIDTH, PieceType::EMPTY);
 
@@ -436,8 +434,7 @@ namespace tetris {
 
         PieceType currentType = currentPiece->GetType();
         // if std::unique_ptr<Piece> held_piece is empty, transfer ownership of obj to next piece
-        // we make a new piece object as the nullptr because we need coordinates to start at the top
-        // we risk having swapped pieces appear in the middle of the board???
+        // we make a new Tetris::Piece object as the nullptr because we need coordinates to start at the top
         if (!held_piece) {
             held_piece = CreatePieceByType(currentPiece->GetType());
             currentPiece.reset();
