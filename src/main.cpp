@@ -56,6 +56,7 @@ int main() {
     
     // Pass RNG to board constructor
     Board board(local_rng);
+    Board board2(local_rng);
 
     // Raylib + ImGui
     int monitor = GetCurrentMonitor();
@@ -73,8 +74,6 @@ int main() {
     const int boardOffsetX = 100;
     const int boardOffsetY = 100;
 
-    
-
     // main loop add game stuff here
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -84,7 +83,7 @@ int main() {
         // offset to prevent overlap from squares
 
         // this is box for controlling without keybinds
-        ImGui::SetNextWindowPos(ImVec2(800, 100));
+        ImGui::SetNextWindowPos(ImVec2(600, 100));
         ImGui::Begin("Controls");
 
         if (!gameOver) {
@@ -171,7 +170,7 @@ int main() {
         }
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(450, 500));
+        ImGui::SetNextWindowPos(ImVec2(450, 350));
         ImGui::SetNextWindowSize(ImVec2(100, 0));
         ImGui::Begin("Hold");
         
@@ -190,7 +189,7 @@ int main() {
         ImGui::End();
 
         // this is the box to see command history
-        ImGui::SetNextWindowPos(ImVec2(800, 400));
+        ImGui::SetNextWindowPos(ImVec2(600, 350));
         ImGui::Begin("Command History");
         // populate
         ImGui::BeginChild("ScrollRegion", ImVec2(250, 200), true, 0);
