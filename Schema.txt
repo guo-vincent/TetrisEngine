@@ -14,12 +14,14 @@ TetrisEngine/                 Usage:
 │   └── architecture.md       # High-level architecture diagram and explanations
 ├── include/                  # Public headers for the engine
 │   └── TetrisEngine/         # Namespace folder
+│       ├── Game.h            # Deals with scope of a single game (single or multi)
 │       ├── Board.h           # Game board representation
 │       ├── Piece.h           # Tetris piece definitions
 │       ├── Engine.h          # Game loop and manager
 │       └── NeuralNetwork.h   # NN wrapper interface
 ├── src/                      # Core C++ implementation
 │   ├── main.cpp              # Entry point, command-line handling
+│   ├── Game.cpp              # Game.h definitions
 │   ├── Board.cpp             # Board mechanics implementation
 │   ├── Piece.cpp             # Piece handling code
 │   ├── Engine.cpp            # Core game-engine logic

@@ -9,8 +9,10 @@
 #include <raylib.h>
 
 namespace tetris {
-    Board::Board() : rng(std::random_device{}()), grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }}, 
-                     grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} {
+    Board::Board(std::mt19937& rng_ref) : rng(rng_ref),
+    grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }}, 
+    grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} 
+    {
         Reset();
     }
 

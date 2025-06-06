@@ -52,8 +52,10 @@ int main() {
     // list of previous commands
     std::vector<std::string> commandHistory;
 
-
-    Board board;
+    std::mt19937 local_rng(std::random_device{}());
+    
+    // Pass RNG to board constructor
+    Board board(local_rng);
 
     // Raylib + ImGui
     int monitor = GetCurrentMonitor();
