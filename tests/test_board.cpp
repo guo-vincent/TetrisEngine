@@ -46,20 +46,15 @@ void TestLineClear() {
     // Fill row 5 (visible area) with I-pieces to create a full line
     // I-piece in STATE_0 (horizontal) covers columns 0-3 at row 5
     board.SpawnNewPiece(PieceType::I);
-    board.currentPieceTopLeftPos = {0, 5}; // Columns 0-3
-    board.LockActivePiece();
+    board.MoveActivePiece(-3,0); // Columns 0-3
+    board.HardDropActivePiece();
     board.PrintBoardText(true);
 
     // Second I-piece covers columns 4-7
     board.SpawnNewPiece(PieceType::I);
-    board.currentPieceTopLeftPos = {4, 5};
-    board.LockActivePiece();
+    board.MoveActivePiece(3,0);
+    board.HardDropActivePiece();
     board.PrintBoardText(true);
-
-    // Third I-piece adjusted to fit within BOARD_WIDTH=10
-    board.SpawnNewPiece(PieceType::O);
-    board.currentPieceTopLeftPos = {7, 5}; // Columns 6-9
-    board.LockActivePiece();
 
     // Verify the board state
     std::cout << "Before clear:\n";
