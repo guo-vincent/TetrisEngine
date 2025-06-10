@@ -47,7 +47,7 @@ enum class RotationDirection {
  */
 class Board {
     public:
-        Board(std::mt19937& rng_ref);
+        Board(unsigned int seed);
 
         /// @name Game Flow
         /// @{
@@ -271,7 +271,7 @@ class Board {
         std::unique_ptr<Piece> CreatePieceByType(PieceType type);
 
     private:
-        std::mt19937& rng; 
+        std::mt19937 rng;
         std::vector<PieceType> grab_bag;
         std::vector<PieceType> grab_bag_next;
         size_t index;
