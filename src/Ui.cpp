@@ -35,7 +35,7 @@ Color GetColorForPiece(PieceType pt) {
     return colorMap.count(pt) ? colorMap[pt] : RAYWHITE;
 }
 
-bool DrawControlsPanel(Game& game,
+bool DrawControlsPanel(Board& board,
                        std::vector<std::string>& commandHistory,
                        bool gameOver,
                        const ImVec2& SetNextWindowPosVector
@@ -47,54 +47,54 @@ bool DrawControlsPanel(Game& game,
     if (!gameOver) {
         // these controls were also reversed
         if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
-            game.getBoard(0).MoveActivePiece(-1, 0);
+            board.MoveActivePiece(-1, 0);
             commandHistory.push_back("Move Left");
         }
         ImGui::SameLine();
         if (ImGui::Button("Right") || IsKeyPressed(KEY_RIGHT)){ 
-            game.getBoard(0).MoveActivePiece(1, 0);
+            board.MoveActivePiece(1, 0);
             commandHistory.push_back("Move Right");
         }
         if (ImGui::Button("Soft Drop") || IsKeyPressed(KEY_DOWN)) {
             commandHistory.push_back("Drop 1");
-            if (!game.getBoard(0).MoveActivePiece(0, -1)) {
-                game.getBoard(0).LockActivePiece();
+            if (!board.MoveActivePiece(0, -1)) {
+                board.LockActivePiece();
 
-                if (!game.getBoard(0).SpawnRandomPiece()) gameOver = true;
-                game.getBoard(0).GetNextQueue();
+                if (!board.SpawnRandomPiece()) gameOver = true;
+                board.GetNextQueue();
 
                 
             }
         }
         ImGui::SameLine();  
         if (ImGui::Button("Hard Drop") || IsKeyPressed(KEY_SPACE)) {
-            game.getBoard(0).HardDropActivePiece();
+            board.HardDropActivePiece();
             commandHistory.push_back("Drop X");
-            if (!game.getBoard(0).SpawnRandomPiece()) gameOver = true;
-            game.getBoard(0).GetNextQueue();
+            if (!board.SpawnRandomPiece()) gameOver = true;
+            board.GetNextQueue();
         }
         ImGui::SameLine();
         if (ImGui::Button("HOLD") || IsKeyPressed(KEY_LEFT_SHIFT)) {
-            game.getBoard(0).HoldPiece();
+            board.HoldPiece();
             commandHistory.push_back("Hold Piece");
         }
         if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
-            game.getBoard(0).RotateActivePiece(RotationDirection::CLOCKWISE);
+            board.RotateActivePiece(RotationDirection::CLOCKWISE);
             commandHistory.push_back("Rotate CW");
         }
         ImGui::SameLine();
         if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Q)) {
-            game.getBoard(0).RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
+            board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
             commandHistory.push_back("Rotate CCW");
         }
         ImGui::SameLine();
         if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_W)) {
-            game.getBoard(0).RotateActivePiece(RotationDirection::ONE_EIGHTY);
+            board.RotateActivePiece(RotationDirection::ONE_EIGHTY);
             commandHistory.push_back("Rotate 180");
         }
 
         if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
-            game.getBoard(0).Reset();
+            board.Reset();
             commandHistory.push_back("Reset Board");
         }
         
@@ -109,8 +109,8 @@ bool DrawControlsPanel(Game& game,
         ImGui::Text("Game Over!");
     }
 
-    ImGui::Text("Score: %d", game.getBoard(0).GetScore());
-    ImGui::Text("Lines: %d", game.getBoard(0).GetLinesCleared());
+    ImGui::Text("Score: %d", board.GetScore());
+    ImGui::Text("Lines: %d", board.GetLinesCleared());
     ImGui::End();
 
     return gameOver;

@@ -52,7 +52,7 @@ int main() {
         ClearBackground(BLACK);
         rlImGuiBegin();
 
-        gameOver = DrawControlsPanel(game, commandHistory, gameOver);
+        gameOver = DrawControlsPanel(game.getBoard(0), commandHistory, gameOver);
 
         DrawQueuePanel(game.getBoard(0));
         DrawHoldPanel (game.getBoard(0));

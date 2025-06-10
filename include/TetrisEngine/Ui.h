@@ -11,23 +11,19 @@
 
 namespace tetris {
 
-// Draw the “Controls” window, mutate game and history as needed.
-// Returns true if gameOver flipped from false to true.
-// Defaults: 
-/*
-*/
-bool DrawControlsPanel(Game& game, std::vector<std::string>& commandHistory, bool gameOver, const ImVec2& SetNextWindowPosVector = ImVec2(600,100));
+// Controls
+bool DrawControlsPanel(Board& board, std::vector<std::string>& commandHistory, bool gameOver, const ImVec2& SetNextWindowPosVector = ImVec2(600,100));
 
-// Draw the “Next Queue” window
+// Next Queue
 void DrawQueuePanel(const Board& board, const ImVec2& SetNextWindowPosVector = ImVec2(450,100), const ImVec2& SetNextWindowSizeVector = ImVec2(100,0));
 
-// Draw the “Hold” window
+// Hold
 void DrawHoldPanel(const Board& board, const ImVec2& SetNextWindowPosVector = ImVec2(450,350), const ImVec2& SetNextWindowSizeVector = ImVec2(100,0));
 
-// Draw the “Command History” window
+// Command History
 void DrawHistoryPanel(const std::vector<std::string>& commandHistory, const ImVec2& SetNextWindowPosVector = ImVec2(600,350), const ImVec2& ScrollRegionSizeVector = ImVec2(250,200));
 
-// Draw the block grid of the board
+// Block Grid
 void DrawBoardGrid(const Board& board, int offsetX, int offsetY, int cellSize);
 
 } // namespace tetris::ui
