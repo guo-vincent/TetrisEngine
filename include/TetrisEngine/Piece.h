@@ -41,7 +41,8 @@ namespace tetris {
         O = 4,
         S = 5,
         T = 6,
-        Z = 7
+        Z = 7,
+        G = 8
     };
 
     enum class RotationState : uint8_t {

@@ -21,6 +21,7 @@ Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 #include "Piece.h"
 #include <vector>
 #include <array>
+#include <queue>
 #include <memory> 
 #include <bitset>
 #include <functional>
@@ -259,10 +260,25 @@ class Board {
          * @return True if position is valid. False otherwise
          */
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
+
+        /**
+         * @brief Adds garbage lines with the garbage queue
+         * @param num number of lines add
+         */
+        void AddGarbageToQueue(int num_lines);
+
+        /**
+         * @brief Sends all garbage in the queue to the bottom of the board
+         */
+        void InsertGarbage();
+
+    private:
+        std::queue<int> garbage_queue;
         /// @}
 
         /// @name Piece Factory
         /// @{
+    public:
         /**
          * @brief Given a PieceType, returns a unique_ptr containing an instance of said Piece
          * @param type tetris::PieceType of tetronimo

@@ -159,6 +159,8 @@ namespace tetris {
         // Clear lines and get count
         int lines = ClearFullLines();
 
+        if (lines == 0) InsertGarbage();
+
         // Score calculation
         int baseScore = 0;
         bool isB2BEligible = false;
@@ -256,6 +258,24 @@ namespace tetris {
             }
         }
         return lines;
+    }
+
+    void Board::AddGarbageToQueue(int num_lines) {
+        garbage_queue.push(num_lines);
+    }
+
+    void Board::InsertGarbage(){
+        while(!garbage_queue.empty()){
+            int garbage_lines = garbage_queue.front();
+            int hole_col = rand()%10; // replace with random number 0-9
+
+            std::rotate(grid.begin(), grid.end()-(garbage_lines*10), grid.end());
+            for (int i = 0; i < garbage_lines*10; i++){
+                grid[i] = (i%10 != hole_col) ? PieceType::G : PieceType::EMPTY;
+            }
+
+            garbage_queue.pop();
+        }
     }
 
     void Board::InitializeGrid() {
