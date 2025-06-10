@@ -3,6 +3,7 @@
 // Testing imports
 #include <onnxruntime_cxx_api.h>
 #include "../include/TetrisEngine/Board.h"
+#include "../include/TetrisEngine/Game.h"
 #include <raylib.h>
 #include <imgui.h>
 #include <rlImGui.h>
@@ -51,12 +52,9 @@ int main() {
 
     // list of previous commands
     std::vector<std::string> commandHistory;
-
-    std::mt19937 local_rng(std::random_device{}());
     
     // Pass RNG to board constructor
-    Board board(local_rng);
-    Board board2(local_rng);
+    Game game(2);
 
     // Raylib + ImGui
     int monitor = GetCurrentMonitor();
@@ -89,22 +87,22 @@ int main() {
         if (!gameOver) {
             // these controls were also reversed
             if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
-                board.MoveActivePiece(-1, 0);
+                game.getBoard(0).MoveActivePiece(-1, 0);
                 commandHistory.push_back("Move Left");
             }
             ImGui::SameLine();
             if (ImGui::Button("Right") || IsKeyPressed(KEY_RIGHT)){ 
-                board.MoveActivePiece(1, 0);
+                game.getBoard(0).MoveActivePiece(1, 0);
                 commandHistory.push_back("Move Right");
             }
             
             if (ImGui::Button("Soft Drop") || IsKeyPressed(KEY_DOWN)) {
                 commandHistory.push_back("Drop 1");
-                if (!board.MoveActivePiece(0, -1)) {
-                    board.LockActivePiece();
+                if (!game.getBoard(0).MoveActivePiece(0, -1)) {
+                    game.getBoard(0).LockActivePiece();
 
-                    if (!board.SpawnRandomPiece()) gameOver = true;
-                    board.GetNextQueue();
+                    if (!game.getBoard(0).SpawnRandomPiece()) gameOver = true;
+                    game.getBoard(0).GetNextQueue();
 
                    
                 }
@@ -112,34 +110,34 @@ int main() {
             
             ImGui::SameLine();  
             if (ImGui::Button("Hard Drop") || IsKeyPressed(KEY_SPACE)) {
-                board.HardDropActivePiece();
+                game.getBoard(0).HardDropActivePiece();
                 commandHistory.push_back("Drop X");
-                if (!board.SpawnRandomPiece()) gameOver = true;
-                board.GetNextQueue();
+                if (!game.getBoard(0).SpawnRandomPiece()) gameOver = true;
+                game.getBoard(0).GetNextQueue();
             }
             ImGui::SameLine();
             if (ImGui::Button("HOLD") || IsKeyPressed(KEY_LEFT_SHIFT)) {
-                board.HoldPiece();
+                game.getBoard(0).HoldPiece();
                 commandHistory.push_back("Hold Piece");
             }
 
             if (ImGui::Button("Rotate CW") || IsKeyPressed(KEY_E)){ 
-                board.RotateActivePiece(RotationDirection::CLOCKWISE);
+                game.getBoard(0).RotateActivePiece(RotationDirection::CLOCKWISE);
                 commandHistory.push_back("Rotate CW");
             }
             ImGui::SameLine();
             if (ImGui::Button("Rotate CCW") || IsKeyPressed(KEY_Q)) {
-                board.RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
+                game.getBoard(0).RotateActivePiece(RotationDirection::COUNTER_CLOCKWISE);
                 commandHistory.push_back("Rotate CCW");
             }
             ImGui::SameLine();
             if (ImGui::Button("Rotate 180") || IsKeyPressed(KEY_W)) {
-                board.RotateActivePiece(RotationDirection::ONE_EIGHTY);
+                game.getBoard(0).RotateActivePiece(RotationDirection::ONE_EIGHTY);
                 commandHistory.push_back("Rotate 180");
             }
 
             if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
-                board.Reset();
+                game.getBoard(0).Reset();
                 commandHistory.push_back("Reset Board");
             }
            
@@ -153,14 +151,14 @@ int main() {
             ImGui::Text("Game Over!");
         }    
         
-        ImGui::Text("Score: %d", board.GetScore());
-        ImGui::Text("Lines: %d", board.GetLinesCleared());
+        ImGui::Text("Score: %d", game.getBoard(0).GetScore());
+        ImGui::Text("Lines: %d", game.getBoard(0).GetLinesCleared());
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(450, 100));
         ImGui::SetNextWindowSize(ImVec2(100, 0));
         ImGui::Begin("Queue");
-        for (PieceType pt : board.GetNextQueue()) {
+        for (PieceType pt : game.getBoard(0).GetNextQueue()) {
             Color c = GetColorForPiece(pt);
             ImGui::ColorButton("##color", ImVec4{c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, 1.0f},
                        ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop,
@@ -174,7 +172,7 @@ int main() {
         ImGui::SetNextWindowSize(ImVec2(100, 0));
         ImGui::Begin("Hold");
         
-        PieceType held = board.GetHeldPieceType();
+        PieceType held = game.getBoard(0).GetHeldPieceType();
         if (held != PieceType::EMPTY) {
             Color c = GetColorForPiece(held);
             ImGui::ColorButton("##heldcolor", 
@@ -200,9 +198,9 @@ int main() {
 
         rlImGuiEnd();
 
-        // Draw board
+        // Draw game.getBoard(0)
         std::vector<PieceType> state(VISIBLE_BOARD_HEIGHT * BOARD_WIDTH, PieceType::EMPTY);
-        state = board.GetRenderableState();
+        state = game.getBoard(0).GetRenderableState();
 
         for (int row = 0; row < VISIBLE_BOARD_HEIGHT; ++row) {
             for (int col = 0; col < BOARD_WIDTH; ++col) {
