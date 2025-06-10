@@ -32,6 +32,7 @@ Color GetColorForPiece(PieceType pt) {
         {PieceType::Z, RED},
         {PieceType::J, BLUE},
         {PieceType::L, ORANGE},
+        {PieceType::G, LIGHTGRAY}
     };
     return colorMap.count(pt) ? colorMap[pt] : RAYWHITE;
 }
@@ -140,6 +141,14 @@ int main() {
             if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
                 board.Reset();
                 commandHistory.push_back("Reset Board");
+            }
+
+            static char buf[32] = ""; ImGui::InputText("Garbage", buf, 32, ImGuiInputTextFlags_CharsDecimal);
+            int garabge_lines = atoi(buf);
+
+            if (ImGui::Button("Add Garbage")) {
+                board.AddGarbageToQueue(garabge_lines);
+                commandHistory.push_back("Added some Garbage line to Queue");
             }
            
            // erase first command if bigger than 10
