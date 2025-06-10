@@ -71,7 +71,6 @@ class Board {
         bool SpawnRandomPiece();
         /// @}
 
-
         /// @name Player Actions
         /// @{
         /**
@@ -93,10 +92,20 @@ class Board {
          * @brief Instantly drop piece and lock it. 
          */
         void HardDropActivePiece();
+
+        /**
+         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset
+         */
+        void HoldPiece();
+
+    private: 
+        std::unique_ptr<Piece> held_piece;
+        bool canHold;
         /// @}
 
         /// @name Game State
         /// @{
+    public:
         /**
          * @brief Check if the game has ended.
          * @return true if game over condition detected, false otherwise
@@ -216,8 +225,8 @@ class Board {
         int linesClearedTotal;
     // Could add: level
 
-    /// @name Internal Game Logic
-    /// @{
+        /// @name Internal Game Logic
+        /// @{
     public:
         /**
          * @brief Places piece on grid, clears lines, and checks game over.
@@ -250,10 +259,10 @@ class Board {
          * @return True if position is valid. False otherwise
          */
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
-    /// @}
+        /// @}
 
-    /// @name Piece Factory
-    /// @{
+        /// @name Piece Factory
+        /// @{
         /**
          * @brief Given a PieceType, returns a unique_ptr containing an instance of said Piece
          * @param type tetris::PieceType of tetronimo
@@ -268,11 +277,11 @@ class Board {
         size_t index;
         PieceType last_piece;
         bool last_piece_is_none;
-    /// @}
+        /// @}
 
 
-    /// @name SRS Kick Data & Logic
-    /// @{
+        /// @name SRS Kick Data & Spin Detection
+        /// @{
     public:
         /**
          * @brief Returns a list of kick offsets to try for a given rotation.
@@ -284,36 +293,24 @@ class Board {
         const std::vector<Point>& GetSrsKickData(PieceType type, RotationState from_rotation, RotationState to_rotation) const;
 
         /**
-         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset
-         */
-        void HoldPiece();
-
-    private: 
-        std::unique_ptr<Piece> held_piece;
-        bool canHold;
-    /// @}
-
-    /// @name Spin Detection
-    /// @{
-    public: 
-        /* Test for T-Spins
+         * @brief Test for T-Spins
          * 0 = no T-Spin
          * 1 = T-Spin Mini
          * 2 = T-Spin
-         * int T-Spin status code
+         * @return int T-Spin status code
          */
         int IsTSpin() const;
 
-        /*
-        * @brief Detects minispins for every piece except O.
-        * @return true if minispin detected, false otherwise
-        */
+        /**
+         * @brief Detects minispins for every piece except O.
+         * @return true if minispin detected, false otherwise
+         */
         bool IsAllMiniSpin() const;
 
     private:
         int back_to_back;
         mutable bool lastMoveWasRotation;
-    /// @}
+        /// @}
 
     // debugging only
     public:
