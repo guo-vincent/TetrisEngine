@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
 #include "Board.h"
 #include <vector>
@@ -33,3 +34,5 @@ private:
 };
 
 } // namespace tetris
+
+#endif GAME_H
