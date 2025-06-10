@@ -28,7 +28,7 @@ namespace tetris {
         lastMoveWasRotation = false;
         last_piece_is_none = true;
         canHold = true;
-        SpawnRandomPiece(); // Spawns first piece after initilizing
+        SpawnRandomPiece();
     }
 
     PieceType Board::GetHeldPieceType() const {
