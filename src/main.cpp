@@ -143,8 +143,8 @@ int main() {
                 commandHistory.push_back("Reset Board");
             }
 
-            static char buf[32] = ""; ImGui::InputText("Garbage", buf, 32, ImGuiInputTextFlags_CharsDecimal);
-            int garabge_lines = atoi(buf);
+            static int garabge_lines = 0;
+            ImGui::InputInt("Garbage", &garabge_lines);
 
             if (ImGui::Button("Add Garbage")) {
                 board.AddGarbageToQueue(garabge_lines);
