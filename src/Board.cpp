@@ -162,7 +162,10 @@ namespace tetris {
         if (lines == 0) InsertGarbage();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         // // Score calculation
         // int baseScore = 0;
         // bool isB2BEligible = false;
@@ -229,6 +232,9 @@ namespace tetris {
     }
 
     int Board::CalculateScore(int isTSpin, bool isAllMiniSpin, int lines) {
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         // Score calculation
         int baseScore = 0;
@@ -321,8 +327,13 @@ namespace tetris {
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     void Board::AddGarbageToQueue(int num_lines) {
         garbage_queue.push(num_lines);
+=======
+    void Board::AddGarbageToQueue(int lines) {
+        garbage_queue.push(lines);
+>>>>>>> Stashed changes
 =======
     void Board::AddGarbageToQueue(int lines) {
         garbage_queue.push(lines);
@@ -333,7 +344,11 @@ namespace tetris {
         while(!garbage_queue.empty()){
             int garbage_lines = garbage_queue.front();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             int hole_col = rand()%10; // replace with random number 0-9
+=======
+            int hole_col = rand()%10; //replace with better random number generator
+>>>>>>> Stashed changes
 =======
             int hole_col = rand()%10; //replace with better random number generator
 >>>>>>> Stashed changes
