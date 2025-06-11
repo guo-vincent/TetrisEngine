@@ -31,6 +31,7 @@ Color GetColorForPiece(PieceType pt) {
         {PieceType::Z, RED},
         {PieceType::J, BLUE},
         {PieceType::L, ORANGE},
+        {PieceType::G, LIGHTGRAY}
     };
     return colorMap.count(pt) ? colorMap[pt] : RAYWHITE;
 }
@@ -99,6 +100,14 @@ bool DrawControlsPanel(Board& board,
         if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
             board.Reset();
             commandHistory.push_back("Reset Board");
+        }
+
+        static int garbage_lines = 0;
+        ImGui::InputInt("Garbage", &garbage_lines);
+
+        if (ImGui::Button("Add Garbage")) {
+            board.AddGarbageToQueue(garbage_lines);
+            commandHistory.push_back("Added garbage lines to queue");
         }
         
         // erase first command if bigger than 10

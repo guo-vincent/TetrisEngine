@@ -231,9 +231,18 @@ class Board {
     public:
         /**
          * @brief Places piece on grid, clears lines, and checks game over.
-         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
          */
         void LockActivePiece();
+
+        /**
+         * @brief Calculates score and garbage to be sent to other player
+         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
+         * @param isTSpin t-spin status code 0, 1, 2
+         * @param isAllMiniSpin keep b2b if a mini-spin by a non-T was done
+         * @param lines number of lines cleared
+         * @return final score calculated
+         */
+        int CalculateScore(int isTSpin, bool isAllMiniSpin, int lines);
 
         /**
          * @brief Clears lines on the board
@@ -262,6 +271,7 @@ class Board {
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
 
         /**
+<<<<<<< Updated upstream
          * @brief Adds garbage lines with the garbage queue
          * @param num number of lines add
          */
@@ -269,6 +279,15 @@ class Board {
 
         /**
          * @brief Sends all garbage in the queue to the bottom of the board
+=======
+         * @brief Adds garbage lines to the garbage queue
+         * @param int number of lines to add to the queue
+         */
+        void AddGarbageToQueue(int lines);
+
+        /**
+         * @brief Sends all garbage inb the queue to the bottom of the board
+>>>>>>> Stashed changes
          */
         void InsertGarbage();
 

@@ -161,6 +161,75 @@ namespace tetris {
 
         if (lines == 0) InsertGarbage();
 
+<<<<<<< Updated upstream
+=======
+        // // Score calculation
+        // int baseScore = 0;
+        // bool isB2BEligible = false;
+
+        // if (isTSpin == 2) {         // full t-spin
+        //     if (lines == 0) baseScore = 400;
+        //     else if (lines == 1) {
+        //         baseScore = 800;
+        //         isB2BEligible = true;
+        //     }
+        //     else if (lines == 2) {
+        //         baseScore = 1200;
+        //         isB2BEligible = true;
+        //     }
+        //     else if (lines == 3) {
+        //         baseScore = 1600;
+        //         isB2BEligible = true;
+        //     }
+        // } else if (isTSpin == 1) {  // t-spin mini
+        //     if (lines == 0) baseScore = 100;
+        //     else if (lines == 1) {
+        //         baseScore = 200;
+        //         isB2BEligible = true;
+        //     }
+        //     else if (lines == 2) {
+        //         baseScore = 400;
+        //         isB2BEligible = true;
+        //     }
+        // } else {
+        //     if (lines == 1) baseScore = 100;
+        //     else if (lines == 2) baseScore = 300;
+        //     else if (lines == 3) baseScore = 500;
+        //     else if (lines == 4) {
+        //         baseScore = 800;
+        //         isB2BEligible = true;
+        //     }
+        //     if (isAllMiniSpin) {
+        //         baseScore += 50;
+        //         isB2BEligible = true;
+        //     }
+        // }
+
+        // // Apply B2B bonus
+        // if (isB2BEligible) {
+        //     if (back_to_back > 0) {
+        //         baseScore = baseScore * 3 / 2; // 1.5x bonus
+        //     }
+        //     back_to_back++;
+        // } else if (lines > 0) {
+        //     // Reset B2B if cleared lines without T-spin/Tetris
+        //     back_to_back = 0;
+        // }
+
+        score += CalculateScore(isTSpin, isAllMiniSpin, lines);
+        linesClearedTotal += lines;
+
+        // Reset current piece
+        currentPiece.reset();
+
+        // Since we've updated the board, we can now hold a new piece
+        canHold = true;
+
+        // Game over is checked in SpawnNewPiece, not here
+    }
+
+    int Board::CalculateScore(int isTSpin, bool isAllMiniSpin, int lines) {
+>>>>>>> Stashed changes
         // Score calculation
         int baseScore = 0;
         bool isB2BEligible = false;
@@ -214,16 +283,7 @@ namespace tetris {
             back_to_back = 0;
         }
 
-        score += baseScore;
-        linesClearedTotal += lines;
-
-        // Reset current piece
-        currentPiece.reset();
-
-        // Since we've updated the board, we can now hold a new piece
-        canHold = true;
-
-        // Game over is checked in SpawnNewPiece, not here
+        return baseScore;
     }
 
     int Board::ClearFullLines() {
@@ -260,14 +320,23 @@ namespace tetris {
         return lines;
     }
 
+<<<<<<< Updated upstream
     void Board::AddGarbageToQueue(int num_lines) {
         garbage_queue.push(num_lines);
+=======
+    void Board::AddGarbageToQueue(int lines) {
+        garbage_queue.push(lines);
+>>>>>>> Stashed changes
     }
 
     void Board::InsertGarbage(){
         while(!garbage_queue.empty()){
             int garbage_lines = garbage_queue.front();
+<<<<<<< Updated upstream
             int hole_col = rand()%10; // replace with random number 0-9
+=======
+            int hole_col = rand()%10; //replace with better random number generator
+>>>>>>> Stashed changes
 
             std::rotate(grid.begin(), grid.end()-(garbage_lines*10), grid.end());
             for (int i = 0; i < garbage_lines*10; i++){
