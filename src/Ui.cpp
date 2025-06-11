@@ -40,7 +40,8 @@ bool DrawControlsPanel(Board& board,
                        int playerNum,
                        std::vector<std::string>& commandHistory,
                        bool gameOver,
-                       const ImVec2& SetNextWindowPosVector
+                       const ImVec2& SetNextWindowPosVector,
+                       gravity :: int
                     )
 {
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
@@ -49,6 +50,7 @@ bool DrawControlsPanel(Board& board,
     ImGui::Begin(title.c_str());
     
     if (!gameOver) {
+
         // these controls were also reversed
         if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
             board.MoveActivePiece(-1, 0);
@@ -66,8 +68,6 @@ bool DrawControlsPanel(Board& board,
 
                 if (!board.SpawnRandomPiece()) gameOver = true;
                 board.GetNextQueue();
-
-                
             }
         }
         ImGui::SameLine();  
@@ -230,7 +230,7 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2(static_cast<float>(offsetX + 500), static_cast<float>(offsetY)));
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY), 5);
 
     DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY)));
     DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY + 300)));
