@@ -42,7 +42,8 @@ int main() {
     rlImGuiSetup(true);
 
     // window borders
-    bool gameOver = false;
+    bool gameOver0 = false;
+    bool gameOver1 = false;
     const int cellSize = 30;
     const int board0OffsetX = 100;
     const int board1OffsetX = 1000;
@@ -52,24 +53,13 @@ int main() {
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
-        // rlImGuiBegin();
 
-        // gameOver = DrawControlsPanel(game.getBoard(0), commandHistory0, gameOver);
+        rlImGuiBegin();
 
-        // DrawQueuePanel(game.getBoard(0));
-        // DrawHoldPanel (game.getBoard(0));
-        // DrawHistoryPanel(commandHistory0);
-
-        gameOver = DrawPlayer(game, 0, board0OffsetX, boardOffsetY, commandHistory0, gameOver, cellSize);
-        gameOver = DrawPlayer(game, 1, board1OffsetX, boardOffsetY, commandHistory1, gameOver, cellSize);
+        gameOver0 = DrawPlayer(game, 0, board0OffsetX, boardOffsetY, commandHistory0, gameOver0, cellSize);
+        gameOver1 = DrawPlayer(game, 1, board1OffsetX, boardOffsetY, commandHistory1, gameOver1, cellSize);      
         
-        // rlImGuiEnd();
-
-        // // draw the actual tetris board
-        // DrawBoardGrid(game.getBoard(0), board0OffsetX, boardOffsetY, cellSize);
-        // DrawBoardGrid(game.getBoard(0), 1000, boardOffsetY, cellSize);
-      
-        
+        rlImGuiEnd();
 
         EndDrawing();
     }

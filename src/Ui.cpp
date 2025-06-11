@@ -36,16 +36,13 @@ Color GetColorForPiece(PieceType pt) {
 }
 
 bool DrawControlsPanel(Board& board,
-                       int playerNum,
                        std::vector<std::string>& commandHistory,
                        bool gameOver,
                        const ImVec2& SetNextWindowPosVector
                     )
 {
-    std::string name = "Controls###" + (char)playerNum;
-    playerNum = playerNum; // remove later
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
-    ImGui::Begin(name.c_str());
+    ImGui::Begin("Controls");
     
     if (!gameOver) {
         // these controls were also reversed
@@ -196,17 +193,15 @@ bool DrawPlayer(Game& game,
                 std::vector<std::string>& commandHistory, 
                 bool gameOver,
                 int cellSize){
-    rlImGuiBegin();
-    //ImGui::PushID(playerNum*123);
+    ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
 
     DrawQueuePanel(game.getBoard(playerNum), ImVec2((float)offsetX + 350, (float)offsetY));
     DrawHoldPanel(game.getBoard(playerNum), ImVec2((float)offsetX + 350, (float)offsetY + 250));
     DrawHistoryPanel(commandHistory, ImVec2((float)offsetX + 500, (float)offsetY + 250));
 
-    //ImGui::PopID();
-    rlImGuiEnd();
+    ImGui::PopID();
 
     // draw the actual tetris board
     DrawBoardGrid(game.getBoard(playerNum), offsetX, offsetY, cellSize);
