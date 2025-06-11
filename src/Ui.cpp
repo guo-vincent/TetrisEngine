@@ -36,13 +36,16 @@ Color GetColorForPiece(PieceType pt) {
 }
 
 bool DrawControlsPanel(Board& board,
+                       int playerNum,
                        std::vector<std::string>& commandHistory,
                        bool gameOver,
                        const ImVec2& SetNextWindowPosVector
                     )
 {
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
-    ImGui::Begin("Controls");
+
+    std::string title = "Controls##" + std::to_string(playerNum);
+    ImGui::Begin(title.c_str());
     
     if (!gameOver) {
         // these controls were also reversed
@@ -117,11 +120,13 @@ bool DrawControlsPanel(Board& board,
 }
 
 void DrawQueuePanel(const Board& board,
+                    int playerNum,
                     const ImVec2& SetNextWindowPosVector,
                     const ImVec2& SetNextWindowSizeVector) {
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
     ImGui::SetNextWindowSize(SetNextWindowSizeVector);
-    ImGui::Begin("Queue");
+    std::string title = "Queue##" + std::to_string(playerNum);
+    ImGui::Begin(title.c_str());
     for (PieceType pt : board.GetNextQueue()) {
         Color c = GetColorForPiece(pt);
         ImGui::ColorButton("##color",
@@ -135,11 +140,13 @@ void DrawQueuePanel(const Board& board,
 }
 
 void DrawHoldPanel(const Board& board, 
+                   int playerNum,
                    const ImVec2& SetNextWindowPosVector,
                    const ImVec2& SetNextWindowSizeVector) {
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
     ImGui::SetNextWindowSize(SetNextWindowSizeVector);
-    ImGui::Begin("Hold");
+    std::string title = "Hold##" + std::to_string(playerNum);
+    ImGui::Begin(title.c_str());
     PieceType held = board.GetHeldPieceType();
     if (held != PieceType::EMPTY) {
         Color c = GetColorForPiece(held);
@@ -156,10 +163,12 @@ void DrawHoldPanel(const Board& board,
 }
 
 void DrawHistoryPanel(const std::vector<std::string>& history, 
+                      int playerNum,
                       const ImVec2& SetNextWindowPosVector,
                       const ImVec2& ScrollRegionSizeVector) {
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
-    ImGui::Begin("Command History");
+    std::string title = "Command History##" + std::to_string(playerNum);
+    ImGui::Begin(title.c_str());
       ImGui::BeginChild("ScrollRegion", ScrollRegionSizeVector, true);
       for (const std::string& cmd : history)
         ImGui::TextUnformatted(cmd.c_str());
@@ -195,11 +204,11 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
 
-    DrawQueuePanel(game.getBoard(playerNum), ImVec2((float)offsetX + 350, (float)offsetY));
-    DrawHoldPanel(game.getBoard(playerNum), ImVec2((float)offsetX + 350, (float)offsetY + 250));
-    DrawHistoryPanel(commandHistory, ImVec2((float)offsetX + 500, (float)offsetY + 250));
+    DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY));
+    DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY + 250));
+    DrawHistoryPanel(commandHistory, playerNum, ImVec2((float)offsetX + 500, (float)offsetY + 250));
 
     ImGui::PopID();
 
