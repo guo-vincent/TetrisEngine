@@ -51,7 +51,7 @@ bool DrawControlsPanel(Board& board,
     ImGui::Begin(title.c_str());
     
     if (!gameOver) {
-
+        // these controls were also reversed
         if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
             board.MoveActivePiece(-1, 0);
             commandHistory.push_back("Move Left");
@@ -97,27 +97,10 @@ bool DrawControlsPanel(Board& board,
             commandHistory.push_back("Rotate 180");
         }
 
-
-        static int garbage_lines = 0;
-        ImGui::InputInt("Garbage", &garbage_lines);
-
-        if (ImGui::Button("Add Garbage")) {
-            board.AddGarbageToQueue(garbage_lines);
-            commandHistory.push_back("Added garbage lines to queue");
+        if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
+            board.Reset();
+            commandHistory.push_back("Reset Board");
         }
-        
-        // TODO: without using a timer, any value except 0 triggers this if. Number of Frames is not a good measure since it becomes 
-        // inflexible if we change frame rate. Instead use GetFrameTime(), built into Raylib.
-        // gravity implementation
-        if(gravity % 4){
-            if (!board.MoveActivePiece(0, -1)) {
-                board.LockActivePiece();
-
-            if (!board.SpawnRandomPiece()) gameOver = true;
-                board.GetNextQueue();                
-        }
-        }
-        
         
         // erase first command if bigger than 10
         if (commandHistory.size() > 10) {
@@ -238,7 +221,7 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY), 5);
 
     if (IsKeyPressed(KEY_T)) {
         game.Reset();
