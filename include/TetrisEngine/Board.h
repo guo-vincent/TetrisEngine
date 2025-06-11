@@ -271,13 +271,6 @@ class Board {
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
 
         /**
-         * @brief Adds garbage lines with the garbage queue
-         * @param num number of lines add
-         */
-        void AddGarbageToQueue(int num_lines);
-
-        /**
-         * @brief Sends all garbage in the queue to the bottom of the board
          * @brief Adds garbage lines to the garbage queue
          * @param int number of lines to add to the queue
          */
