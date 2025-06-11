@@ -25,7 +25,8 @@ int main() {
     }
 
     // list of previous commands
-    std::vector<std::string> commandHistory;
+    std::vector<std::string> commandHistory0;
+    std::vector<std::string> commandHistory1;
     
     // Pass RNG to board constructor
     Game game(2);
@@ -43,25 +44,32 @@ int main() {
     // window borders
     bool gameOver = false;
     const int cellSize = 30;
-    const int boardOffsetX = 100;
+    const int board0OffsetX = 100;
+    const int board1OffsetX = 1000;
     const int boardOffsetY = 100;
 
     // main loop add game stuff here
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
-        rlImGuiBegin();
+        // rlImGuiBegin();
 
-        gameOver = DrawControlsPanel(game.getBoard(0), commandHistory, gameOver);
+        // gameOver = DrawControlsPanel(game.getBoard(0), commandHistory0, gameOver);
 
-        DrawQueuePanel(game.getBoard(0));
-        DrawHoldPanel (game.getBoard(0));
-        DrawHistoryPanel(commandHistory);
+        // DrawQueuePanel(game.getBoard(0));
+        // DrawHoldPanel (game.getBoard(0));
+        // DrawHistoryPanel(commandHistory0);
 
-        rlImGuiEnd();
+        gameOver = DrawPlayer(game, 0, board0OffsetX, boardOffsetY, commandHistory0, gameOver, cellSize);
+        gameOver = DrawPlayer(game, 1, board1OffsetX, boardOffsetY, commandHistory1, gameOver, cellSize);
+        
+        // rlImGuiEnd();
 
-        // draw the actual tetris board
-        DrawBoardGrid(game.getBoard(0), boardOffsetX, boardOffsetY, cellSize);
+        // // draw the actual tetris board
+        // DrawBoardGrid(game.getBoard(0), board0OffsetX, boardOffsetY, cellSize);
+        // DrawBoardGrid(game.getBoard(0), 1000, boardOffsetY, cellSize);
+      
+        
 
         EndDrawing();
     }
