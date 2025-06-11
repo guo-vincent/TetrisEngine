@@ -235,13 +235,6 @@ namespace tetris {
     }
 
     int Board::CalculateScore(int isTSpin, bool isAllMiniSpin, int lines) {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         // Score calculation
         int baseScore = 0;
         bool isB2BEligible = false;

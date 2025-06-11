@@ -271,9 +271,6 @@ class Board {
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
 
         /**
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
          * @brief Adds garbage lines with the garbage queue
          * @param num number of lines add
          */
@@ -281,11 +278,6 @@ class Board {
 
         /**
          * @brief Sends all garbage in the queue to the bottom of the board
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
          * @brief Adds garbage lines to the garbage queue
          * @param int number of lines to add to the queue
          */
@@ -293,13 +285,6 @@ class Board {
 
         /**
          * @brief Sends all garbage inb the queue to the bottom of the board
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
          */
         void InsertGarbage();
 
