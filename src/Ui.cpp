@@ -101,6 +101,8 @@ bool DrawControlsPanel(Board& board,
             commandHistory.push_back("Reset Board");
         }
         
+        // TODO: without using a timer, any value except 0 triggers this if. Number of Frames is not a good measure since it becomes 
+        // inflexible if we change frame rate. Instead use GetFrameTime(), built into Raylib.
         // gravity implementation
         if(gravity % 4){
             if (!board.MoveActivePiece(0, -1)) {

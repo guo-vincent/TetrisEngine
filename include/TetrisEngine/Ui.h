@@ -15,6 +15,7 @@ namespace tetris {
 bool DrawPlayer(Game& game, int playerNum, int offsetX, int offsetY, std::vector<std::string>& commandHistory, bool gameOver, int cellSize = 30);
 
 // Controls
+// TODO: Update this with gravity variable
 bool DrawControlsPanel(Board& board, int playerNum, std::vector<std::string>& commandHistory, bool gameOver, const ImVec2& SetNextWindowPosVector = ImVec2(600,100));
 
 // Next Queue
