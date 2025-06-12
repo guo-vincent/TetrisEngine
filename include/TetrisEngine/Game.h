@@ -24,7 +24,7 @@ class Game {
         }
 
         void addPlayer(int playerID) {
-            m_boards.emplace_back(std::make_unique<Board>(m_seed, playerID, this));
+            m_boards.emplace_back(std::make_unique<Board>(m_seed, playerID, *this));
         }
 
         void Reset();
