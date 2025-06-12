@@ -185,6 +185,23 @@ void DrawHistoryPanel(const std::vector<std::string>& history,
     ImGui::End();
 }
 
+void DrawGarbagePanel(const Board& board, 
+                   int playerNum,
+                   const ImVec2& SetNextWindowPosVector,
+                   const ImVec2& SetNextWindowSizeVector) {
+    ImGui::SetNextWindowPos(SetNextWindowPosVector);
+    ImGui::SetNextWindowSize(SetNextWindowSizeVector);
+    std::string title = "Garbage Stats##" + std::to_string(playerNum);
+    ImGui::Begin(title.c_str());
+    std::string b2b = "Back to Back: " + std::to_string(board.GetB2BChain());
+    std::string combo = "Combo: " + std::to_string(board.GetCombo());
+    std::string garbage = "Garbage in Queue: " + std::to_string(board.GetGarbageQueue());
+    ImGui::TextUnformatted(b2b.c_str());
+    ImGui::TextUnformatted(combo.c_str());
+    ImGui::TextUnformatted(garbage.c_str());
+    ImGui::End();
+}
+
 void DrawBoardGrid(const Board& board,
                    int offsetX,
                    int offsetY,
@@ -218,6 +235,7 @@ bool DrawPlayer(Game& game,
     DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY));
     DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY + 250));
     DrawHistoryPanel(commandHistory, playerNum, ImVec2((float)offsetX + 500, (float)offsetY + 250));
+    DrawGarbagePanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX, (float)offsetY + 650));
 
     ImGui::PopID();
 

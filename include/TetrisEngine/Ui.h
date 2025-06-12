@@ -26,6 +26,9 @@ void DrawHoldPanel(const Board& board, int playerNum, const ImVec2& SetNextWindo
 // Command History
 void DrawHistoryPanel(const std::vector<std::string>& commandHistory, int playerNum, const ImVec2& SetNextWindowPosVector = ImVec2(600,350), const ImVec2& ScrollRegionSizeVector = ImVec2(250,200));
 
+// Command History
+void DrawGarbagePanel(const Board& board, int playerNum, const ImVec2& SetNextWindowPosVector = ImVec2(100,800), const ImVec2& ScrollRegionSizeVector = ImVec2(250,200));
+
 // Block Grid
 void DrawBoardGrid(const Board& board, int offsetX, int offsetY, int cellSize = 30);
 

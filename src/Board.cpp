@@ -26,6 +26,8 @@ namespace tetris {
         linesClearedTotal = 0;
         index = 0;
         back_to_back = 0;
+        combo = 0;
+        garbage_count = 0;
         lastMoveWasRotation = false;
         last_piece_is_none = true;
         canHold = true;
@@ -193,7 +195,7 @@ namespace tetris {
         } else {
             if (lines > 1){
                 baseGarbage = 1<<(lines-2);
-                if (lines > 4) isB2BEligible = true;
+                if (lines == 4) isB2BEligible = true;
             }
             if (isAllMiniSpin && lines > 0) {
                 isB2BEligible = true;
@@ -207,8 +209,29 @@ namespace tetris {
             }
             back_to_back++;
         } else if (lines > 0) {
-            // B2B Charging TODO
+            // B2B Charging 
+            if (back_to_back >= 4){
+                for (int i = 0; i < 3; i++){
+                    if (back_to_back%3 > i){
+                        SendGarbage(back_to_back/3 + 1);
+                    } else {
+                        SendGarbage(back_to_back/3);
+                    }
+                }
+            }
             back_to_back = 0;
+        }
+
+        // Apply Combo bonus
+        if (lines > 0){
+            if (baseGarbage == 0){
+                baseGarbage = (int)log(1.0 + (1.25*combo));
+            } else {
+                baseGarbage *= (int)(1 + (0.25*combo));
+            }
+            combo++;
+        } else {
+            combo = 0;
         }
 
         SendGarbage(baseGarbage);
@@ -252,6 +275,7 @@ namespace tetris {
 
     void Board::AddGarbageToQueue(int lines) {
         garbage_queue.push(lines);
+        garbage_count += lines;
     }
 
     void Board::InsertGarbage(){
@@ -278,6 +302,8 @@ namespace tetris {
                 grid[i] = (i%10 != hole_col) ? PieceType::G : PieceType::EMPTY;
             }
 
+            garbage_count -= garbage_lines;
+
             if (!garbage_broken) hole_col = -1;
         }
     }
@@ -287,10 +313,13 @@ namespace tetris {
         while (lines != 0 && !garbage_queue.empty()) {
             if (lines >= garbage_queue.front()){
                 lines -= garbage_queue.front();
+                garbage_count -= garbage_queue.front();
                 garbage_queue.pop();
             } else {
                 garbage_queue.front() -= lines;
+                garbage_count -= lines;
                 lines = 0;
+                
             }
         }
 

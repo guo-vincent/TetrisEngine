@@ -103,7 +103,7 @@ class Board {
         void HardDropActivePiece();
 
         /**
-         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset
+         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset.
          */
         void HoldPiece();
 
@@ -160,6 +160,24 @@ class Board {
          * @return Cumulative lines cleared this game
          */
         int GetLinesCleared() const { return linesClearedTotal; }
+
+        /**
+         * @brief Get current back to back. 
+         * @return Current B2B chain
+         */
+        int GetB2BChain() const { return back_to_back; }
+
+        /**
+         * @brief Get current combo. 
+         * @return Current combo
+         */
+        int GetCombo() const { return combo; }
+
+        /**
+         * @brief Gets total garbage currently in the queue.
+         * @return Lines of garbage in queue
+         */
+        int GetGarbageQueue() const { return garbage_count; }
 
         /**
          * @brief Get visible board state for rendering.
@@ -297,6 +315,7 @@ class Board {
 
     private:
         std::queue<int> garbage_queue;
+        int garbage_count;
         int hole_col;
         /// @}
 
@@ -349,6 +368,7 @@ class Board {
 
     private:
         int back_to_back;
+        int combo;
         mutable bool lastMoveWasRotation;
         /// @}
 
