@@ -225,9 +225,9 @@ namespace tetris {
         // Apply Combo bonus
         if (lines > 0){
             if (baseGarbage == 0){
-                baseGarbage = (int)log(1.0 + (1.25*combo));
+                baseGarbage = static_cast<int>(log(1.0 + (1.25*combo)));
             } else {
-                baseGarbage *= (int)(1 + (0.25*combo));
+                baseGarbage *= static_cast<int>(1 + (0.25*combo));
             }
             combo++;
         } else {
