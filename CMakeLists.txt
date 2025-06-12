@@ -97,6 +97,8 @@ add_library(TetrisEngineCore STATIC
     src/Piece.cpp
     src/Engine.cpp
     src/NeuralNetwork.cpp
+    src/Game.cpp
+    src/UI.cpp
 )
 
 target_include_directories(TetrisEngineCore PUBLIC

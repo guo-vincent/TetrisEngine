@@ -19,6 +19,7 @@ Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 */
 
 #include "Piece.h"
+#include "Game.h"
 #include <vector>
 #include <array>
 #include <queue>
@@ -41,6 +42,8 @@ enum class RotationDirection {
     ONE_EIGHTY
 };
 
+class Game;
+
 /**
  * @brief Tetris game board controller.
  * 
@@ -48,8 +51,13 @@ enum class RotationDirection {
  */
 class Board {
     public:
-        Board();
+        Board(unsigned int seed, int playerNum, Game& gameAddress);
 
+    private:
+        int playerID;
+        Game& game;
+    
+    public:
         /// @name Game Flow
         /// @{
         /**
@@ -231,9 +239,18 @@ class Board {
     public:
         /**
          * @brief Places piece on grid, clears lines, and checks game over.
-         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
          */
         void LockActivePiece();
+
+        /**
+         * @brief Calculates score and garbage to be sent to other player
+         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
+         * @param isTSpin t-spin status code 0, 1, 2
+         * @param isAllMiniSpin keep b2b if a mini-spin by a non-T was done
+         * @param lines number of lines cleared
+         * @return final score calculated
+         */
+        int CalculateScore(int isTSpin, bool isAllMiniSpin, int lines);
 
         /**
          * @brief Clears lines on the board
@@ -262,18 +279,25 @@ class Board {
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
 
         /**
-         * @brief Adds garbage lines with the garbage queue
-         * @param num number of lines add
+         * @brief Adds garbage lines to the garbage queue
+         * @param int number of lines to add to the queue
          */
-        void AddGarbageToQueue(int num_lines);
+        void AddGarbageToQueue(int lines);
 
         /**
          * @brief Sends all garbage in the queue to the bottom of the board
          */
         void InsertGarbage();
 
+        /**
+         * @brief Sends garbage to opponents (cancels incoming garbage first)
+         * @param lines number of garbage lines to send
+         */
+        void SendGarbage(int lines);
+
     private:
         std::queue<int> garbage_queue;
+        int hole_col;
         /// @}
 
         /// @name Piece Factory
