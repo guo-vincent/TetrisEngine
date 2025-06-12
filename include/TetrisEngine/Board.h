@@ -19,6 +19,7 @@ Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 */
 
 #include "Piece.h"
+#include "Game.h"
 #include <vector>
 #include <array>
 #include <queue>
@@ -41,6 +42,8 @@ enum class RotationDirection {
     ONE_EIGHTY
 };
 
+class Game;
+
 /**
  * @brief Tetris game board controller.
  * 
@@ -48,8 +51,13 @@ enum class RotationDirection {
  */
 class Board {
     public:
-        Board(unsigned int seed);
+        Board(unsigned int seed, int playerNum, Game& gameAddress);
 
+    private:
+        int playerID;
+        Game& game;
+    
+    public:
         /// @name Game Flow
         /// @{
         /**
@@ -277,12 +285,19 @@ class Board {
         void AddGarbageToQueue(int lines);
 
         /**
-         * @brief Sends all garbage inb the queue to the bottom of the board
+         * @brief Sends all garbage in the queue to the bottom of the board
          */
         void InsertGarbage();
 
+        /**
+         * @brief Sends garbage to opponents (cancels incoming garbage first)
+         * @param lines number of garbage lines to send
+         */
+        void SendGarbage(int lines);
+
     private:
         std::queue<int> garbage_queue;
+        int hole_col;
         /// @}
 
         /// @name Piece Factory
