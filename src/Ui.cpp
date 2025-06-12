@@ -230,11 +230,11 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2(static_cast<float>(offsetX + 500), static_cast<float>(offsetY)));
 
-    DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY));
-    DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY + 250));
-    DrawHistoryPanel(commandHistory, playerNum, ImVec2((float)offsetX + 500, (float)offsetY + 250));
+    DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY)));
+    DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY + 300)));
+    DrawHistoryPanel(commandHistory, playerNum, ImVec2(static_cast<float>(offsetX + 500), static_cast<float>(offsetY + 300)));
     DrawGarbagePanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX, (float)offsetY + 650));
 
     ImGui::PopID();
