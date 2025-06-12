@@ -101,7 +101,7 @@ bool DrawControlsPanel(Board& board,
             board.Reset();
             commandHistory.push_back("Reset Board");
         }
-        
+
         // erase first command if bigger than 10
         if (commandHistory.size() > 10) {
             commandHistory.erase(commandHistory.begin());
@@ -221,7 +221,7 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY), 5);
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
 
     if (IsKeyPressed(KEY_T)) {
         game.Reset();
