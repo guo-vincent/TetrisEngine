@@ -3,11 +3,14 @@
 
 #include "Board.h"
 #include <vector>
+#include <queue>
 #include <memory>
 #include <random>
 #include <stdexcept>
 
 namespace tetris {
+
+class Board;
 
 class Game {
     public:
@@ -15,13 +18,16 @@ class Game {
 
         explicit Game(size_t numPlayers) : m_seed(std::random_device{}()) {
             for (size_t i = 0; i < numPlayers; ++i) {
-                addPlayer();
+                addPlayer((int)i);
+                pending_garbage_queues.push_back(std::queue<int>());
             }
         }
 
-        void addPlayer() {
-            m_boards.emplace_back(std::make_unique<Board>(m_seed));
+        void addPlayer(int playerID) {
+            m_boards.emplace_back(std::make_unique<Board>(m_seed, playerID, *this));
         }
+
+        void Reset();
 
         // I doubt we'll be using const Game, but here you go
         Board& getBoard(size_t index) {
@@ -49,9 +55,12 @@ class Game {
 
         size_t playerCount() const noexcept { return m_boards.size(); }
 
+        void TransferGarbage(int sendingPlayerID, int lines);
+
     private:
         std::vector<std::unique_ptr<Board>> m_boards;
         unsigned int m_seed;
+        std::vector<std::queue<int>> pending_garbage_queues;
     };
 } // namespace tetris
 

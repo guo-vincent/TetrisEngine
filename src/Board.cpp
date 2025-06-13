@@ -1,5 +1,6 @@
 #include "../include/TetrisEngine/Board.h"
 #include "../include/TetrisEngine/Piece.h"
+#include "../include/TetrisEngine/Game.h"
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
@@ -9,7 +10,7 @@
 #include <raylib.h>
 
 namespace tetris {
-    Board::Board(unsigned int seed) : rng(seed),
+    Board::Board(unsigned int seed, int playerNum, Game& gameAddress) : rng(seed), playerID(playerNum), game(gameAddress),
         grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }}, 
         grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} 
     {
@@ -25,6 +26,8 @@ namespace tetris {
         linesClearedTotal = 0;
         index = 0;
         back_to_back = 0;
+        combo = 0;
+        garbage_count = 0;
         lastMoveWasRotation = false;
         last_piece_is_none = true;
         canHold = true;
@@ -159,60 +162,9 @@ namespace tetris {
         // Clear lines and get count
         int lines = ClearFullLines();
 
-        // Score calculation
-        int baseScore = 0;
-        bool isB2BEligible = false;
+        if (lines == 0) InsertGarbage();
 
-        if (isTSpin == 2) {         // full t-spin
-            if (lines == 0) baseScore = 400;
-            else if (lines == 1) {
-                baseScore = 800;
-                isB2BEligible = true;
-            }
-            else if (lines == 2) {
-                baseScore = 1200;
-                isB2BEligible = true;
-            }
-            else if (lines == 3) {
-                baseScore = 1600;
-                isB2BEligible = true;
-            }
-        } else if (isTSpin == 1) {  // t-spin mini
-            if (lines == 0) baseScore = 100;
-            else if (lines == 1) {
-                baseScore = 200;
-                isB2BEligible = true;
-            }
-            else if (lines == 2) {
-                baseScore = 400;
-                isB2BEligible = true;
-            }
-        } else {
-            if (lines == 1) baseScore = 100;
-            else if (lines == 2) baseScore = 300;
-            else if (lines == 3) baseScore = 500;
-            else if (lines == 4) {
-                baseScore = 800;
-                isB2BEligible = true;
-            }
-            if (isAllMiniSpin) {
-                baseScore += 50;
-                isB2BEligible = true;
-            }
-        }
-
-        // Apply B2B bonus
-        if (isB2BEligible) {
-            if (back_to_back > 0) {
-                baseScore = baseScore * 3 / 2; // 1.5x bonus
-            }
-            back_to_back++;
-        } else if (lines > 0) {
-            // Reset B2B if cleared lines without T-spin/Tetris
-            back_to_back = 0;
-        }
-
-        score += baseScore;
+        score += CalculateScore(isTSpin, isAllMiniSpin, lines);
         linesClearedTotal += lines;
 
         // Reset current piece
@@ -222,6 +174,69 @@ namespace tetris {
         canHold = true;
 
         // Game over is checked in SpawnNewPiece, not here
+    }
+
+    int Board::CalculateScore(int isTSpin, bool isAllMiniSpin, int lines) {
+        // Score calculation
+        int baseScore = 0;
+        int baseGarbage = 0;
+        bool isB2BEligible = false;
+
+        if (isTSpin == 2) {         // full t-spin
+            if (lines > 0){
+                baseGarbage = 2*lines;
+                isB2BEligible = true;
+            }
+        } else if (isTSpin == 1) {  // t-spin mini
+            if (lines > 0){
+                baseGarbage = lines - 1;
+                isB2BEligible = true;
+            }
+        } else {
+            if (lines > 1){
+                baseGarbage = 1<<(lines-2);
+                if (lines == 4) isB2BEligible = true;
+            }
+            if (isAllMiniSpin && lines > 0) {
+                isB2BEligible = true;
+            }
+        }
+
+        // Apply B2B bonus
+        if (isB2BEligible) {
+            if (back_to_back > 0) {
+                baseGarbage++;
+            }
+            back_to_back++;
+        } else if (lines > 0) {
+            // B2B Charging 
+            if (back_to_back >= 4){
+                for (int i = 0; i < 3; i++){
+                    if (back_to_back%3 > i){
+                        SendGarbage(back_to_back/3 + 1);
+                    } else {
+                        SendGarbage(back_to_back/3);
+                    }
+                }
+            }
+            back_to_back = 0;
+        }
+
+        // Apply Combo bonus
+        if (lines > 0){
+            if (baseGarbage == 0){
+                baseGarbage = static_cast<int>(log(1.0 + (1.25*combo)));
+            } else {
+                baseGarbage *= static_cast<int>(1 + (0.25*combo));
+            }
+            combo++;
+        } else {
+            combo = 0;
+        }
+
+        SendGarbage(baseGarbage);
+
+        return baseScore;
     }
 
     int Board::ClearFullLines() {
@@ -256,6 +271,60 @@ namespace tetris {
             }
         }
         return lines;
+    }
+
+    void Board::AddGarbageToQueue(int lines) {
+        if (lines < 1) return;
+        garbage_queue.push(lines);
+        garbage_count += lines;
+    }
+
+    void Board::InsertGarbage(){
+        int total_garbage_lines = 0;
+        bool garbage_broken = false;
+        while(!garbage_queue.empty() && total_garbage_lines < 8){
+            // generate random hole if no previous
+            if (hole_col == -1) hole_col = rand()%10; //replace with better random number generator
+
+            // prevent exceeding garbage cap of 8
+            int garbage_lines = garbage_queue.front();
+            if (garbage_lines + total_garbage_lines > 8) {
+                garbage_lines = 8 - total_garbage_lines;
+                garbage_queue.front() -= garbage_lines;
+                garbage_broken = true;
+            } else {
+                garbage_queue.pop();
+            }
+            total_garbage_lines += garbage_lines;
+
+            // insert garbage
+            std::rotate(grid.begin(), grid.end()-(garbage_lines*10), grid.end());
+            for (int i = 0; i < garbage_lines*10; i++){
+                grid[i] = (i%10 != hole_col) ? PieceType::G : PieceType::EMPTY;
+            }
+
+            garbage_count -= garbage_lines;
+
+            if (!garbage_broken) hole_col = -1;
+        }
+    }
+
+    void Board::SendGarbage(int lines) {
+        //cancel active garbage
+        while (lines != 0 && !garbage_queue.empty()) {
+            if (lines >= garbage_queue.front()){
+                lines -= garbage_queue.front();
+                garbage_count -= garbage_queue.front();
+                garbage_queue.pop();
+            } else {
+                garbage_queue.front() -= lines;
+                garbage_count -= lines;
+                lines = 0;
+                
+            }
+        }
+
+        if (lines != 0) game.TransferGarbage(playerID, lines);
     }
 
     void Board::InitializeGrid() {

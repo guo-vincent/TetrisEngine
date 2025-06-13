@@ -31,6 +31,7 @@ Color GetColorForPiece(PieceType pt) {
         {PieceType::Z, RED},
         {PieceType::J, BLUE},
         {PieceType::L, ORANGE},
+        {PieceType::G, LIGHTGRAY}
     };
     return colorMap.count(pt) ? colorMap[pt] : RAYWHITE;
 }
@@ -99,6 +100,14 @@ bool DrawControlsPanel(Board& board,
         if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
             board.Reset();
             commandHistory.push_back("Reset Board");
+        }
+
+        static int garbage_lines = 0;
+        ImGui::InputInt("Garbage", &garbage_lines);
+
+        if (ImGui::Button("Add Garbage")) {
+            board.AddGarbageToQueue(garbage_lines);
+            commandHistory.push_back("Added garbage lines to queue");
         }
         
         // erase first command if bigger than 10
@@ -176,6 +185,23 @@ void DrawHistoryPanel(const std::vector<std::string>& history,
     ImGui::End();
 }
 
+void DrawGarbagePanel(const Board& board, 
+                   int playerNum,
+                   const ImVec2& SetNextWindowPosVector,
+                   const ImVec2& SetNextWindowSizeVector) {
+    ImGui::SetNextWindowPos(SetNextWindowPosVector);
+    ImGui::SetNextWindowSize(SetNextWindowSizeVector);
+    std::string title = "Garbage Stats##" + std::to_string(playerNum);
+    ImGui::Begin(title.c_str());
+    std::string b2b = "Back to Back: " + std::to_string(board.GetB2BChain());
+    std::string combo = "Combo: " + std::to_string(board.GetCombo());
+    std::string garbage = "Garbage in Queue: " + std::to_string(board.GetGarbageQueue());
+    ImGui::TextUnformatted(b2b.c_str());
+    ImGui::TextUnformatted(combo.c_str());
+    ImGui::TextUnformatted(garbage.c_str());
+    ImGui::End();
+}
+
 void DrawBoardGrid(const Board& board,
                    int offsetX,
                    int offsetY,
@@ -204,11 +230,12 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2(static_cast<float>(offsetX + 500), static_cast<float>(offsetY)));
 
-    DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY));
-    DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2((float)offsetX + 350, (float)offsetY + 250));
-    DrawHistoryPanel(commandHistory, playerNum, ImVec2((float)offsetX + 500, (float)offsetY + 250));
+    DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY)));
+    DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY + 300)));
+    DrawHistoryPanel(commandHistory, playerNum, ImVec2(static_cast<float>(offsetX + 500), static_cast<float>(offsetY + 300)));
+    DrawGarbagePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX), static_cast<float>(offsetY + 650)));
 
     ImGui::PopID();
 

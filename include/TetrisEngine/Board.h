@@ -19,8 +19,10 @@ Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 */
 
 #include "Piece.h"
+#include "Game.h"
 #include <vector>
 #include <array>
+#include <queue>
 #include <memory> 
 #include <bitset>
 #include <functional>
@@ -40,6 +42,8 @@ enum class RotationDirection {
     ONE_EIGHTY
 };
 
+class Game;
+
 /**
  * @brief Tetris game board controller.
  * 
@@ -47,8 +51,13 @@ enum class RotationDirection {
  */
 class Board {
     public:
-        Board(unsigned int seed);
+        Board(unsigned int seed, int playerNum, Game& gameAddress);
 
+    private:
+        int playerID;
+        Game& game;
+    
+    public:
         /// @name Game Flow
         /// @{
         /**
@@ -94,7 +103,7 @@ class Board {
         void HardDropActivePiece();
 
         /**
-         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset
+         * @brief holds a piece, and disables further swaps until another piece has been dropped OR board is reset.
          */
         void HoldPiece();
 
@@ -151,6 +160,24 @@ class Board {
          * @return Cumulative lines cleared this game
          */
         int GetLinesCleared() const { return linesClearedTotal; }
+
+        /**
+         * @brief Get current back to back. 
+         * @return Current B2B chain
+         */
+        int GetB2BChain() const { return back_to_back; }
+
+        /**
+         * @brief Get current combo. 
+         * @return Current combo
+         */
+        int GetCombo() const { return combo; }
+
+        /**
+         * @brief Gets total garbage currently in the queue.
+         * @return Lines of garbage in queue
+         */
+        int GetGarbageQueue() const { return garbage_count; }
 
         /**
          * @brief Get visible board state for rendering.
@@ -230,9 +257,18 @@ class Board {
     public:
         /**
          * @brief Places piece on grid, clears lines, and checks game over.
-         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
          */
         void LockActivePiece();
+
+        /**
+         * @brief Calculates score and garbage to be sent to other player
+         * Based on the following scoring guidelines: https://tetris.fandom.com/wiki/Scoring
+         * @param isTSpin t-spin status code 0, 1, 2
+         * @param isAllMiniSpin keep b2b if a mini-spin by a non-T was done
+         * @param lines number of lines cleared
+         * @return final score calculated
+         */
+        int CalculateScore(int isTSpin, bool isAllMiniSpin, int lines);
 
         /**
          * @brief Clears lines on the board
@@ -259,10 +295,33 @@ class Board {
          * @return True if position is valid. False otherwise
          */
         bool IsValidPosition(uint16_t piece_representation, Point top_left_pos) const;
+
+        /**
+         * @brief Adds garbage lines to the garbage queue
+         * @param int number of lines to add to the queue
+         */
+        void AddGarbageToQueue(int lines);
+
+        /**
+         * @brief Sends all garbage in the queue to the bottom of the board
+         */
+        void InsertGarbage();
+
+        /**
+         * @brief Sends garbage to opponents (cancels incoming garbage first)
+         * @param lines number of garbage lines to send
+         */
+        void SendGarbage(int lines);
+
+    private:
+        std::queue<int> garbage_queue;
+        int garbage_count;
+        int hole_col;
         /// @}
 
         /// @name Piece Factory
         /// @{
+    public:
         /**
          * @brief Given a PieceType, returns a unique_ptr containing an instance of said Piece
          * @param type tetris::PieceType of tetronimo
@@ -309,6 +368,7 @@ class Board {
 
     private:
         int back_to_back;
+        int combo;
         mutable bool lastMoveWasRotation;
         /// @}
 
