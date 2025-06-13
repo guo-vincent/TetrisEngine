@@ -123,6 +123,19 @@ bool DrawControlsPanel(Board& board,
         }
         
         
+        // TODO: without using a timer, any value except 0 triggers this if. Number of Frames is not a good measure since it becomes 
+        // inflexible if we change frame rate. Instead use GetFrameTime(), built into Raylib.
+        // gravity implementation
+        if(gravity % 4){
+            if (!board.MoveActivePiece(0, -1)) {
+                board.LockActivePiece();
+
+            if (!board.SpawnRandomPiece()) gameOver = true;
+                board.GetNextQueue();                
+        }
+        }
+        
+        
         // erase first command if bigger than 10
         if (commandHistory.size() > 10) {
             commandHistory.erase(commandHistory.begin());
