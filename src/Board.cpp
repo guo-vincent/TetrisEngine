@@ -274,6 +274,7 @@ namespace tetris {
     }
 
     void Board::AddGarbageToQueue(int lines) {
+        if (lines < 1) return;
         garbage_queue.push(lines);
         garbage_count += lines;
     }
