@@ -136,7 +136,7 @@ else()
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
         target_compile_options(TetrisEngineCore PRIVATE
-            -Weverything -Wno-c++98-compat
+            -Wall
         )
     endif()
 endif()
