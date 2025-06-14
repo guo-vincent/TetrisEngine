@@ -1,6 +1,7 @@
-#include "TetrisEngine/Board.h"
-#include "TetrisEngine/Piece.h"
-#include "TetrisEngine/Game.h"
+#include "../include/TetrisEngine/Board.h"
+#include "../include/TetrisEngine/Piece.h"
+#include "../include/TetrisEngine/Game.h"
+#include "../include/TetrisEngine/UtilFunctions.h"
 #include <algorithm>
 #include <cassert>
 #include <iomanip>

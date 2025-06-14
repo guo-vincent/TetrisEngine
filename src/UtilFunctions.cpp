@@ -1,4 +1,4 @@
-#include "TetrisEngine/UtilFunctions.h"
+#include "../include/TetrisEngine/UtilFunctions.h"
 
 static constexpr double MicrosecondsToSeconds = 0.000001;
 static constexpr double FramesPerSecond = 60.0;
@@ -19,7 +19,7 @@ namespace tetris {
     void GravityClock::update() {
         auto now = std::chrono::steady_clock::now();
         std::chrono::microseconds elapsedMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
-        double elapsedFrames = static_cast<double>(elapsedMicroseconds.count()) * MicrosecondsToSeconds * FramesPerSecond;
+        double elapsedFrames = elapsedMicroseconds.count() * MicrosecondsToSeconds * FramesPerSecond;
         
         start = now;
         totalElapsedFrames += elapsedFrames;
@@ -45,14 +45,5 @@ namespace tetris {
         double secondsAfterDelay = (totalElapsedFrames - gravityRampUpDelay) / FramesPerSecond;
         int increments = static_cast<int>(secondsAfterDelay);
         return initialGravity + increments * gravityIncrement;
-    }
-
-    void GravityClock::reset(double initialG, double GRampUpDelay, double GIncrement) {
-        totalElapsedFrames = 0;
-        gravityAccumulator = 0.0;
-
-        initialGravity = initialG;
-        gravityRampUpDelay = GRampUpDelay;
-        gravityIncrement = GIncrement;
     }
 }
