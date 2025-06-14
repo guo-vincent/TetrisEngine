@@ -1,4 +1,4 @@
-#include "../include/TetrisEngine/UtilFunctions.h"
+#include "TetrisEngine/UtilFunctions.h"
 
 static constexpr double MicrosecondsToSeconds = 0.000001;
 static constexpr double FramesPerSecond = 60.0;
