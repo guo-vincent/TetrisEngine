@@ -1,5 +1,5 @@
-#include "../include/TetrisEngine/Game.h"
-#include "../include/TetrisEngine/Board.h"
+#include "TetrisEngine/Game.h"
+#include "TetrisEngine/Board.h"
 
 namespace tetris {
     void Game::Reset() {
@@ -8,8 +8,8 @@ namespace tetris {
         }
     }
 
-    void Game::TransferGarbage(int sendingPlayerID, int lines){
-        int target_player = (sendingPlayerID) ? 0 : 1; // targetting only considers 2 players 
+    void Game::TransferGarbage(size_t sendingPlayerID, int lines){
+        size_t target_player = (sendingPlayerID) ? 0u : 1u; // targetting only considers 2 players 
         Board &target_board = getBoard(target_player);
 
         // cancel pending garbage

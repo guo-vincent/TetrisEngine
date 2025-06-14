@@ -53,6 +53,14 @@ class Board {
     public:
         Board(unsigned int seed, int playerNum, Game& gameAddress);
 
+        // disable copy semantics
+        Board(const Board&)            = delete;
+        Board& operator=(const Board&) = delete;
+
+        // you can still allow moves if you want
+        Board(Board&&)                 = default;
+        Board& operator=(Board&&)      = delete;
+
     private:
         int playerID;
         Game& game;

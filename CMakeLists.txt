@@ -94,17 +94,44 @@ add_library(TetrisEngineCore STATIC
 
 if(MSVC)
     target_compile_options(TetrisEngineCore PRIVATE
-        /W4         # High warning level
-        /WX         # Treat warnings as errors
-        /permissive-  # Strict standard conformance
-        /sdl        # Enable additional security warnings
-        /Wall       # Enable *almost* all warnings, but note this includes noisy ones
+        /W4
+        # Uncomment this for strict
+        # /WX
+        /permissive-
+        /sdl
+        /Wall
+
+        # suppress padding warning
+        /wd4820
+        # suppress unreferenced-inline removal
+        /wd4514
+        # suppress size_t→int and signed/unsigned conversion warnings
+        /wd4267
+        /wd4365
+        /wd4710     # “function not inlined” (std::…::_Xrange, bad_array_new_length, etc.)
+        /wd4711     # “function selected for automatic inline expansion”
+
+        /external:anglebrackets 
+        /external:W0
     )
 else()
     # GCC/Clang
     target_compile_options(TetrisEngineCore PRIVATE
         -Wall -Wextra -Wpedantic
-        -Wnon-virtual-dtor -Woverloaded-virtual -Wconversion
+        -Wnon-virtual-dtor -Woverloaded-virtual 
+
+        # suppress “padding added” in GCC/Clang
+        -Wno-padded
+        # suppress unused-inline warning
+        -Wno-unused-function
+
+        # suppress “size_t → int” and signed/unsigned mismatch
+        -Wno-conversion
+        -Wno-sign-conversion
+
+        # suppress “could not inline” notes
+        -Wno-inline
+        -Wno-error=inline
     )
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")

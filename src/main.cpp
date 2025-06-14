@@ -2,9 +2,9 @@
 
 // Testing imports
 #include <onnxruntime_cxx_api.h>
-#include "../include/TetrisEngine/Board.h"
-#include "../include/TetrisEngine/Game.h"
-#include "../include/TetrisEngine/Ui.h"
+#include "TetrisEngine/Board.h"
+#include "TetrisEngine/Game.h"
+#include "TetrisEngine/Ui.h"
 #include <raylib.h>
 #include <imgui.h>
 #include <rlImGui.h>

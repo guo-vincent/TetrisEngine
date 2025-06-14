@@ -1,7 +1,7 @@
 // UI.cpp
-#include "../include/TetrisEngine/Ui.h"
-#include "../include/TetrisEngine/Board.h"
-#include "../include/TetrisEngine/Game.h"
+#include "TetrisEngine/Ui.h"
+#include "TetrisEngine/Board.h"
+#include "TetrisEngine/Game.h"
 #include <raylib.h>
 #include <imgui.h>
 #include <rlImGui.h>
@@ -17,6 +17,8 @@ std::string PieceTypeToString(PieceType pt) {
         case PieceType::Z: return "Z";
         case PieceType::J: return "J";
         case PieceType::L: return "L";
+        case PieceType::G: return "G";
+        case PieceType::EMPTY: return "E";
         default: return " ";
     }
 }

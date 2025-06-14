@@ -51,11 +51,11 @@ class Game {
             return *m_boards.at(0);
         }
 
-        const unsigned int getRNG() noexcept { return m_seed; }
+        unsigned int getRNG() const noexcept { return m_seed; }
 
         size_t playerCount() const noexcept { return m_boards.size(); }
 
-        void TransferGarbage(int sendingPlayerID, int lines);
+        void TransferGarbage(size_t sendingPlayerID, int lines);
 
     private:
         std::vector<std::unique_ptr<Board>> m_boards;
