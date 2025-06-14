@@ -59,6 +59,7 @@ sudo apt-get install cmake
 
 ```bash
 brew install cmake
+brew install pkg-config
 ```
 
 #### Windows (Doxygen)

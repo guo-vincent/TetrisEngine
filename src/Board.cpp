@@ -1,7 +1,6 @@
-#include "../include/TetrisEngine/Board.h"
-#include "../include/TetrisEngine/Piece.h"
-#include "../include/TetrisEngine/Game.h"
-#include "../include/TetrisEngine/UtilFunctions.h"
+#include "TetrisEngine/Board.h"
+#include "TetrisEngine/Piece.h"
+#include "TetrisEngine/Game.h"
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
@@ -11,7 +10,7 @@
 #include <raylib.h>
 
 namespace tetris {
-    Board::Board(unsigned int seed, int playerNum, Game& gameAddress) : rng(seed), playerID(playerNum), game(gameAddress),
+    Board::Board(unsigned int seed, int playerNum, Game& gameAddress) : playerID(playerNum), game(gameAddress), rng(seed),
         grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }}, 
         grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} 
     {
@@ -150,11 +149,11 @@ namespace tetris {
         bool isAllMiniSpin = IsAllMiniSpin();
 
         // Write the piece to the grid (only once)
-        for (int i = 0; i < 16; ++i) {
+        for (size_t i = 0; i < 16; ++i) {
             if (repr & (1 << (15 - i))) {
-                int row = y + (i / 4);
-                int col = x + (i % 4);
-                if (col >= 0 && col < BOARD_WIDTH && row >= 0 && row < TOTAL_BOARD_HEIGHT) {
+                size_t row = y + (i / 4);
+                size_t col = x + (i % 4);
+                if (col < BOARD_WIDTH && row < TOTAL_BOARD_HEIGHT) {
                     grid[row * BOARD_WIDTH + col] = currentPiece->GetType();
                 }
             }
@@ -243,10 +242,10 @@ namespace tetris {
     int Board::ClearFullLines() {
         int lines = 0;
         // Iterate from bottom (row 0) to top (row 19)
-        for (int row = 0; row < VISIBLE_BOARD_HEIGHT; ++row) {
+        for (size_t row = 0; row < VISIBLE_BOARD_HEIGHT; ++row) {
             bool full = true;
             // Check if all cells in the row are filled
-            for (int col = 0; col < BOARD_WIDTH; ++col) {
+            for (size_t col = 0; col < BOARD_WIDTH; ++col) {
                 if (grid[row * BOARD_WIDTH + col] == PieceType::EMPTY) {
                     full = false;
                     break;
@@ -362,6 +361,8 @@ namespace tetris {
             case PieceType::S: return std::make_unique<PieceS>();
             case PieceType::T: return std::make_unique<PieceT>();
             case PieceType::Z: return std::make_unique<PieceZ>();
+            case PieceType::G: return nullptr;
+            case PieceType::EMPTY: return nullptr;
             default: return nullptr;
         }
     }
@@ -438,6 +439,8 @@ namespace tetris {
             case PieceType::S: return GREEN;
             case PieceType::T: return PURPLE;
             case PieceType::Z: return RED;
+            case PieceType::G: return GRAY;
+            case PieceType::EMPTY: return BLACK;
             default: return GRAY;
         }
     }

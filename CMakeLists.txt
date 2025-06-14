@@ -19,15 +19,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Cross-platform warning configuration
-if(MSVC)
-    add_compile_options(/W4 /WX /permissive-)
-else()
-    add_compile_options(
-        -Wall -Wextra -Wpedantic -Werror
-        -Wnon-virtual-dtor -Woverloaded-virtual -Wconversion
-        $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Weverything -Wno-c++98-compat>
-    )
-endif()
 
 # Configuration options
 option(USE_GPU "Enable GPU acceleration for neural networks" OFF)
@@ -102,6 +93,55 @@ add_library(TetrisEngineCore STATIC
     src/UtilFunctions.cpp
 )
 
+if(MSVC)
+    target_compile_options(TetrisEngineCore PRIVATE
+        /W4
+        # Uncomment this for strict
+        # /WX
+        /permissive-
+        /sdl
+        /Wall
+
+        # suppress padding warning
+        /wd4820
+        # suppress unreferenced-inline removal
+        /wd4514
+        # suppress size_t→int and signed/unsigned conversion warnings
+        /wd4267
+        /wd4365
+        /wd4710     # “function not inlined” (std::…::_Xrange, bad_array_new_length, etc.)
+        /wd4711     # “function selected for automatic inline expansion”
+
+        /external:anglebrackets 
+        /external:W0
+    )
+else()
+    # GCC/Clang
+    target_compile_options(TetrisEngineCore PRIVATE
+        -Wall -Wextra -Wpedantic
+        -Wnon-virtual-dtor -Woverloaded-virtual 
+
+        # suppress “padding added” in GCC/Clang
+        -Wno-padded
+        # suppress unused-inline warning
+        -Wno-unused-function
+
+        # suppress “size_t → int” and signed/unsigned mismatch
+        -Wno-conversion
+        -Wno-sign-conversion
+
+        # suppress “could not inline” notes
+        -Wno-inline
+        -Wno-error=inline
+    )
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
+        target_compile_options(TetrisEngineCore PRIVATE
+            -Wall
+        )
+    endif()
+endif()
+
 target_include_directories(TetrisEngineCore PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
@@ -144,12 +184,14 @@ if(WIN32)
 endif()
 target_link_libraries(TetrisEngine PRIVATE TetrisEngineCore)
 
-# Copy the correct ONNX Runtime library post-build
-add_custom_command(TARGET TetrisEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:onnxruntime::onnxruntime>"
-        $<TARGET_FILE_DIR:TetrisEngine>
-)
+# Copy the correct ONNX Runtime library post-build -- only if windows
+if(WIN32)
+    add_custom_command(TARGET TetrisEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:onnxruntime::onnxruntime>"
+            $<TARGET_FILE_DIR:TetrisEngine>
+    )
+endif()
 
 # Installation targets (cross-platform)
 install(TARGETS TetrisEngine TetrisEngineCore
