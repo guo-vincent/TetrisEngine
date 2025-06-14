@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "Board.h"
+#include "UtilFunctions.h"
 #include <vector>
 #include <queue>
 #include <memory>
@@ -18,7 +19,7 @@ class Game {
 
         explicit Game(size_t numPlayers) : m_seed(std::random_device{}()) {
             for (size_t i = 0; i < numPlayers; ++i) {
-                addPlayer((int)i);
+                addPlayer(static_cast<int>(i));
                 pending_garbage_queues.push_back(std::queue<int>());
             }
         }
