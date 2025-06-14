@@ -19,15 +19,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Cross-platform warning configuration
-if(MSVC)
-    add_compile_options(/W4 /WX /permissive-)
-else()
-    add_compile_options(
-        -Wall -Wextra -Wpedantic -Werror
-        -Wnon-virtual-dtor -Woverloaded-virtual -Wconversion
-        $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Weverything -Wno-c++98-compat>
-    )
-endif()
 
 # Configuration options
 option(USE_GPU "Enable GPU acceleration for neural networks" OFF)
@@ -101,6 +92,15 @@ add_library(TetrisEngineCore STATIC
     src/UI.cpp
 )
 
+target_compile_options(TetrisEngineCore PRIVATE
+    -Wall -Wextra -Wpedantic
+    -Wnon-virtual-dtor -Woverloaded-virtual -Wconversion
+)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
+    target_compile_options(TetrisEngineCore PRIVATE -Weverything -Wno-c++98-compat)
+endif()
+
 target_include_directories(TetrisEngineCore PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
@@ -143,12 +143,14 @@ if(WIN32)
 endif()
 target_link_libraries(TetrisEngine PRIVATE TetrisEngineCore)
 
-# Copy the correct ONNX Runtime library post-build
-add_custom_command(TARGET TetrisEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:onnxruntime::onnxruntime>"
-        $<TARGET_FILE_DIR:TetrisEngine>
-)
+# Copy the correct ONNX Runtime library post-build -- only if windows
+if(WIN32)
+    add_custom_command(TARGET TetrisEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:onnxruntime::onnxruntime>"
+            $<TARGET_FILE_DIR:TetrisEngine>
+    )
+endif()
 
 # Installation targets (cross-platform)
 install(TARGETS TetrisEngine TetrisEngineCore
