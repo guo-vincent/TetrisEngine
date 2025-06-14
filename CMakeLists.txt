@@ -92,13 +92,23 @@ add_library(TetrisEngineCore STATIC
     src/UI.cpp
 )
 
-target_compile_options(TetrisEngineCore PRIVATE
-    -Wall -Wextra -Wpedantic
-    -Wnon-virtual-dtor -Woverloaded-virtual -Wconversion
-)
+if(MSVC)
+    target_compile_options(TetrisEngineCore PRIVATE
+        /W4
+        /WX
+    )
+else()
+    # GCC/Clang
+    target_compile_options(TetrisEngineCore PRIVATE
+        -Wall -Wextra -Wpedantic
+        -Wnon-virtual-dtor -Woverloaded-virtual -Wconversion
+    )
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
-    target_compile_options(TetrisEngineCore PRIVATE -Weverything -Wno-c++98-compat)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
+        target_compile_options(TetrisEngineCore PRIVATE
+            -Weverything -Wno-c++98-compat
+        )
+    endif()
 endif()
 
 target_include_directories(TetrisEngineCore PUBLIC
