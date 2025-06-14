@@ -94,8 +94,11 @@ add_library(TetrisEngineCore STATIC
 
 if(MSVC)
     target_compile_options(TetrisEngineCore PRIVATE
-        /W4
-        /WX
+        /W4         # High warning level
+        /WX         # Treat warnings as errors
+        /permissive-  # Strict standard conformance
+        /sdl        # Enable additional security warnings
+        /Wall       # Enable *almost* all warnings, but note this includes noisy ones
     )
 else()
     # GCC/Clang

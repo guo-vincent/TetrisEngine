@@ -437,6 +437,8 @@ namespace tetris {
             case PieceType::S: return GREEN;
             case PieceType::T: return PURPLE;
             case PieceType::Z: return RED;
+            case PieceType::G: return GRAY;
+            case PieceType::EMPTY: return BLACK;
             default: return GRAY;
         }
     }
