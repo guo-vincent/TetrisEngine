@@ -51,6 +51,7 @@ bool DrawControlsPanel(Board& board,
     ImGui::Begin(title.c_str());
     
     if (!gameOver) {
+
         // these controls were also reversed
         if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
             board.MoveActivePiece(-1, 0);
