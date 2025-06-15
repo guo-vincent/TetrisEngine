@@ -52,7 +52,6 @@ bool DrawControlsPanel(Board& board,
     
     if (!gameOver) {
 
-        // these controls were also reversed
         if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
             board.MoveActivePiece(-1, 0);
             commandHistory.push_back("Move Left");
@@ -231,6 +230,10 @@ bool DrawPlayer(Game& game,
     ImGui::PushID(playerNum);
 
     gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
+
+    if (IsKeyPressed(KEY_ENTER)) {
+        game.Reset();
+    }
 
     DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY)));
     DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY + 300)));
