@@ -22,6 +22,8 @@ class Game {
                 addPlayer(static_cast<int>(i));
                 pending_garbage_queues.push_back(std::queue<int>());
             }
+
+            gravityClock = GravityClock(0.02, 7200, 0.0035, [this](int rows) { this->moveAllPiecesDown(rows);} );
         }
 
         void addPlayer(int playerID) {
@@ -58,10 +60,14 @@ class Game {
 
         void TransferGarbage(size_t sendingPlayerID, int lines);
 
+        void moveAllPiecesDown(int row);
+        void Update();
+
     private:
         std::vector<std::unique_ptr<Board>> m_boards;
         unsigned int m_seed;
         std::vector<std::queue<int>> pending_garbage_queues;
+        GravityClock gravityClock;
     };
 } // namespace tetris
 

@@ -19,7 +19,7 @@ namespace tetris {
     void GravityClock::update() {
         auto now = std::chrono::steady_clock::now();
         std::chrono::microseconds elapsedMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
-        double elapsedFrames = elapsedMicroseconds.count() * MicrosecondsToSeconds * FramesPerSecond;
+        double elapsedFrames = static_cast<double>(elapsedMicroseconds.count()) * MicrosecondsToSeconds * FramesPerSecond;
         
         start = now;
         totalElapsedFrames += elapsedFrames;

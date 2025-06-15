@@ -115,6 +115,11 @@ class Board {
          */
         void HoldPiece();
 
+        /**
+         * @brief returns true if a piece is active
+         */
+        bool HasActivePiece() const { return currentPiece != nullptr; }
+
     private: 
         std::unique_ptr<Piece> held_piece;
         bool canHold;

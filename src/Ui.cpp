@@ -42,8 +42,7 @@ bool DrawControlsPanel(Board& board,
                        int playerNum,
                        std::vector<std::string>& commandHistory,
                        bool gameOver,
-                       const ImVec2& SetNextWindowPosVector,
-                       int gravity
+                       const ImVec2& SetNextWindowPosVector
                     )
 {
     ImGui::SetNextWindowPos(SetNextWindowPosVector);
@@ -112,25 +111,11 @@ bool DrawControlsPanel(Board& board,
             commandHistory.push_back("Added garbage lines to queue");
         }
         
-        /*
-        // TODO: without using a timer, any value except 0 triggers this if. Number of Frames is not a good measure since it becomes 
-        // inflexible if we change frame rate. Instead use GetFrameTime(), built into Raylib.
-        // gravity implementation
-        if(gravity % 4){
-            if (!board.MoveActivePiece(0, -1)) {
-                board.LockActivePiece();
-                if (!board.SpawnRandomPiece()) gameOver = true;
-                board.GetNextQueue();                
-            }
-        }
-        */
-        
         // erase first command if bigger than 10
         if (commandHistory.size() > 10) {
             commandHistory.erase(commandHistory.begin());
         }
     }
-
 
     if (gameOver) {
         ImGui::Text("Game Over!");
@@ -245,7 +230,7 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY), 5);
+    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
 
     DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY)));
     DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY + 300)));
