@@ -46,4 +46,13 @@ namespace tetris {
         int increments = static_cast<int>(secondsAfterDelay);
         return initialGravity + increments * gravityIncrement;
     }
+
+    void GravityClock::reset(double initialG, double GRampUpDelay, double GIncrement) {
+        totalElapsedFrames = 0;
+        gravityAccumulator = 0.0;
+
+        initialGravity = initialG;
+        gravityRampUpDelay = GRampUpDelay;
+        gravityIncrement = GIncrement;
+    }
 }
