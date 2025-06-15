@@ -6,6 +6,8 @@ namespace tetris {
         for (size_t i = 0; i < playerCount(); i++) {
             getBoard(i).Reset();
         }
+
+        gravityClock.reset();
     }
 
     void Game::TransferGarbage(size_t sendingPlayerID, int lines){

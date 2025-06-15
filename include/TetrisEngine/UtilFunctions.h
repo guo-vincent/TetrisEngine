@@ -17,6 +17,7 @@ namespace tetris {
             );
 
             void update();
+            void reset(double initialG = 0.02, double GRampUpDelay = 7200, double GIncrement = 0.0035);
             
             void setInitialGravity(double value) { initialGravity = value; }
             void setRampUpDelay(double value) { gravityRampUpDelay = value; }
@@ -27,7 +28,6 @@ namespace tetris {
             double totalElapsedFrames = 0;
             double gravityAccumulator = 0.0;
             
-            // Configurable parameters
             double initialGravity;
             double gravityRampUpDelay;
             double gravityIncrement;
