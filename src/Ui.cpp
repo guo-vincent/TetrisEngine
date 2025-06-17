@@ -97,10 +97,6 @@ bool DrawControlsPanel(Board& board,
             commandHistory.push_back("Rotate 180");
         }
 
-        if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
-            board.Reset();
-            commandHistory.push_back("Reset Board");
-        }
 
         static int garbage_lines = 0;
         ImGui::InputInt("Garbage", &garbage_lines);
@@ -231,7 +227,7 @@ bool DrawPlayer(Game& game,
 
     gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
 
-    if (IsKeyPressed(KEY_ENTER)) {
+    if (IsKeyPressed(KEY_T)) {
         game.Reset();
     }
 
