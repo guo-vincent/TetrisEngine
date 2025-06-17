@@ -96,13 +96,11 @@ namespace tetris {
         if (IsValidPosition(repr, newPos)) {
             currentPieceTopLeftPos = newPos;
             lastMoveWasRotation = false;
-            if (delta_y < 0) {
-                lockDelayTimer.Cancel();  // Cancel lock delay when moving down
-            }
-            else if (delta_x != 0 && lockDelayTimer.IsActive()) {
+            if (delta_x != 0 && lockDelayTimer.IsFirstTouch()) {
                 lockDelayTimer.Reset();   // Reset lock delay on horizontal movement
-            } else if (delta_y < 0) {
-                lockDelayTimer.Start();   // Start lock delay when downward move fails
+            } 
+            if (!IsValidPosition(repr, newPos + Point(0, -1))) {
+                lockDelayTimer.Start();   // Start lock delay if downward move fails
             } 
             return true;
         }
@@ -133,9 +131,12 @@ namespace tetris {
                 currentPiece->SetCurrentRotation(to_rot);
                 currentPieceTopLeftPos = test_pos;
                 lastMoveWasRotation = true;
-                if (lockDelayTimer.IsActive()) {
+                if (lockDelayTimer.IsFirstTouch()) {
                     lockDelayTimer.Reset();  // Reset lock delay on successful rotation
                 }
+                if (!IsValidPosition(new_repr, test_pos + Point(0, -1))) {
+                    lockDelayTimer.Start();   // Start lock delay if downward move fails
+                } 
                 return true;
             }
         }
@@ -620,8 +621,9 @@ namespace tetris {
     }
 
     bool Board::UpdateLockDelay(double deltaTime) {
-        if (lockDelayTimer.Update(deltaTime)) {
+        if (lockDelayTimer.Update(deltaTime) && !IsValidPosition(currentPiece->GetCurrentRepresentation(), currentPieceTopLeftPos + Point(0, -1))) {
             LockActivePiece();
+            SpawnRandomPiece(); // still needs game over detection
             return true;
         }
         return false;

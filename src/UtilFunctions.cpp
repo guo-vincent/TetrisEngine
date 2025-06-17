@@ -56,23 +56,25 @@ namespace tetris {
         gravityIncrement = GIncrement;
     }
 
-    LockDelayTimer::LockDelayTimer() : resetsLeft(15), elapsed(0.0), active(false) {}
+    LockDelayTimer::LockDelayTimer() : resetsLeft(15), elapsed(0.0), active(false), firstTouch(false) {}
 
     void LockDelayTimer::Start() {
-        if (resetsLeft > 0) {
+        if (!active) {
+            firstTouch = true;
             active = true;
-            elapsed = 0.0;
         }
     }
 
     void LockDelayTimer::Reset() {
         if (resetsLeft > 0) {
             resetsLeft--;
+            active = false;
             elapsed = 0.0;
         }
     }
 
     void LockDelayTimer::Cancel() {
+        firstTouch = false;
         active = false;
         elapsed = 0.0;
     }
@@ -90,6 +92,10 @@ namespace tetris {
 
     bool LockDelayTimer::IsActive() const {
         return active;
+    }
+
+    bool LockDelayTimer::IsFirstTouch() const {
+        return firstTouch;
     }
 
     int LockDelayTimer::GetResetsLeft() const {

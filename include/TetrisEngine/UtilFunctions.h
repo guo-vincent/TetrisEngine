@@ -48,6 +48,7 @@ namespace tetris {
             void Cancel();
             bool Update(double deltaTime);
             bool IsActive() const;
+            bool IsFirstTouch() const;
             int GetResetsLeft() const;
             void ResetCounter();
 
@@ -56,6 +57,7 @@ namespace tetris {
             int resetsLeft;
             double elapsed;
             bool active;
+            bool firstTouch;
     };
 }
 
