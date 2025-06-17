@@ -492,15 +492,6 @@ namespace tetris {
                 queue.push_back(grab_bag_next[look_index%grab_bag.size()]);
             }
         }
-        // std::cout << "Bags: ";
-        // for (auto piece : grab_bag){
-        //     std::cout << static_cast<int>(piece) << " ";
-        // }
-        // for (auto piece : grab_bag_next){
-        //     std::cout << static_cast<int>(piece) << " ";
-        // }
-        // std::cout << "\n";
-        // std::cout << "Index: " << index << "\n";
         return queue;
     }
 

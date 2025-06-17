@@ -90,6 +90,7 @@ add_library(TetrisEngineCore STATIC
     src/NeuralNetwork.cpp
     src/Game.cpp
     src/UI.cpp
+    src/UtilFunctions.cpp
 )
 
 if(MSVC)

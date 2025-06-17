@@ -51,6 +51,7 @@ int main() {
 
     // main loop add game stuff here
     while (!WindowShouldClose()) {
+        game.Update();
         BeginDrawing();
         ClearBackground(BLACK);
 
