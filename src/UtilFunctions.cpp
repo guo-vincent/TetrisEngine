@@ -55,4 +55,48 @@ namespace tetris {
         gravityRampUpDelay = GRampUpDelay;
         gravityIncrement = GIncrement;
     }
+
+    LockDelayTimer::LockDelayTimer() : resetsLeft(15), elapsed(0.0), active(false) {}
+
+    void LockDelayTimer::Start() {
+        if (resetsLeft > 0) {
+            active = true;
+            elapsed = 0.0;
+        }
+    }
+
+    void LockDelayTimer::Reset() {
+        if (resetsLeft > 0) {
+            resetsLeft--;
+            elapsed = 0.0;
+        }
+    }
+
+    void LockDelayTimer::Cancel() {
+        active = false;
+        elapsed = 0.0;
+    }
+
+    bool LockDelayTimer::Update(double deltaTime) {
+        if (!active) return false;
+        
+        elapsed += deltaTime;
+        if (elapsed >= DELAY_DURATION) {
+            active = false;
+            return true;
+        }
+        return false;
+    }
+
+    bool LockDelayTimer::IsActive() const {
+        return active;
+    }
+
+    int LockDelayTimer::GetResetsLeft() const {
+        return resetsLeft;
+    }
+
+    void LockDelayTimer::ResetCounter() {
+        resetsLeft = 15;
+    }
 }
