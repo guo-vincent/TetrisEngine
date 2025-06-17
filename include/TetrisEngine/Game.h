@@ -68,6 +68,7 @@ class Game {
         unsigned int m_seed;
         std::vector<std::queue<int>> pending_garbage_queues;
         GravityClock gravityClock;
+        double accumulatedTime = 0.0;
     };
 } // namespace tetris
 
