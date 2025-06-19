@@ -18,6 +18,7 @@ Rows (y):
 Cols: 0 1 2 3 4 5 6 7 8 9 (x)
 */
 
+#include "UtilFunctions.h"
 #include "Piece.h"
 #include "Game.h"
 #include <vector>
@@ -385,8 +386,14 @@ class Board {
         mutable bool lastMoveWasRotation;
         /// @}
 
-    // debugging only
+        LockDelayTimer lockDelayTimer;
+
     public:
+        bool UpdateLockDelay(double deltaTime);
+        bool IsInLockDelay() const;
+        void StartLockDelay();
+
+        // debugging only
         void PrintBoardText(bool show_hidden) const;
 };
 

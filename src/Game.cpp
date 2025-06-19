@@ -35,18 +35,19 @@ namespace tetris {
         }
     }
 
+    // This is so scuffed
     void Game::moveAllPiecesDown(int row) {
         for (int i = 0; i < row; i++) {  // Move one row at a time
             for (size_t j = 0; j < m_boards.size(); j++) {
-                if (m_boards[j]->HasActivePiece()) {  // Check if piece exists
-                    // Try to move down
-                    if (!m_boards[j]->MoveActivePiece(0, -1)) {
-                        // Lock piece if can't move down
-                        m_boards[j]->LockActivePiece();
-                        
-                        // Spawn new piece or handle game over
-                        if (!m_boards[j]->SpawnRandomPiece()) {
-                            // Handle game over (set flag, etc.)
+                Board& board = *m_boards[j];
+                // Skip boards in lock delay
+                if (board.IsInLockDelay()) continue;
+                
+                if (board.HasActivePiece()) {
+                    if (!board.MoveActivePiece(0, -1)) {
+                        // If moving down fails, start lock delay if not already started
+                        if (!board.IsInLockDelay()) {
+                            board.StartLockDelay();
                         }
                     }
                 }
@@ -55,7 +56,15 @@ namespace tetris {
     }
 
     void Game::Update() {
+        static auto lastTime = std::chrono::steady_clock::now();
+        auto now = std::chrono::steady_clock::now();
+        std::chrono::duration<double> deltaTime = now - lastTime;
+        lastTime = now;
+
         gravityClock.update();
+        for (std::unique_ptr<Board>& board : m_boards) {
+            board->UpdateLockDelay(deltaTime.count());
+        }
     }
 
 } // namespace tetris

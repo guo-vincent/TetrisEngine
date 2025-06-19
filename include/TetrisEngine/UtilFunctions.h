@@ -38,6 +38,27 @@ namespace tetris {
             // Helper to compute current gravity
             double _computeCurrentGravity() const;
     };
+
+    class LockDelayTimer {
+        public:
+            LockDelayTimer();
+
+            void Start();
+            void Reset();
+            void Cancel();
+            bool Update(double deltaTime);
+            bool IsActive() const;
+            bool IsFirstTouch() const;
+            int GetResetsLeft() const;
+            void ResetCounter();
+
+        private:
+            static constexpr double DELAY_DURATION = 0.5; // 0.5 seconds = 30 logical frames at 60 FPS
+            int resetsLeft;
+            double elapsed;
+            bool active;
+            bool firstTouch;
+    };
 }
 
 #endif UtilFunctions_H

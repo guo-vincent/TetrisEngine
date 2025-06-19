@@ -22,8 +22,18 @@ namespace tetris {
 
     // Represents a 2D point or offset (integer-based for board coordinates and kicks)
     struct Point {
-        int x = 0;
-        int y = 0;
+        int x;
+        int y;
+
+        Point() {
+            x = 0;
+            y = 0;
+        }
+
+        Point(int a, int b) {
+            x = a;
+            y = b;
+        }
 
         Point operator+(const Point& other) const {
             return {x + other.x, y + other.y};

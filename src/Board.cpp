@@ -1,6 +1,7 @@
-#include "TetrisEngine/Board.h"
-#include "TetrisEngine/Piece.h"
-#include "TetrisEngine/Game.h"
+#include "../include/TetrisEngine/Board.h"
+#include "../include/TetrisEngine/Piece.h"
+#include "../include/TetrisEngine/Game.h"
+#include "../include/TetrisEngine/UtilFunctions.h"
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
@@ -12,7 +13,8 @@
 namespace tetris {
     Board::Board(unsigned int seed, int playerNum, Game& gameAddress) : playerID(playerNum), game(gameAddress), rng(seed),
         grab_bag{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }}, 
-        grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }} 
+        grab_bag_next{ {PieceType::I, PieceType::J, PieceType::L, PieceType::O, PieceType::S, PieceType::T, PieceType::Z }},
+        lockDelayTimer()
     {
         Reset();
     }
@@ -32,6 +34,8 @@ namespace tetris {
         last_piece_is_none = true;
         canHold = true;
         SpawnRandomPiece();
+        lockDelayTimer.Cancel();
+        lockDelayTimer.ResetCounter();
     }
 
     PieceType Board::GetHeldPieceType() const {
@@ -42,7 +46,7 @@ namespace tetris {
     }
 
     bool Board::SpawnNewPiece(PieceType type) {
-        auto piece = CreatePieceByType(type);
+        std::unique_ptr<Piece> piece = CreatePieceByType(type);
         if (!piece) return false;
         uint16_t repr = piece->GetCurrentRepresentation();
         RotationState spawnRotation = RotationState::STATE_0;
@@ -59,6 +63,8 @@ namespace tetris {
         currentPieceTopLeftPos = spawnPos;
         last_piece_is_none = false;
         lastMoveWasRotation = false;
+        lockDelayTimer.Cancel();
+        lockDelayTimer.ResetCounter();
         return true;
     }
 
@@ -91,8 +97,15 @@ namespace tetris {
         if (IsValidPosition(repr, newPos)) {
             currentPieceTopLeftPos = newPos;
             lastMoveWasRotation = false;
+            if (delta_x != 0 && lockDelayTimer.IsFirstTouch()) {
+                lockDelayTimer.Reset();   // Reset lock delay on horizontal movement
+            } 
+            if (!IsValidPosition(repr, newPos + Point(0, -1))) {
+                lockDelayTimer.Start();   // Start lock delay if downward move fails
+            } 
             return true;
         }
+
         return false;
     }
 
@@ -119,6 +132,12 @@ namespace tetris {
                 currentPiece->SetCurrentRotation(to_rot);
                 currentPieceTopLeftPos = test_pos;
                 lastMoveWasRotation = true;
+                if (lockDelayTimer.IsFirstTouch()) {
+                    lockDelayTimer.Reset();  // Reset lock delay on successful rotation
+                }
+                if (!IsValidPosition(new_repr, test_pos + Point(0, -1))) {
+                    lockDelayTimer.Start();   // Start lock delay if downward move fails
+                } 
                 return true;
             }
         }
@@ -127,6 +146,7 @@ namespace tetris {
 
     void Board::HardDropActivePiece() {
         if (!currentPiece) return;
+        lockDelayTimer.Cancel();
         Point pos = currentPieceTopLeftPos;
         uint16_t repr = currentPiece->GetCurrentRepresentation();
         while (IsValidPosition(repr, {pos.x, pos.y - 1})) {
@@ -140,6 +160,7 @@ namespace tetris {
 
     void Board::LockActivePiece() {
         if (!currentPiece) return;
+        lockDelayTimer.Cancel();
         uint16_t repr = currentPiece->GetCurrentRepresentation();
         int x = currentPieceTopLeftPos.x;
         int y = currentPieceTopLeftPos.y;
@@ -528,6 +549,9 @@ namespace tetris {
         }
 
         canHold = false;
+
+        lockDelayTimer.Cancel();
+        lockDelayTimer.ResetCounter();
     }
 
     int Board::IsTSpin() const {
@@ -591,6 +615,23 @@ namespace tetris {
             }
         }
         return true;
+    }
+
+    void Board::StartLockDelay() {
+        lockDelayTimer.Start();
+    }
+
+    bool Board::UpdateLockDelay(double deltaTime) {
+        if (lockDelayTimer.Update(deltaTime) && !IsValidPosition(currentPiece->GetCurrentRepresentation(), currentPieceTopLeftPos + Point(0, -1))) {
+            LockActivePiece();
+            SpawnRandomPiece(); // still needs game over detection
+            return true;
+        }
+        return false;
+    }
+
+    bool Board::IsInLockDelay() const {
+        return lockDelayTimer.IsActive();
     }
 
     void Board::PrintBoardText(bool show_hidden = false) const {

@@ -52,6 +52,7 @@ bool DrawControlsPanel(Board& board,
     
     if (!gameOver) {
 
+        // these controls were also reversed
         if (ImGui::Button("Left") || IsKeyPressed(KEY_LEFT)) {
             board.MoveActivePiece(-1, 0);
             commandHistory.push_back("Move Left");
@@ -97,6 +98,10 @@ bool DrawControlsPanel(Board& board,
             commandHistory.push_back("Rotate 180");
         }
 
+        if (ImGui::Button("Reset") || IsKeyPressed(KEY_T)) {
+            board.Reset();
+            commandHistory.push_back("Reset Board");
+        }
 
         static int garbage_lines = 0;
         ImGui::InputInt("Garbage", &garbage_lines);
