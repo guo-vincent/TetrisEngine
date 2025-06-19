@@ -195,6 +195,7 @@ namespace tetris {
         canHold = true;
 
         // Game over is checked in SpawnNewPiece, not here
+        SpawnRandomPiece();
     }
 
     int Board::CalculateScore(int isTSpin, bool isAllMiniSpin, int lines) {
@@ -624,7 +625,6 @@ namespace tetris {
     bool Board::UpdateLockDelay(double deltaTime) {
         if (lockDelayTimer.Update(deltaTime) && !IsValidPosition(currentPiece->GetCurrentRepresentation(), currentPieceTopLeftPos + Point(0, -1))) {
             LockActivePiece();
-            SpawnRandomPiece(); // still needs game over detection
             return true;
         }
         return false;

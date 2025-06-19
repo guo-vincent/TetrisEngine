@@ -63,20 +63,13 @@ bool DrawControlsPanel(Board& board,
             commandHistory.push_back("Move Right");
         }
         if (ImGui::Button("Soft Drop") || IsKeyPressed(KEY_DOWN)) {
+            board.MoveActivePiece(0, -1);
             commandHistory.push_back("Drop 1");
-            if (!board.MoveActivePiece(0, -1)) {
-                board.LockActivePiece();
-
-                if (!board.SpawnRandomPiece()) gameOver = true;
-                board.GetNextQueue();
-            }
         }
         ImGui::SameLine();  
         if (ImGui::Button("Hard Drop") || IsKeyPressed(KEY_SPACE)) {
             board.HardDropActivePiece();
             commandHistory.push_back("Drop X");
-            if (!board.SpawnRandomPiece()) gameOver = true;
-            board.GetNextQueue();
         }
         ImGui::SameLine();
         if (ImGui::Button("HOLD") || IsKeyPressed(KEY_LEFT_SHIFT)) {
@@ -230,11 +223,7 @@ bool DrawPlayer(Game& game,
                 int cellSize){
     ImGui::PushID(playerNum);
 
-    gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
-
-    if (IsKeyPressed(KEY_T)) {
-        game.Reset();
-    }
+    //gameOver = DrawControlsPanel(game.getBoard(playerNum), playerNum, commandHistory, gameOver, ImVec2((float)offsetX + 500, (float)offsetY));
 
     DrawQueuePanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY)));
     DrawHoldPanel(game.getBoard(playerNum), playerNum, ImVec2(static_cast<float>(offsetX + 350), static_cast<float>(offsetY + 300)));

@@ -5,6 +5,7 @@
 #include "TetrisEngine/Board.h"
 #include "TetrisEngine/Game.h"
 #include "TetrisEngine/Ui.h"
+#include "TetrisEngine/Controls.h"
 #include <raylib.h>
 #include <imgui.h>
 #include <rlImGui.h>
@@ -52,13 +53,27 @@ int main() {
     // main loop add game stuff here
     while (!WindowShouldClose()) {
         game.Update();
+
+        gameOver0 = game.getBoard(0).IsGameOver();
+        if (!gameOver0){
+            if (IsKeyPressed(KEY_LEFT)) ControlLeft(game.getBoard(0));
+            if (IsKeyPressed(KEY_RIGHT)) ControlRight(game.getBoard(0));
+            if (IsKeyPressed(KEY_E)) ControlRotateCW(game.getBoard(0));
+            if (IsKeyPressed(KEY_Q)) ControlRotateCCW(game.getBoard(0));
+            if (IsKeyPressed(KEY_W)) ControlRotate180(game.getBoard(0));
+            if (IsKeyPressed(KEY_SPACE)) ControlHardDrop(game.getBoard(0));
+            if (IsKeyPressed(KEY_DOWN)) ControlSoftDrop(game.getBoard(0));
+            if (IsKeyPressed(KEY_LEFT_SHIFT)) ControlHold(game.getBoard(0));
+        }
+        if (IsKeyPressed(KEY_T)) game.Reset();
+
         BeginDrawing();
         ClearBackground(BLACK);
 
         rlImGuiBegin();
 
-        gameOver0 = DrawPlayer(game, 0, board0OffsetX, boardOffsetY, commandHistory0, gameOver0, cellSize);
-        gameOver1 = DrawPlayer(game, 1, board1OffsetX, boardOffsetY, commandHistory1, gameOver1, cellSize);      
+        DrawPlayer(game, 0, board0OffsetX, boardOffsetY, commandHistory0, gameOver0, cellSize);
+        DrawPlayer(game, 1, board1OffsetX, boardOffsetY, commandHistory1, gameOver1, cellSize);      
         
         rlImGuiEnd();
 

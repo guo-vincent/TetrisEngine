@@ -91,6 +91,7 @@ add_library(TetrisEngineCore STATIC
     src/Game.cpp
     src/UI.cpp
     src/UtilFunctions.cpp
+    src/Controls.cpp
 )
 
 if(MSVC)
