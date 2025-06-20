@@ -15,7 +15,8 @@ class Board;
 
 class Game {
     public:
-        Game() : m_seed(std::random_device{}()) {}
+    
+        Game() : Game(1) {}
 
         explicit Game(size_t numPlayers) : m_seed(std::random_device{}()) {
             for (size_t i = 0; i < numPlayers; ++i) {
