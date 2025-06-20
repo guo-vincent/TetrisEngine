@@ -15,9 +15,11 @@ class Board;
 
 class Game {
     public:
-        Game() : m_seed(std::random_device{}()) {}
+        
+        Game() : Game(1) {}
 
         explicit Game(size_t numPlayers) : m_seed(std::random_device{}()) {
+            alive_players = numPlayers;
             for (size_t i = 0; i < numPlayers; ++i) {
                 addPlayer(static_cast<int>(i));
                 pending_garbage_queues.push_back(std::queue<int>());
@@ -27,6 +29,7 @@ class Game {
         }
 
         void addPlayer(int playerID) {
+            alive_players++;
             m_boards.emplace_back(std::make_unique<Board>(m_seed, playerID, *this));
         }
 
@@ -65,6 +68,7 @@ class Game {
 
     private:
         std::vector<std::unique_ptr<Board>> m_boards;
+        int alive_players;
         unsigned int m_seed;
         std::vector<std::queue<int>> pending_garbage_queues;
         GravityClock gravityClock;

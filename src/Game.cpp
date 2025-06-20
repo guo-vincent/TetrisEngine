@@ -3,6 +3,7 @@
 
 namespace tetris {
     void Game::Reset() {
+        alive_players = playerCount();
         for (size_t i = 0; i < playerCount(); i++) {
             getBoard(i).Reset();
         }
